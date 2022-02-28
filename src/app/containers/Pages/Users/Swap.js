@@ -688,7 +688,7 @@ function Swap(props) {
             <div className="main-wrapper">
                 <div className="home-section home-full-height">
                     <HeaderHome setActivePublicKey={setActivePublicKey} selectedNav={"Swap"} />
-                    <div style={{ backgroundColor: '#e846461F' }} className="card">
+                    <div style={{ backgroundColor: '#000052' }} className="card">
                         <div className="container-fluid">
                             <div
                                 className="content"
@@ -718,6 +718,7 @@ function Swap(props) {
                                                                         {tokenA ? (
                                                                             <Card
                                                                                 className='custom-card'
+                                                                                style={{ borderRadius: '15px' }}
                                                                             >
                                                                                 <CardHeader
                                                                                     onClick={() => {
@@ -732,7 +733,7 @@ function Swap(props) {
                                                                             <Card onClick={() => {
                                                                                 handleShowTokenAModal()
 
-                                                                            }} className='custom-card' style={{ padding: '20px' }}>
+                                                                            }} className='custom-card' style={{ borderRadius: '15px', padding: '20px' }}>
                                                                                 Select Token  <i style={{ float: 'right' }} className="fas fa-chevron-down"></i>
                                                                             </Card>
                                                                         )}
@@ -798,9 +799,8 @@ function Swap(props) {
                                                                         {tokenB ? (
                                                                             <Card
                                                                                 className='custom-card'
+                                                                                style={{ borderRadius: '15px' }}
                                                                             >
-                                                                                {/* <Row>
-                                                                                    <Col> */}
                                                                                 <CardHeader
                                                                                     onClick={() => {
                                                                                         handleShowTokenBModal()
@@ -809,16 +809,11 @@ function Swap(props) {
                                                                                     title={tokenB.name}
                                                                                     subheader={tokenB.symbol}
                                                                                 />
-                                                                                {/* </Col> */}
-                                                                                {/* <Col>
-                                                                                        <i style={{ float: 'right', margin: '20px', marginTop: '30px' }} className="fas fa-chevron-down"></i>
-                                                                                    </Col>
-                                                                                </Row> */}
                                                                             </Card>
                                                                         ) : (
                                                                             <Card onClick={() => {
                                                                                 handleShowTokenBModal()
-                                                                            }} style={{ padding: '20px' }}
+                                                                            }} style={{ borderRadius: '15px', padding: '20px' }}
                                                                                 className='custom-card'
                                                                             >
                                                                                 Select Token<i style={{ float: 'right' }} className="fas fa-chevron-down"></i>
@@ -882,7 +877,7 @@ function Swap(props) {
                                                             </div>
 
                                                             {tokenA ? (
-                                                                <Accordion key={0} expanded={expanded === 0} onChange={handleChange(0)}>
+                                                                <Accordion style={{ borderRadius: '15px',marginBottom: '10px' }} key={0} expanded={expanded === 0} onChange={handleChange(0)}>
                                                                     <AccordionSummary
                                                                         expandIcon={tokenA.address !== "" ? (<i className="fas fa-chevron-down"></i>) : (null)}
                                                                         aria-controls="panel1bh-content"
@@ -896,7 +891,7 @@ function Swap(props) {
                                                                     </AccordionSummary>
                                                                     {tokenA.address !== "" ? (
                                                                         <AccordionDetails >
-                                                                            <Card style={{ backgroundColor: '#e846461F' }} className={classes.root}>
+                                                                            <Card style={{ backgroundColor: '#0000521f' }} className={classes.root}>
                                                                                 <CardContent>
                                                                                     <Typography style={{ margin: '10px' }} variant="body2" color="textSecondary" component="p">
                                                                                         <strong>Contract Hash: </strong>{tokenA.address}
@@ -912,7 +907,7 @@ function Swap(props) {
                                                                 </Accordion>
                                                             ) : (null)}
                                                             {tokenB ? (
-                                                                <Accordion key={1} expanded={expanded === 1} onChange={handleChange(1)}>
+                                                                <Accordion style={{ borderRadius: '15px', marginBottom: '10px' }} key={1} expanded={expanded === 1} onChange={handleChange(1)}>
                                                                     <AccordionSummary
                                                                         expandIcon={tokenB.address !== "" ? (<i className="fas fa-chevron-down"></i>) : (null)}
                                                                         aria-controls="panel1bh-content"
@@ -926,7 +921,7 @@ function Swap(props) {
                                                                     </AccordionSummary>
                                                                     {tokenB.address !== "" ? (
                                                                         <AccordionDetails >
-                                                                            <Card style={{ backgroundColor: '#e846461F' }} className={classes.root}>
+                                                                            <Card style={{ backgroundColor: '#0000521f' }} className={classes.root}>
                                                                                 <CardContent>
                                                                                     <Typography style={{ margin: '10px' }} variant="body2" color="textSecondary" component="p">
                                                                                         <strong>Contract Hash: </strong>{tokenB.address}
@@ -947,13 +942,14 @@ function Swap(props) {
                                                                         <Spinner
                                                                             animation="border"
                                                                             role="status"
-                                                                            style={{ color: "#e84646" }}
+                                                                            style={{ color: "#6476bf" }}
                                                                         >
                                                                             <span className="sr-only">Loading...</span>
                                                                         </Spinner>
                                                                     </div>
                                                                 ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenABalance < tokenAAmount * 10 ** 9 ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >
@@ -961,6 +957,7 @@ function Swap(props) {
                                                                     </button>
                                                                 ) : (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn-block btn-outline-primary btn-lg"
                                                                         onClick={async () => {
                                                                             setApproveAIsLoading(true)
@@ -978,13 +975,14 @@ function Swap(props) {
                                                                     <Spinner
                                                                         animation="border"
                                                                         role="status"
-                                                                        style={{ color: "#e84646" }}
+                                                                        style={{ color: "#6476bf" }}
                                                                     >
                                                                         <span className="sr-only">Loading...</span>
                                                                     </Spinner>
                                                                 </div>
                                                             ) : isInvalidPair ? (
                                                                 <button
+                                                                    style={{ borderRadius: '15px' }}
                                                                     className="btn btn-block btn-lg"
                                                                     disabled
                                                                 >
@@ -992,6 +990,7 @@ function Swap(props) {
                                                                 </button>
                                                             ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenABalance < tokenAAmount * 10 ** 9 ? (
                                                                 <button
+                                                                    style={{ borderRadius: '15px' }}
                                                                     className="btn btn-block btn-lg "
                                                                     disabled
                                                                 >
@@ -999,6 +998,7 @@ function Swap(props) {
                                                                 </button>
                                                             ) : tokenA && tokenA.name !== "Casper" && tokenAAmount * 10 ** 9 > tokenAAllowance ? (
                                                                 <button
+                                                                    style={{ borderRadius: '15px' }}
                                                                     className="btn btn-block btn-lg "
                                                                     disabled
                                                                 >
@@ -1007,6 +1007,7 @@ function Swap(props) {
                                                             ) : (
                                                                 activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenAAmount !== 0 && tokenBAmount !== 0 && tokenAAmount !== undefined && tokenBAmount !== undefined ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg"
                                                                         onClick={async () => await swapMakeDeploy()}
                                                                     >
@@ -1014,6 +1015,7 @@ function Swap(props) {
                                                                     </button>
                                                                 ) : activePublicKey === 'null' || activePublicKey === null || activePublicKey === undefined ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >
@@ -1021,6 +1023,7 @@ function Swap(props) {
                                                                     </button>
                                                                 ) : (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >

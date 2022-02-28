@@ -378,7 +378,7 @@ function RemoveLiquidity(props) {
             <div className="main-wrapper">
                 <div className="home-section home-full-height">
                     <HeaderHome setActivePublicKey={setActivePublicKey} selectedNav={"Pool"} />
-                    <div style={{ backgroundColor: '#e846461F' }} className="card">
+                    <div style={{ backgroundColor: '#000052' }} className="card">
                         <div className="container-fluid">
                             <div
                                 className="content"
@@ -396,26 +396,33 @@ function RemoveLiquidity(props) {
                                                     <div className="col-md-12 col-lg-6 login-right">
                                                         <>
                                                             <div className="login-header">
-                                                                <h3 style={{ textAlign: "center" }}>Remove Liquidity</h3>
-                                                                <h3 onClick={handleShowSlippage} style={{ textAlign: 'right' }}><i className="fas fa-cog"></i></h3>
+                                                                <h3  >
+                                                                <div style={{ textAlign: "center" }}>Remove Liquidity
+                                                                    <span onClick={handleShowSlippage} style={{ float: 'right' }}><i className="fas fa-cog"></i></span>
+                                                                </div>
+                                                            </h3>
                                                             </div>
                                                             <form>
-                                                                <br></br>
-                                                                <Box style={{ margin: '10px' }}>
-                                                                    <Slider
-                                                                        style={{ color: '#ed0b25' }}
-                                                                        aria-label="Custom marks"
-                                                                        defaultValue={25}
-                                                                        getAriaValueText={valuetext}
-                                                                        step={1}
-                                                                        valueLabelDisplay="auto"
-                                                                        marks={marks}
-                                                                    />
-                                                                </Box>
-                                                                <div className="login-header" style={{ margin: '40px' }}>
-                                                                    <h1 className="neonText" style={{ textAlign: "center" }}>{value}%</h1>
-                                                                </div>
-
+                                                                <Row style={{ marginBottom: '20px' }}>
+                                                                    <Col xs={10} md={10}>
+                                                                        <Box style={{ margin: '10px' }}>
+                                                                            <Slider
+                                                                                style={{ color: '#08209e' }}
+                                                                                aria-label="Custom marks"
+                                                                                defaultValue={25}
+                                                                                getAriaValueText={valuetext}
+                                                                                step={1}
+                                                                                valueLabelDisplay="auto"
+                                                                                marks={marks}
+                                                                            />
+                                                                        </Box>
+                                                                    </Col>
+                                                                    <Col xs={2} md={2}>
+                                                                        <div style={{marginTop:'10px'}}>
+                                                                            <h2 style={{ textAlign: "center" }}>{value}%</h2>
+                                                                        </div>
+                                                                    </Col>
+                                                                </Row>
                                                                 {tokenA && tokenB ? (
                                                                     <>
                                                                         <Card>
@@ -449,19 +456,24 @@ function RemoveLiquidity(props) {
                                                                         </Card>
                                                                         <br />
                                                                         {activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined ? (
-                                                                            <Card style={{ marginBottom: '20px' }}>
-                                                                                <CardHeader
-                                                                                    title={'Price'}
-                                                                                />
-                                                                                <CardContent className="text-center" >
-                                                                                    <Typography variant="body1" style={{ color: '#ed0b25' }} component="p">
-                                                                                        {`1 ${tokenA.name} = ${(tokenBAmountPercent / tokenAAmountPercent).toFixed(5)} ${tokenB.name}`}
-                                                                                    </Typography>
-                                                                                    <Typography variant="body1" style={{ color: '#ed0b25' }} component="p">
-                                                                                        {`1 ${tokenB.name} = ${(tokenAAmountPercent / tokenBAmountPercent).toFixed(5)} ${tokenA.name}`}
-                                                                                    </Typography>
-                                                                                </CardContent>
-                                                                            </Card>) : (null)}
+                                                                            <Row style={{ marginBottom: '20px' }}>
+                                                                                <Col xs={2} md={2}>
+                                                                                    <CardHeader
+                                                                                        subheader={'Price'}
+                                                                                    />
+                                                                                </Col>
+                                                                                <Col xs={10} md={10}>
+                                                                                    <CardContent className="text-right" >
+                                                                                        <Typography variant="body2" style={{ color: '#08209e' }} component="p">
+                                                                                            {`1 ${tokenA.name} = ${(tokenBAmountPercent / tokenAAmountPercent).toFixed(5)} ${tokenB.name}`}
+                                                                                        </Typography>
+                                                                                        <Typography variant="body2" style={{ color: '#08209e' }} component="p">
+                                                                                            {`1 ${tokenB.name} = ${(tokenAAmountPercent / tokenBAmountPercent).toFixed(5)} ${tokenA.name}`}
+                                                                                        </Typography>
+                                                                                    </CardContent>
+                                                                                </Col>
+                                                                            </Row>
+                                                                        ) : (null)}
                                                                     </>
                                                                 ) : (
                                                                     null
@@ -472,7 +484,7 @@ function RemoveLiquidity(props) {
                                                                             <Spinner
                                                                                 animation="border"
                                                                                 role="status"
-                                                                                style={{ color: "#e84646", marginBottom: '10px' }}
+                                                                                style={{ color: "#6476bf", marginBottom: '10px' }}
                                                                             >
                                                                                 <span className="sr-only">Loading...</span>
                                                                             </Spinner>
@@ -480,6 +492,7 @@ function RemoveLiquidity(props) {
                                                                     ) : (
                                                                         <button
                                                                             className="btn btn-block btn-lg"
+                                                                            style={{ borderRadius: '15px' }}
                                                                             onClick={async () => {
                                                                                 setApproveAIsLoading(true)
                                                                                 await approveMakeDeploy()
@@ -494,7 +507,7 @@ function RemoveLiquidity(props) {
                                                                         <Spinner
                                                                             animation="border"
                                                                             role="status"
-                                                                            style={{ color: "#e84646", marginTop: '10px' }}
+                                                                            style={{ color: "#6476bf", marginTop: '10px' }}
                                                                         >
                                                                             <span className="sr-only">Loading...</span>
                                                                         </Spinner>
@@ -503,6 +516,7 @@ function RemoveLiquidity(props) {
                                                                     (liquidity) * value / 100 <= pairAllowance && tokenAAmountPercent !== 0 && tokenBAmountPercent !== 0 && tokenAAmount !== 0 && tokenBAmount !== 0 && tokenAAmount !== undefined && tokenBAmount !== undefined ? (
                                                                         isRemoveLiquidityCSPR ? (
                                                                             <button
+                                                                                style={{ borderRadius: '15px' }}
                                                                                 className="btn btn-block btn-lg"
                                                                                 onClick={async () => await RemoveLiquidityCSPRMakeDeploy()}
                                                                             >
@@ -510,6 +524,7 @@ function RemoveLiquidity(props) {
                                                                             </button>
                                                                         ) : (
                                                                             <button
+                                                                                style={{ borderRadius: '15px' }}
                                                                                 className="btn btn-block btn-lg"
                                                                                 onClick={async () => await RemoveLiquidityMakeDeploy()}
                                                                             >
@@ -518,6 +533,7 @@ function RemoveLiquidity(props) {
                                                                         )
                                                                     ) : activePublicKey === 'null' || activePublicKey === null || activePublicKey === undefined ? (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             disabled
                                                                         >
@@ -525,6 +541,7 @@ function RemoveLiquidity(props) {
                                                                         </button>
                                                                     ) : isRemoveLiquidityCSPR ? (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             disabled
                                                                         >
@@ -532,6 +549,7 @@ function RemoveLiquidity(props) {
                                                                         </button>
                                                                     ) : (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             disabled
                                                                         >
@@ -540,11 +558,10 @@ function RemoveLiquidity(props) {
                                                                     )
                                                                 )}
                                                                 {(tokenA && tokenB) && (tokenA.symbol === "WCSPR" || tokenB.symbol === "WCSPR") ? (
-                                                                    <FormGroup>
+                                                                    <FormGroup style={{ float: 'right' }}>
                                                                         <FormControlLabel onClick={() => {
                                                                             setIsRemoveLiquidityCSPR(!isRemoveLiquidityCSPR)
-
-                                                                        }} value={isRemoveLiquidityCSPR} control={<Checkbox defaultValue={isRemoveLiquidityCSPR} />} label="Remove Liquidity CSPR" />
+                                                                        }} value={isRemoveLiquidityCSPR} control={<Checkbox style={{ color: '#000052' }} defaultValue={isRemoveLiquidityCSPR} />} labelPlacement="start" label="Remove Liquidity CSPR?" />
                                                                     </FormGroup>
                                                                 ) : (null)}
                                                             </form>

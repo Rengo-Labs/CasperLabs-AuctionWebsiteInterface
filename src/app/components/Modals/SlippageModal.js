@@ -8,7 +8,7 @@ import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
 function SlippageModal(props) {
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal style={{borderRadius: '15px'}} centered show={props.show} onHide={props.handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Transaction Settings <i className="fas fa-cog"></i> </Modal.Title>
             </Modal.Header>
@@ -47,10 +47,10 @@ function SlippageModal(props) {
 
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="contained" style={{ margin: '10px', backgroundColor: '#ed0b25', color: 'white' }} onClick={props.handleClose}>
+                <Button variant="contained" style={{ margin: '10px', backgroundColor: '#08209e', color: 'white' }} onClick={props.handleClose}>
                     Confirm
                 </Button>
-                <Button variant="contained" style={{ margin: '10px', backgroundColor: '#ed0b25', color: 'white' }} onClick={() => {
+                <Button variant="contained" style={{ margin: '10px', backgroundColor: '#08209e', color: 'white' }} onClick={() => {
                     props.setSlippage(0.5)
                     props.handleClose()
                 }}>

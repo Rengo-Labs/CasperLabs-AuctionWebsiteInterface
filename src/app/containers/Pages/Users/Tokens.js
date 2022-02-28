@@ -79,7 +79,7 @@ function Tokens(props) {
             <div className="main-wrapper">
                 <div className="home-section home-full-height">
                     <HeaderHome setActivePublicKey={setActivePublicKey} selectedNav={"Tokens"} />
-                    <div style={{ backgroundColor: '#e846461F' }} className="card">
+                    <div style={{ backgroundColor: '#000052' }} className="card">
                         <div className="container-fluid">
                             <div
                                 className="content"
@@ -93,9 +93,8 @@ function Tokens(props) {
 
                                         <div
                                             className="row"
-                                            style={{ height: `${props.windowHeight}`, marginRight: "px" }}
+                                            style={{ height: `${props.windowHeight}`,padding:"20px" }}
                                         >
-
                                             <div
                                                 className="table-responsive"
                                                 style={{ paddingTop: "20px" }}
@@ -105,7 +104,7 @@ function Tokens(props) {
                                                         <Spinner
                                                             animation="border"
                                                             role="status"
-                                                            style={{ color: "#e84646" }}
+                                                            style={{ color: "#6476bf" }}
                                                         >
                                                             <span className="sr-only">Loading...</span>
                                                         </Spinner>

@@ -99,7 +99,7 @@ function Pool(props) {
                                 console.log(error.response)
                             })
                     }
-                    
+
                 })
                 .catch((error) => {
                     console.log(error)
@@ -115,20 +115,20 @@ function Pool(props) {
             <div className="main-wrapper">
                 <div className="home-section home-full-height">
                     <HeaderHome setActivePublicKey={setActivePublicKey} selectedNav={"Pool"} />
-                    <div style={{ backgroundColor: '#e846461F' }} className="card">
+                    <div style={{ backgroundColor: '#000052' }} className="card">
                         <div className="container-fluid">
                             <div className="content" style={{ paddingTop: "150px", minHeight: "100vh" }} position="absolute">
                                 <div className="container-fluid">
                                     <div className="row" style={{ height: `${props.windowHeight}` }}>
                                         <div className="col-md-6 offset-md-3">
                                             <div className="account-content">
-                                                <h3>
+                                                <h3 style={{ color: 'white' }}>
                                                     My Liquidity Positions
                                                 </h3>
                                             </div>
                                             <div className="account-content">
                                                 {!ispairList && !isError ? (
-                                                    <Card style={{ marginBottom: '10px' }} className={classes.root}>
+                                                    <Card style={{ borderRadius: '15px', marginBottom: '10px' }} className={classes.root}>
                                                         <CardContent >
                                                             <Alert style={{ marginBottom: '0px' }} color="light">
                                                                 Connect to a wallet to view your liquidity.
@@ -136,7 +136,7 @@ function Pool(props) {
                                                         </CardContent>
                                                     </Card>
                                                 ) : isError && error ? (
-                                                    <Card style={{ marginBottom: '10px' }} className={classes.root}>
+                                                    <Card style={{ borderRadius: '15px', marginBottom: '10px' }} className={classes.root}>
                                                         <CardContent >
                                                             <Alert style={{ marginBottom: '0px' }} color="light">
                                                                 No liquidity was found
@@ -145,7 +145,7 @@ function Pool(props) {
                                                     </Card>
                                                 ) : (
                                                     userPairs.map((i, index) => (
-                                                        <Accordion style={{ marginBottom: '10px' }} key={index} expanded={expanded === index} onChange={handleChange(index)}>
+                                                        <Accordion style={{ borderRadius: '15px', marginBottom: '10px' }} key={index} expanded={expanded === index} onChange={handleChange(index)}>
                                                             <AccordionSummary
                                                                 expandIcon={<i className="fas fa-chevron-down"></i>}
                                                                 aria-controls="panel1bh-content"
@@ -156,7 +156,7 @@ function Pool(props) {
                                                                 </Typography>
                                                             </AccordionSummary>
                                                             <AccordionDetails >
-                                                                <Card style={{ backgroundColor: '#e846461F' }} className={classes.root}>
+                                                                <Card style={{ backgroundColor: '#0000521f' }} className={classes.root}>
                                                                     <CardContent>
                                                                         <Row>
                                                                             <Col>Your total Pool Tokens:</Col>
@@ -185,7 +185,7 @@ function Pool(props) {
                                                                                 <Link to='/pool/addLiquidity'>
                                                                                     <button
                                                                                         className="btn-block btn-primary btn-lg"
-                                                                                        style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                                                                        style={{ borderRadius: '15px', marginTop: '10px', marginBottom: '10px' }}>
                                                                                         Add
                                                                                     </button>
                                                                                 </Link>
@@ -194,7 +194,7 @@ function Pool(props) {
                                                                                 <Link to={`/pool/removeLiquidity/${i.token0.id}/${i.token1.id}`}>
                                                                                     <button
                                                                                         className="btn-block btn-primary btn-lg"
-                                                                                        style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                                                                        style={{ borderRadius: '15px', marginTop: '10px', marginBottom: '10px' }}>
                                                                                         Remove
                                                                                     </button>
                                                                                 </Link>
@@ -215,7 +215,7 @@ function Pool(props) {
                                                 <Link to='/pool/addLiquidity'>
                                                     <button
                                                         className="btn-block btn-primary btn-lg"
-                                                        style={{ marginBottom: '10px' }}>
+                                                        style={{ borderRadius: '15px', marginBottom: '10px' }}>
                                                         Add Liquidity
                                                     </button>
                                                 </Link>

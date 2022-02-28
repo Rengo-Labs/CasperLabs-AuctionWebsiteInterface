@@ -641,7 +641,7 @@ function AddLiquidity(props) {
             <div className="main-wrapper">
                 <div className="home-section home-full-height">
                     <HeaderHome setActivePublicKey={setActivePublicKey} selectedNav={"Pool"} />
-                    <div style={{ backgroundColor: '#e846461F' }} className="card">
+                    <div style={{ backgroundColor: '#000052' }} className="card">
                         <div className="container-fluid">
                             <div
                                 className="content"
@@ -672,6 +672,7 @@ function AddLiquidity(props) {
                                                                             {tokenA ? (
                                                                                 <Card
                                                                                     className='custom-card'
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                 >
                                                                                     <CardHeader
                                                                                         onClick={() => {
@@ -686,7 +687,7 @@ function AddLiquidity(props) {
                                                                                 <Card onClick={() => {
                                                                                     handleShowTokenAModal()
 
-                                                                                }} className='custom-card' style={{ padding: '20px' }}>
+                                                                                }} className='custom-card' style={{ borderRadius: '15px', padding: '20px' }}>
                                                                                     Select Token  <i style={{ float: 'right' }} className="fas fa-chevron-down"></i>
                                                                                 </Card>
                                                                             )}
@@ -742,6 +743,7 @@ function AddLiquidity(props) {
                                                                             {tokenB ? (
                                                                                 <Card
                                                                                     className='custom-card'
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                 >
                                                                                     <CardHeader
                                                                                         onClick={() => {
@@ -755,7 +757,7 @@ function AddLiquidity(props) {
                                                                             ) : (
                                                                                 <Card onClick={() => {
                                                                                     handleShowTokenBModal()
-                                                                                }} style={{ padding: '20px' }}
+                                                                                }} style={{ borderRadius: '15px', padding: '20px' }}
                                                                                     className='custom-card'
                                                                                 >
                                                                                     Select Token<i style={{ float: 'right' }} className="fas fa-chevron-down"></i>
@@ -809,7 +811,7 @@ function AddLiquidity(props) {
                                                                     </div>
                                                                 </div>
                                                                 {tokenA ? (
-                                                                    <Accordion key={0} expanded={expanded === 0} onChange={handleChange(0)}>
+                                                                    <Accordion style={{ borderRadius: '15px' ,marginBottom: '10px'}} key={0} expanded={expanded === 0} onChange={handleChange(0)}>
                                                                         <AccordionSummary
                                                                             expandIcon={tokenA.address !== "" ? (<i className="fas fa-chevron-down"></i>) : (null)}
                                                                             aria-controls="panel1bh-content"
@@ -823,7 +825,7 @@ function AddLiquidity(props) {
                                                                         </AccordionSummary>
                                                                         {tokenA.address !== "" ? (
                                                                             <AccordionDetails >
-                                                                                <Card style={{ backgroundColor: '#e846461F' }} className={classes.root}>
+                                                                                <Card style={{ backgroundColor: '#0000521f' }} className={classes.root}>
                                                                                     <CardContent>
                                                                                         <Typography style={{ margin: '10px' }} variant="body2" color="textSecondary" component="p">
                                                                                             <strong>Contract Hash: </strong>{tokenA.address}
@@ -839,7 +841,7 @@ function AddLiquidity(props) {
                                                                     </Accordion>
                                                                 ) : (null)}
                                                                 {tokenB ? (
-                                                                    <Accordion style={{ marginBottom: '10px' }} key={1} expanded={expanded === 1} onChange={handleChange(1)}>
+                                                                    <Accordion style={{ borderRadius: '15px', marginBottom: '10px' }} key={1} expanded={expanded === 1} onChange={handleChange(1)}>
                                                                         <AccordionSummary
                                                                             expandIcon={tokenB.address !== "" ? (<i className="fas fa-chevron-down"></i>) : (null)}
                                                                             aria-controls="panel1bh-content"
@@ -853,7 +855,7 @@ function AddLiquidity(props) {
                                                                         </AccordionSummary>
                                                                         {tokenB.address !== "" ? (
                                                                             <AccordionDetails >
-                                                                                <Card style={{ backgroundColor: '#e846461F' }} className={classes.root}>
+                                                                                <Card style={{ backgroundColor: '#0000521f' }} className={classes.root}>
                                                                                     <CardContent>
                                                                                         <Typography style={{ margin: '10px' }} variant="body2" color="textSecondary" component="p">
                                                                                             <strong>Contract Hash: </strong>{tokenB.address}
@@ -875,7 +877,7 @@ function AddLiquidity(props) {
                                                                                     <Spinner
                                                                                         animation="border"
                                                                                         role="status"
-                                                                                        style={{ color: "#e84646" }}
+                                                                                        style={{ color: "#6476bf" }}
                                                                                     >
                                                                                         <span className="sr-only">Loading...</span>
                                                                                     </Spinner>
@@ -884,6 +886,7 @@ function AddLiquidity(props) {
                                                                         ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenABalance < tokenAAmount * 10 ** 9 ? (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg "
                                                                                     disabled
                                                                                 >
@@ -893,6 +896,7 @@ function AddLiquidity(props) {
                                                                         ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined ? (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg"
                                                                                     onClick={async () => {
                                                                                         setApproveAIsLoading(true)
@@ -907,6 +911,7 @@ function AddLiquidity(props) {
                                                                         ) : (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg"
                                                                                     disabled
                                                                                 >
@@ -924,7 +929,7 @@ function AddLiquidity(props) {
                                                                                     <Spinner
                                                                                         animation="border"
                                                                                         role="status"
-                                                                                        style={{ color: "#e84646" }}
+                                                                                        style={{ color: "#6476bf" }}
                                                                                     >
                                                                                         <span className="sr-only">Loading...</span>
                                                                                     </Spinner>
@@ -933,6 +938,7 @@ function AddLiquidity(props) {
                                                                         ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenBBalance < tokenBAmount * 10 ** 9 ? (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg "
                                                                                     disabled
                                                                                 >
@@ -942,6 +948,7 @@ function AddLiquidity(props) {
                                                                         ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined ? (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg"
                                                                                     onClick={async () => {
                                                                                         setApproveBIsLoading(true)
@@ -956,6 +963,7 @@ function AddLiquidity(props) {
                                                                         ) : (
                                                                             <Col>
                                                                                 <button
+                                                                                    style={{ borderRadius: '15px' }}
                                                                                     className="btn btn-block btn-lg"
                                                                                     disabled
                                                                                 >
@@ -1002,20 +1010,26 @@ function AddLiquidity(props) {
                                                                             </CardContent>
                                                                         </Card>
                                                                         <hr />
-                                                                        <Card style={{ marginBottom: '20px' }}>
-                                                                            <CardHeader
-                                                                                title={'Price'}
-                                                                            />
+                                                                        {/* <Card style={{ marginBottom: '20px' }}> */}
+                                                                        <Row style={{ marginBottom: '20px' }}>
+                                                                            <Col xs={2} md={2}>
+                                                                                <CardHeader
+                                                                                    subheader={'Price'}
+                                                                                />
+                                                                            </Col>
+                                                                            <Col xs={10} md={10}>
+                                                                                <CardContent className="text-right" >
+                                                                                    <Typography variant="body2" style={{ color: '#08209e' }} component="p">
+                                                                                        {`1 ${tokenA.name} = ${reserve0} ${tokenB.name}`}
+                                                                                    </Typography>
+                                                                                    <Typography variant="body2" style={{ color: '#08209e' }} component="p">
+                                                                                        {`1 ${tokenB.name} = ${reserve1} ${tokenA.name}`}
+                                                                                    </Typography>
+                                                                                </CardContent>
+                                                                            </Col>
+                                                                        </Row>
 
-                                                                            <CardContent className="text-center" >
-                                                                                <Typography variant="body1" style={{ color: '#ed0b25' }} component="p">
-                                                                                    {`1 ${tokenA.name} = ${reserve0} ${tokenB.name}`}
-                                                                                </Typography>
-                                                                                <Typography variant="body1" style={{ color: '#ed0b25' }} component="p">
-                                                                                    {`1 ${tokenB.name} = ${reserve1} ${tokenA.name}`}
-                                                                                </Typography>
-                                                                            </CardContent>
-                                                                        </Card>
+                                                                        {/* </Card> */}
                                                                     </>
                                                                 ) : (
                                                                     null
@@ -1026,13 +1040,14 @@ function AddLiquidity(props) {
                                                                         <Spinner
                                                                             animation="border"
                                                                             role="status"
-                                                                            style={{ color: "#e84646" }}
+                                                                            style={{ color: "#6476bf" }}
                                                                         >
                                                                             <span className="sr-only">Loading...</span>
                                                                         </Spinner>
                                                                     </div>
                                                                 ) : isInvalidPair ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg"
                                                                         disabled
                                                                     >
@@ -1040,6 +1055,7 @@ function AddLiquidity(props) {
                                                                     </button>
                                                                 ) : activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && (tokenABalance < tokenAAmount * 10 ** 9 || tokenBBalance < tokenBAmount * 10 ** 9) ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >
@@ -1047,6 +1063,7 @@ function AddLiquidity(props) {
                                                                     </button>
                                                                 ) : tokenA && tokenA.name !== "Casper" && tokenAAmount * 10 ** 9 > tokenAAllowance ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >
@@ -1054,6 +1071,7 @@ function AddLiquidity(props) {
                                                                     </button>
                                                                 ) : tokenB && tokenB.name !== "Casper" && tokenBAmount * 10 ** 9 > tokenBAllowance ? (
                                                                     <button
+                                                                        style={{ borderRadius: '15px' }}
                                                                         className="btn btn-block btn-lg "
                                                                         disabled
                                                                     >
@@ -1062,6 +1080,7 @@ function AddLiquidity(props) {
                                                                 ) : (
                                                                     activePublicKey !== 'null' && activePublicKey !== null && activePublicKey !== undefined && tokenAAmount !== 0 && tokenBAmount !== 0 && tokenAAmount !== undefined && tokenBAmount !== undefined ? (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             onClick={async () => await addLiquidityMakeDeploy()}
                                                                         >
@@ -1069,6 +1088,7 @@ function AddLiquidity(props) {
                                                                         </button>
                                                                     ) : activePublicKey === 'null' || activePublicKey === null || activePublicKey === undefined ? (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             disabled
                                                                         >
@@ -1076,6 +1096,7 @@ function AddLiquidity(props) {
                                                                         </button>
                                                                     ) : (
                                                                         <button
+                                                                            style={{ borderRadius: '15px' }}
                                                                             className="btn btn-block btn-lg"
                                                                             disabled
                                                                         >

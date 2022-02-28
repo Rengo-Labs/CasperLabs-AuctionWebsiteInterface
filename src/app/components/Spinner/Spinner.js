@@ -12,9 +12,9 @@ function Spinner(props) {
                 <g id="spinner2">
                     <g id="outer" style={{ animationDuration: props.speed + "s" }}>
                         <circle id="Ellipse 1" cx="123.5" cy="124.5" r="104" stroke="#f46c7c" strokeWidth="11" />
-                        <circle id="Ellipse 2" cx="124" cy="20" r="20" fill="#ed0b25" />
-                        <circle id="Ellipse 5" cx="124" cy="227" r="20" fill="#ed0b25" />
-                        <circle id="Ellipse 3" cx="228" cy="127" r="20" fill="#ed0b25" />
+                        <circle id="Ellipse 2" cx="124" cy="20" r="20" fill="#08209e" />
+                        <circle id="Ellipse 5" cx="124" cy="227" r="20" fill="#08209e" />
+                        <circle id="Ellipse 3" cx="228" cy="127" r="20" fill="#08209e" />
                         <circle id="Ellipse 4" cx="20" cy="127" r="20" fill="#ed0b24" />
                     </g>
                     <g id="inner" style={{ animationDuration: props.speed + "s" }}>

@@ -8,7 +8,7 @@ import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
 function TokenBModal(props) {
     return (
-        <Modal show={props.show} onHide={props.handleClose}>
+        <Modal style={{ borderRadius: '15px' }} centered show={props.show} onHide={props.handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Select Token </Modal.Title>
             </Modal.Header>
@@ -20,7 +20,7 @@ function TokenBModal(props) {
                             props.setTokenAAmount(0)
                             props.setTokenBAmount(0)
                             props.handleClose()
-                        }} className='custom-card'>
+                        }} style={{ borderRadius: '15px' }} className='custom-card'>
                             <CardHeader
                                 avatar={<Avatar src={i.logoURI} aria-label="Artist" />}
                                 title={i.name}

@@ -25,11 +25,11 @@ code {
 
 .custom-card {
   transition: all .25s linear;
-  box-shadow: 0px 1px 2px 0px rgba(237, 11, 37,0.4);
+  box-shadow: 0px 1px 2px 0px rgba(8,32,158,0.4);
 }
 
 .custom-card:hover{
-  box-shadow: -1px 10px 29px 0px rgba(237, 11, 37,0.8);
+  box-shadow: -1px 10px 29px 0px rgba(8,32,158,0.8);
 }
 .icon {
   padding: 10px;
@@ -71,9 +71,9 @@ code {
     0 0 7px #fff,
     0 0 10px #fff,
     0 0 21px #fff,
-    0 0 42px #ed0b25,
-    0 0 82px #ed0b25,
-    0 0 92px #ed0b25,
-    0 0 102px #ed0b25,
-    0 0 151px #ed0b25;
+    0 0 42px #08209e,
+    0 0 82px #08209e,
+    0 0 92px #08209e,
+    0 0 102px #08209e,
+    0 0 151px #08209e;
 }
