@@ -10,18 +10,14 @@ import Spinner from "../Spinner/Spinner";
 function SigningModal(props) {
     return (
         <Modal centered show={props.show}>
-            <Modal.Header>
-                <Modal.Title>Sign transaction </Modal.Title>
-            </Modal.Header>
             <Modal.Body style={{ textAlign: 'center' }}>
+            <Typography variant="h5" style={{ color: '#000027' }} gutterBottom ><strong>Sign Transaction</strong></Typography>
                 <div className="row align-items-center justify-content-center">
                     <Spinner style={{ textAlign: 'center' }} />
                 </div>
-                <Typography variant="h6" style={{ margin: '30px' }} gutterBottom className="neonText" >Pending...</Typography>
-            </Modal.Body>
-            <Modal.Body>
-                <Alert color="light">
-                    Waiting for your transaction to be picked up and included in the blockchain
+                <Typography variant="h5" style={{ color: '#000052' }} gutterBottom ><strong>Pending...</strong></Typography>
+                <Alert color="light" style={{color:'#000027'}}>
+                    <strong>Waiting for your transaction to be picked up and included in the blockchain</strong>
                 </Alert>
             </Modal.Body>
 

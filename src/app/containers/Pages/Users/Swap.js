@@ -782,7 +782,7 @@ function Swap(props) {
           console.log(
             "amount_out_min * 10 ** 9 - (amount_out_min * 10 ** 9) * slippage / 100",
             amount_out_min * 10 ** 9 -
-              (amount_out_min * 10 ** 9 * slippage) / 100
+            (amount_out_min * 10 ** 9 * slippage) / 100
           );
           console.log(
             "amount_out_min - (amount_out_min) * slippage / 100",
@@ -1215,16 +1215,21 @@ function Swap(props) {
                                     color: "#08209e",
                                   }}
                                 >
-                                  Swap
-                                  <span
-                                    onClick={handleShowSlippage}
-                                    style={{
-                                      float: "right",
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    <i className="fas fa-cog"></i>
-                                  </span>
+                                  <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+                                    <strong>
+                                      Swap
+                                      <span
+                                        onClick={handleShowSlippage}
+                                        style={{
+                                          float: "right",
+                                          cursor: "pointer",
+
+                                        }}
+                                      >
+                                        <i className="fas fa-cog"></i>
+                                      </span>
+                                    </strong>
+                                  </Typography>
                                 </div>
                               </h3>
                             </div>
@@ -1237,6 +1242,8 @@ function Swap(props) {
                                         className="custom-card"
                                         style={{
                                           borderRadius: "8px",
+                                          color: '#000027',
+                                          fontWeight: '550'
                                         }}
                                       >
                                         <CardHeader
@@ -1352,7 +1359,7 @@ function Swap(props) {
                                       <div className="col-4 align-self-center">
                                         <FormHelperText id="outlined-weight-helper-text">
                                           <strong>Balance:</strong>{" "}
-                                          {"0.000000000"}
+                                          {"0"}
                                         </FormHelperText>
                                       </div>
                                     </div>
@@ -1375,6 +1382,8 @@ function Swap(props) {
                                         className="custom-card"
                                         style={{
                                           borderRadius: "8px",
+                                          color: '#000027',
+                                          fontWeight: '550'
                                         }}
                                       >
                                         <CardHeader
@@ -1499,7 +1508,7 @@ function Swap(props) {
                                       <div className="col-4 align-items-center">
                                         <FormHelperText id="outlined-weight-helper-text">
                                           <strong>Balance: </strong>
-                                          {"0.000000000"}
+                                          {"0"}
                                         </FormHelperText>
                                       </div>
                                     </div>
@@ -1516,6 +1525,8 @@ function Swap(props) {
                                   style={{
                                     borderRadius: "8px",
                                     marginBottom: "10px",
+                                    color: '#000027',
+                                    fontWeight: '550'
                                   }}
                                 >
                                   <AccordionSummary
@@ -1581,6 +1592,8 @@ function Swap(props) {
                                   style={{
                                     borderRadius: "8px",
                                     marginBottom: "10px",
+                                    color: '#000027',
+                                    fontWeight: '550'
                                   }}
                                 >
                                   <AccordionSummary
@@ -1640,10 +1653,10 @@ function Swap(props) {
                               ) : null}
 
                               {tokenA &&
-                              tokenA.name !== "Casper" &&
-                              tokenAAmount > 0 &&
-                              tokenAAmount * 10 ** 9 > tokenAAllowance &&
-                              !isInvalidPair ? (
+                                tokenA.name !== "Casper" &&
+                                tokenAAmount > 0 &&
+                                tokenAAmount * 10 ** 9 > tokenAAllowance &&
+                                !isInvalidPair ? (
                                 approveAIsLoading ? (
                                   <div className="text-center">
                                     <Spinner
@@ -1664,7 +1677,7 @@ function Swap(props) {
                                     className="btn btn-block btn-lg "
                                     disabled
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                   >
@@ -1674,7 +1687,7 @@ function Swap(props) {
                                   <button
                                     className="btn-block btn-outline-primary btn-lg"
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     onClick={async () => {
@@ -1696,8 +1709,10 @@ function Swap(props) {
                                   <Accordion
                                     key={2}
                                     style={{
-                                      marginTop:'10px',
+                                      marginTop: '10px',
                                       borderRadius: "15px 15px 0px 0px",
+                                      color: '#000027',
+                                      fontWeight: '550'
                                     }}
                                   >
                                     <AccordionSummary
@@ -1729,6 +1744,8 @@ function Swap(props) {
                                     style={{
                                       borderRadius: "0px 0px 15px 15px",
                                       marginBottom: "10px",
+                                      color: '#000027',
+                                      fontWeight: '550'
                                     }}
                                   >
                                     <AccordionSummary
@@ -1740,8 +1757,8 @@ function Swap(props) {
                                           )}
                                         />
                                       }
-                                      // aria-controls="panel1bh-content"
-                                      // id="panel1bh-header"
+                                    // aria-controls="panel1bh-content"
+                                    // id="panel1bh-header"
                                     >
                                       <CardHeader
                                         avatar={
@@ -1757,7 +1774,10 @@ function Swap(props) {
                                     </AccordionSummary>
                                   </Accordion>
                                   <hr />
-                                  <Row style={{ marginBottom: "20px" }}>
+                                  <Row style={{
+                                    marginBottom: "20px", color: '#000027',
+                                    fontWeight: '550'
+                                  }}>
                                     <Col xs={2} md={2}>
                                       <CardHeader subheader={"Price"} />
                                     </Col>
@@ -1769,9 +1789,8 @@ function Swap(props) {
                                         >
                                           {`1 ${tokenA.name} = ${numeral(
                                             reserve0
-                                          ).format("0,0.000000000")} ${
-                                            tokenB.name
-                                          }`}
+                                          ).format("0,0.000000000")} ${tokenB.name
+                                            }`}
                                         </Typography>
                                         <Typography
                                           variant="body2"
@@ -1779,9 +1798,8 @@ function Swap(props) {
                                         >
                                           {`1 ${tokenB.name} = ${numeral(
                                             reserve1
-                                          ).format("0,0.000000000")} ${
-                                            tokenA.name
-                                          }`}
+                                          ).format("0,0.000000000")} ${tokenA.name
+                                            }`}
                                         </Typography>
                                       </CardContent>
                                     </Col>
@@ -1802,7 +1820,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg"
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   disabled
@@ -1816,7 +1834,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg "
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   disabled
@@ -1829,7 +1847,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg "
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   disabled
@@ -1850,7 +1868,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg"
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   onClick={async () => await swapMakeDeploy()}
@@ -1863,7 +1881,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg "
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   disabled
@@ -1874,7 +1892,7 @@ function Swap(props) {
                                 <button
                                   className="btn btn-block btn-lg "
                                   style={{
-                                    borderRadius: "8px",
+                                    borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                     padding: "10px",
                                   }}
                                   disabled

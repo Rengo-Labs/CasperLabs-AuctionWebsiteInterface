@@ -37,10 +37,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function descendingComparator(a, b, orderBy) {
-  console.log('a',a);
-  console.log('a',a[orderBy]);
-  console.log('a',b);
-  console.log('a',b[orderBy]);
+  console.log('a', a);
+  console.log('a', a[orderBy]);
+  console.log('a', b);
+  console.log('a', b[orderBy]);
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -176,14 +176,10 @@ const EnhancedTableToolbar = (props) => {
         variant="h6"
         id="tableTitle"
         component="div"
+        style={{ color: '#000027', fontWeight: '550' }}
       >
-        List of Tokens
+        Tokens
       </Typography>
-      <Tooltip title="Filter list">
-        <IconButton>
-          <FilterListIcon />
-        </IconButton>
-      </Tooltip>
     </Toolbar>
   );
 };

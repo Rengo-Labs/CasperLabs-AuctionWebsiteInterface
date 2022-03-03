@@ -1083,16 +1083,21 @@ function AddLiquidity(props) {
                               <div className="login-header">
                                 <h3>
                                   <div style={{ textAlign: "center" }}>
-                                    Add Liquidity
-                                    <span
-                                      onClick={handleShowSlippage}
-                                      style={{
-                                        float: "right",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      <i className="fas fa-cog"></i>
-                                    </span>
+                                    <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+                                      <strong>
+                                        Add Liquidity
+                                        <span
+                                          onClick={handleShowSlippage}
+                                          style={{
+                                            float: "right",
+                                            cursor: "pointer",
+
+                                          }}
+                                        >
+                                          <i className="fas fa-cog"></i>
+                                        </span>
+                                      </strong>
+                                    </Typography>
                                   </div>
                                 </h3>
                               </div>
@@ -1105,6 +1110,8 @@ function AddLiquidity(props) {
                                           className="custom-card"
                                           style={{
                                             borderRadius: "8px",
+                                            color: '#000027',
+                                            fontWeight: '550'
                                           }}
                                         >
                                           <CardHeader
@@ -1224,7 +1231,7 @@ function AddLiquidity(props) {
                                         <div className="col-4 align-self-center">
                                           <FormHelperText id="standard-weight-helper-text">
                                             <strong>Balance: </strong>
-                                            {"0.000000000"}
+                                            {"0"}
                                           </FormHelperText>
                                         </div>
                                       </div>
@@ -1239,6 +1246,8 @@ function AddLiquidity(props) {
                                           className="custom-card"
                                           style={{
                                             borderRadius: "8px",
+                                            color: '#000027',
+                                            fontWeight: '550'
                                           }}
                                         >
                                           <CardHeader
@@ -1354,7 +1363,7 @@ function AddLiquidity(props) {
                                         <div className="col-4 align-self-center">
                                           <FormHelperText id="outlined-weight-helper-text">
                                             <strong>Balance: </strong>
-                                            {"0.000000000"}
+                                            {"0"}
                                           </FormHelperText>
                                         </div>
                                       </div>
@@ -1366,7 +1375,10 @@ function AddLiquidity(props) {
                                     key={0}
                                     expanded={expanded === 0}
                                     onChange={handleChange(0)}
-                                    style={{ borderRadius: "8px" }}
+                                    style={{
+                                      borderRadius: "8px", color: '#000027',
+                                      fontWeight: '550'
+                                    }}
                                   >
                                     <AccordionSummary
                                       expandIcon={
@@ -1428,6 +1440,8 @@ function AddLiquidity(props) {
                                     style={{
                                       marginBottom: "10px",
                                       borderRadius: "8px",
+                                      color: '#000027',
+                                      fontWeight: '550'
                                     }}
                                     key={1}
                                     expanded={expanded === 1}
@@ -1517,7 +1531,7 @@ function AddLiquidity(props) {
                                           className="btn btn-block btn-lg "
                                           disabled
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                         >
@@ -1531,7 +1545,7 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                           onClick={async () => {
@@ -1552,7 +1566,7 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1590,7 +1604,7 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg "
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1605,7 +1619,7 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                           onClick={async () => {
@@ -1626,7 +1640,7 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: "8px",
+                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1639,12 +1653,20 @@ function AddLiquidity(props) {
                                 </Row>
                                 <br></br>
                                 {tokenA && tokenB && !isInvalidPair ? (
-                                  <Row style={{ marginBottom: "20px" }}>
-                                    <Col xs={2} md={2}>
-                                      <CardHeader subheader={"Price"} />
+                                  <Row style={{
+                                    color: '#000027',
+                                    fontWeight: '550', marginBottom: '10px'
+                                  }}>
+                                    <Col xs={{ span: 2, offset: 1 }} md={{ span: 2, offset: 1 }}>
+                                      <Typography
+                                        variant="body2"
+                                        component="p"
+                                      >
+                                        Price
+                                      </Typography>
                                     </Col>
-                                    <Col xs={10} md={10}>
-                                      <CardContent className="text-right">
+                                    <Col xs={9} md={9}>
+                                      <CardContent style={{ padding: '0px' }} className="text-right">
                                         <Typography
                                           variant="body2"
                                           component="p"
@@ -1684,7 +1706,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1699,7 +1721,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1712,7 +1734,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1725,7 +1747,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1744,7 +1766,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     onClick={async () =>
@@ -1759,7 +1781,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1770,7 +1792,7 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: "8px",
+                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                       padding: "10px",
                                     }}
                                     disabled

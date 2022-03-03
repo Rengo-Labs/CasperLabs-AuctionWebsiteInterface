@@ -216,11 +216,11 @@ function HeaderHome(props) {
   }
 
   const selectedStyling = {
-    border: "2px solid '#08209e'",
+    border: "2px solid '#ea3429'",
     padding: "10px 20px",
     borderRadius: "5px",
     color: "#FFF",
-    backgroundColor: "#08209e",
+    backgroundColor: "#ea3429",
   };
   const defaultStyling = {
     padding: "10px 20px",
@@ -261,7 +261,7 @@ function HeaderHome(props) {
           <a
             id="mobile_btn"
             href="/"
-            style={{ color: "#08209e" }}
+            style={{ color: "#ea3429" }}
             onClick={(e) => {
               e.preventDefault();
               setMenuOpenedClass("menu-opened");
@@ -275,7 +275,7 @@ function HeaderHome(props) {
           </a>
 
           <Link
-            style={{ color: "#08209e" }}
+            style={{ color: "#ea3429" }}
             to="/"
             className="navbar-brand logo"
           >
@@ -293,7 +293,7 @@ function HeaderHome(props) {
             <a
               id="menu_close"
               className="menu-close"
-              style={{ color: "#08209e" }}
+              style={{ color: "#ea3429" }}
               href="/"
               onClick={(e) => {
                 e.preventDefault();
@@ -331,7 +331,7 @@ function HeaderHome(props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className=" align-items-center justify-content-center text-center"
-                  style={{ color: "#08209e" }}
+                  style={{ color: "#ea3429" }}
                 >
                   <span style={{ cursor: "pointer" }}>
                     {localStorage.getItem("Address").slice(0, 10)}. . .
@@ -350,7 +350,7 @@ function HeaderHome(props) {
                 <a
                   href="#"
                   className=" align-items-center justify-content-center text-center"
-                  style={{ color: "#08209e" }}
+                  style={{ color: "#ea3429" }}
                 >
                   Connect to Wallet
                 </a>
@@ -367,7 +367,7 @@ function HeaderHome(props) {
                 <a
                   href="#"
                   className=" align-items-center justify-content-center text-center"
-                  style={{ color: "#08209e" }}
+                  style={{ color: "#ea3429" }}
                 >
                   Connect to Wallet
                 </a>
@@ -390,12 +390,12 @@ function HeaderHome(props) {
               className="login-link "
             >
               {localStorage.getItem("Address") &&
-              localStorage.getItem("Address") !== null &&
-              localStorage.getItem("Address") !== "null" ? (
+                localStorage.getItem("Address") !== null &&
+                localStorage.getItem("Address") !== "null" ? (
                 <a
                   href="#"
                   className=" align-items-center justify-content-center text-center"
-                  style={{ color: "#08209e" }}
+                  style={{ color: "#ea3429" }}
                 >
                   <span style={{ cursor: "pointer" }}>Disconnect</span>
                 </a>
@@ -405,7 +405,7 @@ function HeaderHome(props) {
               <Link
                 to="/"
                 className=" align-items-center justify-content-center text-center"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Home}>Home</span>
               </Link>
@@ -414,7 +414,7 @@ function HeaderHome(props) {
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/swap"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Swap}>Swap</span>
               </Link>
@@ -423,7 +423,7 @@ function HeaderHome(props) {
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/pool"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Pool}>Pool</span>
               </Link>
@@ -432,7 +432,7 @@ function HeaderHome(props) {
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/tokens"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Tokens}>Tokens</span>
               </Link>
@@ -441,7 +441,7 @@ function HeaderHome(props) {
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/pairs"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Pairs}>Pairs</span>
               </Link>
@@ -470,7 +470,7 @@ function HeaderHome(props) {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "#08209e" }}
+                style={{ color: "#ea3429" }}
               >
                 <span style={{ cursor: "pointer" }}>
                   {localStorage.getItem("Address").substr(0, 10)}. . .
@@ -479,7 +479,7 @@ function HeaderHome(props) {
             ) : signerLocked && signerConnected ? (
               <>
                 <Button
-                  style={{ borderRadius: "8px" }}
+                  style={{ borderRadius: "8px", backgroundColor: '#ea3429', borderColor: '#ea3429' }}
                   variant="primary"
                   className="fade-in-text"
                   onClick={
@@ -497,7 +497,7 @@ function HeaderHome(props) {
             ) : (
               <>
                 <Button
-                  style={{ borderRadius: "8px" }}
+                  style={{ borderRadius: "8px", backgroundColor: '#ea3429', borderColor: '#ea3429' }}
                   variant="primary"
                   className="fade-in-text"
                   onClick={() => {
@@ -513,10 +513,10 @@ function HeaderHome(props) {
           </li>
           <li>
             {localStorage.getItem("Address") &&
-            localStorage.getItem("Address") !== null &&
-            localStorage.getItem("Address") !== "null" ? (
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
               <span
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", color: "#ea3429" }}
                 onClick={() => {
                   if (
                     localStorage.getItem("selectedWallet") &&

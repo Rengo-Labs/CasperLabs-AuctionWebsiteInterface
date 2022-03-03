@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent, Typography } from "@material-ui/core";
 import React from "react";
 import { Modal, Spinner } from "react-bootstrap";
 import { Alert } from "reactstrap";
@@ -13,12 +13,18 @@ function TokenAModal(props) {
   return (
     <Modal centered show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Select Token </Modal.Title>
+        <Modal.Title>
+          <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+            <strong>
+              Select Token
+            </strong>
+          </Typography>
+        </Modal.Title>
       </Modal.Header>
       {!props.isTokenList &&
-      props.activePublicKey !== "null" &&
-      props.activePublicKey !== null &&
-      props.activePublicKey !== undefined ? (
+        props.activePublicKey !== "null" &&
+        props.activePublicKey !== null &&
+        props.activePublicKey !== undefined ? (
         <div className="text-center" style={{ padding: "20px" }}>
           <Spinner
             animation="border"
@@ -29,10 +35,13 @@ function TokenAModal(props) {
           </Spinner>
         </div>
       ) : (
-        <Modal.Body>
+        <Modal.Body style={{
+          color: '#000027',
+          fontWeight: '550'
+        }}>
           {props.activePublicKey !== "null" &&
-          props.activePublicKey !== null &&
-          props.activePublicKey !== undefined ? (
+            props.activePublicKey !== null &&
+            props.activePublicKey !== undefined ? (
             props.tokenList.map((i, index) => (
               <div key={index}>
                 <Card

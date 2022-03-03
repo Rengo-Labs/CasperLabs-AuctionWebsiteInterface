@@ -212,6 +212,8 @@ function Pool(props) {
                               marginBottom: "10px",
                               borderRadius: "8px",
                               padding: "10px",
+                              color: '#000027',
+                              fontWeight: '550'
                             }}
                             className={classes.root}
                           >
@@ -230,6 +232,8 @@ function Pool(props) {
                               marginBottom: "10px",
                               borderRadius: "8px",
                               padding: "10px",
+                              color: '#000027',
+                              fontWeight: '550'
                             }}
                             className={classes.root}
                           >
@@ -248,6 +252,8 @@ function Pool(props) {
                               marginBottom: "10px",
                               borderRadius: "8px",
                               padding: "10px",
+                              color: '#000027',
+                              fontWeight: '550'
                             }}
                             className={classes.root}
                           >
@@ -348,7 +354,7 @@ function Pool(props) {
                                             style={{
                                               marginTop: "10px",
                                               marginBottom: "10px",
-                                              borderRadius: "8px",
+                                              borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                               padding: "10px",
                                             }}
                                           >
@@ -365,7 +371,7 @@ function Pool(props) {
                                             style={{
                                               marginTop: "10px",
                                               marginBottom: "10px",
-                                              borderRadius: "8px",
+                                              borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                                               padding: "10px",
                                             }}
                                           >
@@ -391,7 +397,7 @@ function Pool(props) {
                             className="btn-block btn-primary btn-lg"
                             style={{
                               marginBottom: "10px",
-                              borderRadius: "8px",
+                              borderRadius: '15px', fontSize: '15px', fontWeight: '550',
                               padding: "10px",
                             }}
                           >

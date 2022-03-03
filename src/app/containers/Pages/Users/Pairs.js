@@ -28,8 +28,8 @@ import Tooltip from "@mui/material/Tooltip";
 import { visuallyHidden } from "@mui/utils";
 
 function descendingComparator(a, b, orderBy) {
-  console.log("a",a[orderBy]);
-    console.log("b",b);
+  console.log("a", a[orderBy]);
+  console.log("b", b);
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -40,7 +40,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  console.log("order, orderBy",order, orderBy);
+  console.log("order, orderBy", order, orderBy);
   return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
@@ -175,14 +175,10 @@ const EnhancedTableToolbar = (props) => {
         variant="h6"
         id="tableTitle"
         component="div"
+        style={{ color: '#000027', fontWeight: '550' }}
       >
-        List of Tokens
+        Token Pairings
       </Typography>
-      <Tooltip title="Filter list">
-        <IconButton>
-          <FilterListIcon />
-        </IconButton>
-      </Tooltip>
     </Toolbar>
   );
 };
@@ -210,16 +206,16 @@ function Pairs(props) {
       .get("/getpairlist")
       .then((res) => {
         console.log("resresres", res);
-        for(let i=0;i<res.data.pairList.length;i++){
-          res.data.pairList[i].token0Name=res.data.pairList[i].token0.name
-          res.data.pairList[i].token0Symbol=res.data.pairList[i].token0.symbol
-          res.data.pairList[i].token0Id=res.data.pairList[i].token0.id
-          res.data.pairList[i].token1Name=res.data.pairList[i].token1.name
-          res.data.pairList[i].token1Symbol=res.data.pairList[i].token1.symbol
-          res.data.pairList[i].token1Id=res.data.pairList[i].token1.id
+        for (let i = 0; i < res.data.pairList.length; i++) {
+          res.data.pairList[i].token0Name = res.data.pairList[i].token0.name
+          res.data.pairList[i].token0Symbol = res.data.pairList[i].token0.symbol
+          res.data.pairList[i].token0Id = res.data.pairList[i].token0.id
+          res.data.pairList[i].token1Name = res.data.pairList[i].token1.name
+          res.data.pairList[i].token1Symbol = res.data.pairList[i].token1.symbol
+          res.data.pairList[i].token1Id = res.data.pairList[i].token1.id
         }
         setIsPairList(false);
-        console.log(res.data.pairList); 
+        console.log(res.data.pairList);
         setPairList(res.data.pairList);
       })
       .catch((error) => {
