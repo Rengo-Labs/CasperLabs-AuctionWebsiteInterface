@@ -1,9 +1,7 @@
-import { Avatar, CardHeader } from '@material-ui/core';
-import {
-  Signer
-} from 'casper-js-sdk';
+import Torus from "@toruslabs/casper-embed";
+import { Signer } from "casper-js-sdk";
 import Cookies from "js-cookie";
-import { useSnackbar } from 'notistack';
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -12,120 +10,221 @@ import "../../assets/css/style.css";
 import Logo from "../../assets/img/Logo.png";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
+import WalletModal from "../Modals/WalletModal";
+
+export const CHAINS = {
+  CASPER_MAINNET: "casper",
+  CASPER_TESTNET: "casper-test",
+};
+
+export const SUPPORTED_NETWORKS = {
+  [CHAINS.CASPER_MAINNET]: {
+    blockExplorerUrl: "https://cspr.live",
+    chainId: "0x1",
+    displayName: "Casper Mainnet",
+    logo: "https://cspr.live/assets/icons/logos/cspr-live-full.svg",
+    rpcTarget: "https://casper-node.tor.us",
+    ticker: "CSPR",
+    tickerName: "Casper Token",
+    networkKey: CHAINS.CASPER_MAINNET,
+  },
+  [CHAINS.CASPER_TESTNET]: {
+    blockExplorerUrl: "https://testnet.cspr.live",
+    chainId: "0x2",
+    displayName: "Casper Testnet",
+    logo: "https://testnet.cspr.live/assets/icons/logos/cspr-live-full.svg",
+    rpcTarget: "https://testnet.casper-node.tor.us",
+    ticker: "CSPR",
+    tickerName: "Casper Token",
+    networkKey: CHAINS.CASPER_TESTNET,
+  },
+};
+
+let torus = null;
+console.log("torus", torus);
 
 function HeaderHome(props) {
   const { enqueueSnackbar } = useSnackbar();
   let [menuOpenedClass, setMenuOpenedClass] = useState();
-  let [signerLocked, setSignerLocked] = useState()
-  let [signerConnected, setSignerConnected] = useState(false)
-  let [isLoading] = useState(false);
+  let [signerLocked, setSignerLocked] = useState();
+  let [signerConnected, setSignerConnected] = useState(false);
+  let [isLoading, setIsLoading] = useState(false);
+  let [, setAccount] = useState("");
 
-
+  const [openWalletModal, setOpenWalletModal] = useState(false);
+  const handleCloseWalletModal = () => {
+    setOpenWalletModal(false);
+  };
+  const handleShowWalletModal = () => {
+    setOpenWalletModal(true);
+  };
   useEffect(() => {
-    setTimeout(async () => {
-      try {
-        const connected = await checkConnection();
-        setSignerConnected(connected)
-      } catch (err) {
-        console.log(err)
+    console.log(
+      "localStorage.getItem(selectedWallet)",
+      localStorage.getItem("selectedWallet")
+    );
+    if (
+      props.selectedWallet === "Casper" ||
+      localStorage.getItem("selectedWallet") === "Casper"
+    ) {
+      setTimeout(async () => {
+        try {
+          const connected = await checkConnection();
+          setSignerConnected(connected);
+        } catch (err) {
+          console.log(err);
+        }
+      }, 100);
+      if (signerConnected) {
+        handleCloseWalletModal();
+        let res = getActiveKeyFromSigner();
+        localStorage.setItem("Address", res);
+        props.setActivePublicKey(res);
       }
-    }, 100);
-    if (signerConnected) {
-      let res = getActiveKeyFromSigner()
-      localStorage.setItem("Address", res)
-      props.setActivePublicKey(res)
+      window.addEventListener("signer:connected", (msg) => {
+        handleCloseWalletModal();
+        setSignerLocked(!msg.detail.isUnlocked);
+        setSignerConnected(true);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:disconnected", (msg) => {
+        setSignerLocked(!msg.detail.isUnlocked);
+        setSignerConnected(false);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:tabUpdated", (msg) => {
+        setSignerLocked(!msg.detail.isUnlocked);
+        setSignerConnected(msg.detail.isConnected);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:activeKeyChanged", (msg) => {
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:locked", (msg) => {
+        setSignerLocked(!msg.detail.isUnlocked);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:unlocked", (msg) => {
+        handleCloseWalletModal();
+        setSignerLocked(!msg.detail.isUnlocked);
+        setSignerConnected(msg.detail.isConnected);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
+      window.addEventListener("signer:initialState", (msg) => {
+        console.log("Initial State: ", msg.detail);
+        handleCloseWalletModal();
+        setSignerLocked(!msg.detail.isUnlocked);
+        setSignerConnected(msg.detail.isConnected);
+        localStorage.setItem("Address", msg.detail.activeKey);
+        props.setActivePublicKey(msg.detail.activeKey);
+      });
     }
-    window.addEventListener('signer:connected', msg => {
-      setSignerLocked(!msg.detail.isUnlocked)
-      setSignerConnected(true)
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:disconnected', msg => {
-      setSignerLocked(!msg.detail.isUnlocked)
-      setSignerConnected(false)
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:tabUpdated', msg => {
-      setSignerLocked(!msg.detail.isUnlocked)
-      setSignerConnected(msg.detail.isConnected)
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:activeKeyChanged', msg => {
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:locked', msg => {
-      setSignerLocked(!msg.detail.isUnlocked);
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:unlocked', msg => {
-      setSignerLocked(!msg.detail.isUnlocked)
-      setSignerConnected(msg.detail.isConnected)
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
-    window.addEventListener('signer:initialState', msg => {
-      console.log("Initial State: ", msg.detail);
-
-      setSignerLocked(!msg.detail.isUnlocked)
-      setSignerConnected(msg.detail.isConnected)
-      localStorage.setItem("Address", msg.detail.activeKey)
-      props.setActivePublicKey(msg.detail.activeKey)
-    });
     // eslint-disable-next-line
-  }, []);
+  }, [props.selectedWallet]);
 
+  const login = async () => {
+    try {
+      setIsLoading(true);
+      torus = new Torus();
+      console.log("torus", torus);
+      await torus.init({
+        buildEnv: "testing",
+        showTorusButton: true,
+        network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+      });
+      const loginaccs = await torus?.login();
+      props.setTorus(torus);
+      localStorage.setItem("torus", JSON.stringify(torus));
+      localStorage.setItem("Address", (loginaccs || [])[0]);
+      props.setActivePublicKey((loginaccs || [])[0]);
+      setAccount((loginaccs || [])[0] || "");
+      handleCloseWalletModal();
+    } catch (error) {
+      console.error(error);
+      await torus?.clearInit();
+      let variant = "Error";
+      enqueueSnackbar("Unable to Login", { variant });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // const changeProvider = async () => {
+  //   const providerRes = await torus?.setProvider(SUPPORTED_NETWORKS[CHAINS.CASPER_MAINNET]);
+  //   console.log("provider res", providerRes);
+  // };
 
+  // const getLatestBlock = async () => {
+  //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+  //   const latestBlock = await casperService.getLatestBlockInfo();
+  //   console.log("latest block", latestBlock);
+  // };
+
+  // const getUserInfo = async () => {
+  //   const userInfo = await torus?.getUserInfo();
+  //   console.log("userInfo", userInfo);
+  // };
+
+  const logout = async () => {
+    try {
+      console.log("logout", torus);
+      await torus?.logout();
+      setAccount("");
+      props.setTorus("");
+      props.setSelectedWallet();
+      localStorage.removeItem("Address");
+      localStorage.removeItem("selectedWallet");
+      window.location.reload();
+    } catch (error) {
+      console.log("logout error", error);
+      let variant = "Error";
+      enqueueSnackbar("Unable to Logout", { variant });
+    }
+  };
   async function checkConnection() {
-
     try {
       return await Signer.isConnected();
-    }
-    catch {
+    } catch {
       let variant = "Error";
-      enqueueSnackbar('Unable to connect', { variant });
+      enqueueSnackbar("Unable to connect", { variant });
     }
   }
 
   async function getActiveKeyFromSigner() {
     try {
       return await Signer.getActivePublicKey();
-    }
-    catch {
+    } catch {
       let variant = "Error";
-      enqueueSnackbar('Unable to get Active Public Key', { variant });
+      enqueueSnackbar("Unable to get Active Public Key", { variant });
     }
-
   }
   async function connectToSigner() {
-
     try {
+      setIsLoading(true);
       return await Signer.sendConnectionRequest();
-    }
-    catch {
+    } catch {
       let variant = "Error";
-      enqueueSnackbar('Unable to send Connection Request', { variant });
+      enqueueSnackbar("Unable to send Connection Request", { variant });
+    } finally {
+      setIsLoading(false);
     }
   }
-
 
   const selectedStyling = {
     border: "2px solid '#08209e'",
     padding: "10px 20px",
     borderRadius: "5px",
-    color: '#FFF',
-    backgroundColor: '#08209e'
+    color: "#FFF",
+    backgroundColor: "#08209e",
   };
   const defaultStyling = {
-    // border: "2px solid #08209e",
     padding: "10px 20px",
     borderRadius: "5px",
-    // color: '#FFF',
-    // backgroundColor: "#000"
   };
   const selectedNavStyle = {
     Swap: props.selectedNav === "Swap" ? selectedStyling : defaultStyling,
@@ -136,16 +235,17 @@ function HeaderHome(props) {
   };
 
   let Disconnect = (e) => {
-    console.log("akjdf");
+    console.log("Disconnect");
     Cookies.remove("Authorization");
-    localStorage.removeItem("Address")
-    props.setActivePublicKey("")
+    localStorage.removeItem("Address");
+    localStorage.removeItem("selectedWallet");
+    props.setActivePublicKey("");
+    props.setSelectedWallet();
     try {
-      Signer.disconnectFromSite()
-    }
-    catch {
+      Signer.disconnectFromSite();
+    } catch {
       let variant = "Error";
-      enqueueSnackbar('Unable to Disconnect', { variant });
+      enqueueSnackbar("Unable to Disconnect", { variant });
     }
 
     window.location.reload();
@@ -174,11 +274,17 @@ function HeaderHome(props) {
             </span>
           </a>
 
-          <Link style={{ color: '#08209e' }} to="/" className="navbar-brand logo">
-            <img src={Logo} style={{borderRadius:'50px'}} alt="Logo" width="50" />
-            {/* <CardHeader
-              avatar={<Avatar src={Logo} aria-label="Logo" />}
-            /> */}
+          <Link
+            style={{ color: "#08209e" }}
+            to="/"
+            className="navbar-brand logo"
+          >
+            <img
+              src={Logo}
+              style={{ borderRadius: "50px" }}
+              alt="Logo"
+              width="50"
+            />
           </Link>
         </div>
 
@@ -187,15 +293,14 @@ function HeaderHome(props) {
             <a
               id="menu_close"
               className="menu-close"
-              style={{ color: '#08209e' }}
+              style={{ color: "#08209e" }}
               href="/"
               onClick={(e) => {
                 e.preventDefault();
                 setMenuOpenedClass("");
               }}
             >
-              <i className="fas fa-times"></i>
-              {" "}Close
+              <i className="fas fa-times"></i> Close
             </a>
           </div>
           <ul
@@ -204,135 +309,241 @@ function HeaderHome(props) {
               marginTop: "4px",
             }}
           >
-
-            {localStorage.getItem("Address") && localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== 'null' ? (
+            {isLoading ? (
+              <div className="text-center">
+                {/* <Spinner
+                  animation="border"
+                  role="status"
+                  style={{ color: "e84646" }}
+                >
+                  <span className="sr-only">Loading...</span>
+                </Spinner> */}
+              </div>
+            ) : localStorage.getItem("Address") &&
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
               <li className="login-link ">
-                <a href={"https://ropsten.etherscan.io/address/" + localStorage.getItem("Address")} target="_blank" rel="noopener noreferrer" className=" align-items-center justify-content-center text-center" style={{ color: '#08209e' }}>
-                  <span style={{ cursor: 'pointer' }}>{localStorage.getItem("Address").slice(0, 10)}. . .</span>
-                </a>
-              </li>
-            ) : (signerLocked && signerConnected ? (
-              <li onClick={async () => {
-                await connectToSigner();
-              }} className="login-link ">
-                <a href='#' className=" align-items-center justify-content-center text-center" style={{ color: '#08209e' }}>
-                  Unlock Signer
-                </a>
-
-              </li>
-            ) : (
-              <li onClick={async () => {
-                await connectToSigner()
-              }} className="login-link ">
-                <a href='#' className=" align-items-center justify-content-center text-center" style={{ color: '#08209e' }}>
-                  Connect to Signer
-                </a>
-              </li>
-            )
-            )}
-
-            <li onClick={() => Disconnect()} className="login-link ">
-              {localStorage.getItem("Address") && localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== 'null' ? (
-                <a href='#' className=" align-items-center justify-content-center text-center" style={{ color: '#08209e' }} >
-                  <span style={{ cursor: 'pointer' }} >
-                    Disconnect
+                <a
+                  href={
+                    "https://testnet.cspr.live/account/" +
+                    localStorage.getItem("Address")
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className=" align-items-center justify-content-center text-center"
+                  style={{ color: "#08209e" }}
+                >
+                  <span style={{ cursor: "pointer" }}>
+                    {localStorage.getItem("Address").slice(0, 10)}. . .
                   </span>
                 </a>
-              ) : (null)}
-            </li>
-            <li>
-              <Link to="/" className=" align-items-center justify-content-center text-center" style={{ color: '#08209e' }} >
-                <span style={selectedNavStyle.Home}>
-                  Home
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link className=" align-items-center justify-content-center text-center" to="/swap" style={{ color: '#08209e' }} >
-                <span style={selectedNavStyle.Swap}>
-                  Swap
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link className=" align-items-center justify-content-center text-center" to="/pool" style={{ color: '#08209e' }} >
-                <span style={selectedNavStyle.Pool}>
-                  Pool
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link className=" align-items-center justify-content-center text-center" to="/tokens" style={{ color: '#08209e' }} >
-                <span style={selectedNavStyle.Tokens}>
-                  Tokens
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link className=" align-items-center justify-content-center text-center" to="/pairs" style={{ color: '#08209e' }} >
-                <span style={selectedNavStyle.Pairs}>
-                  Pairs
-                </span>
-              </Link>
-            </li>
+              </li>
+            ) : signerLocked && signerConnected ? (
+              <li
+                onClick={() => {
+                  handleShowWalletModal();
+                  // async () => {
+                  // await connectToSigner();
+                }}
+                className="login-link "
+              >
+                <a
+                  href="#"
+                  className=" align-items-center justify-content-center text-center"
+                  style={{ color: "#08209e" }}
+                >
+                  Connect to Wallet
+                </a>
+              </li>
+            ) : (
+              <li
+                onClick={() => {
+                  handleShowWalletModal();
+                  // async () => {
+                  // await connectToSigner()
+                }}
+                className="login-link "
+              >
+                <a
+                  href="#"
+                  className=" align-items-center justify-content-center text-center"
+                  style={{ color: "#08209e" }}
+                >
+                  Connect to Wallet
+                </a>
+              </li>
+            )}
 
+            <li
+              onClick={() => {
+                if (
+                  localStorage.getItem("selectedWallet") &&
+                  localStorage.getItem("selectedWallet") !== null &&
+                  localStorage.getItem("selectedWallet") !== "null" &&
+                  localStorage.getItem("selectedWallet") === "Torus"
+                ) {
+                  logout();
+                } else {
+                  Disconnect();
+                }
+              }}
+              className="login-link "
+            >
+              {localStorage.getItem("Address") &&
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
+                <a
+                  href="#"
+                  className=" align-items-center justify-content-center text-center"
+                  style={{ color: "#08209e" }}
+                >
+                  <span style={{ cursor: "pointer" }}>Disconnect</span>
+                </a>
+              ) : null}
+            </li>
+            <li>
+              <Link
+                to="/"
+                className=" align-items-center justify-content-center text-center"
+                style={{ color: "#08209e" }}
+              >
+                <span style={selectedNavStyle.Home}>Home</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                className=" align-items-center justify-content-center text-center"
+                to="/swap"
+                style={{ color: "#08209e" }}
+              >
+                <span style={selectedNavStyle.Swap}>Swap</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                className=" align-items-center justify-content-center text-center"
+                to="/pool"
+                style={{ color: "#08209e" }}
+              >
+                <span style={selectedNavStyle.Pool}>Pool</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                className=" align-items-center justify-content-center text-center"
+                to="/tokens"
+                style={{ color: "#08209e" }}
+              >
+                <span style={selectedNavStyle.Tokens}>Tokens</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                className=" align-items-center justify-content-center text-center"
+                to="/pairs"
+                style={{ color: "#08209e" }}
+              >
+                <span style={selectedNavStyle.Pairs}>Pairs</span>
+              </Link>
+            </li>
           </ul>
         </div>
         <ul className="nav header-navbar-rht">
-          <li >{isLoading ? (
-            <div className="text-center">
-              <Spinner
-                animation="border"
-                role="status"
-                style={{ color: "cbd2f0" }}
-              >
-                <span className="sr-only">Loading...</span>
-              </Spinner>
-            </div>
-          ) : (
-            localStorage.getItem("Address") && localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== 'null' ? (
-              <a href={"https://ropsten.etherscan.io/address/" + localStorage.getItem("Address")} target="_blank" rel="noopener noreferrer" style={{ color: '#08209e' }}>
-                <span style={{ cursor: 'pointer' }}>{localStorage.getItem("Address").substr(0, 10)}. . .</span>
-              </a>
-            ) : (signerLocked && signerConnected ? (
-              <>
-                <Button variant="primary"
-                  style={{ borderRadius: '15px' }}
-                  className='fade-in-text'
-                  onClick={async () => {
-                    await connectToSigner();
-                  }}
+          <li>
+            {isLoading ? (
+              <div className="text-center">
+                <Spinner
+                  animation="border"
+                  role="status"
+                  style={{ color: "e84646" }}
                 >
-                  Unlock Signer
+                  <span className="sr-only">Loading...</span>
+                </Spinner>
+              </div>
+            ) : localStorage.getItem("Address") &&
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
+              <a
+                href={
+                  "https://testnet.cspr.live/account/" +
+                  localStorage.getItem("Address")
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#08209e" }}
+              >
+                <span style={{ cursor: "pointer" }}>
+                  {localStorage.getItem("Address").substr(0, 10)}. . .
+                </span>
+              </a>
+            ) : signerLocked && signerConnected ? (
+              <>
+                <Button
+                  style={{ borderRadius: "8px" }}
+                  variant="primary"
+                  className="fade-in-text"
+                  onClick={
+                    () => {
+                      handleShowWalletModal();
+                    }
+                    //   async () => {
+                    //   await connectToSigner();
+                    // }
+                  }
+                >
+                  Connect to Wallet
                 </Button>
-
               </>
             ) : (
               <>
-                <Button variant="primary"
-                  style={{ borderRadius: '15px' }}
-                  className='fade-in-text'
-                  onClick={async () => {
-                    await connectToSigner()
+                <Button
+                  style={{ borderRadius: "8px" }}
+                  variant="primary"
+                  className="fade-in-text"
+                  onClick={() => {
+                    handleShowWalletModal();
+                    // async () => {
+                    // await connectToSigner()
                   }}
                 >
-                  Connect to Signer
+                  Connect to Wallet
                 </Button>
               </>
-            ))
-          )}
-
+            )}
           </li>
           <li>
-            {localStorage.getItem("Address") && localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== 'null' ? (
-              <span style={{ cursor: 'pointer' }} onClick={() => Disconnect()}>
+            {localStorage.getItem("Address") &&
+            localStorage.getItem("Address") !== null &&
+            localStorage.getItem("Address") !== "null" ? (
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  if (
+                    localStorage.getItem("selectedWallet") &&
+                    localStorage.getItem("selectedWallet") !== null &&
+                    localStorage.getItem("selectedWallet") !== "null" &&
+                    localStorage.getItem("selectedWallet") === "Torus"
+                  ) {
+                    logout();
+                  } else {
+                    Disconnect();
+                  }
+                }}
+              >
                 Disconnect
               </span>
-            ) : (null)}
+            ) : null}
           </li>
         </ul>
-      </nav >
-    </header >
+      </nav>
+      <WalletModal
+        show={openWalletModal}
+        handleClose={handleCloseWalletModal}
+        torusLogin={login}
+        casperLogin={connectToSigner}
+        setSelectedWallet={props.setSelectedWallet}
+      />
+    </header>
   );
 }
 

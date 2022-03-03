@@ -24,12 +24,16 @@ code {
 }
 
 .custom-card {
-  transition: all .25s linear;
-  box-shadow: 0px 1px 2px 0px rgba(8,32,158,0.4);
+  transition: all 0.25s linear;
+  box-shadow: 0px 1px 2px 0px rgba(8, 32, 158, 0.4);
+  border-radius: "15px";
+  padding: "20px";
 }
 
-.custom-card:hover{
-  box-shadow: -1px 10px 29px 0px rgba(8,32,158,0.8);
+.custom-card:hover {
+  box-shadow: -1px 10px 29px 0px rgba(8, 32, 158, 0.8);
+  border-radius: "15px";
+  padding: "20px";
 }
 .icon {
   padding: 10px;
@@ -53,27 +57,32 @@ code {
 }
 
 @keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @-moz-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes fadeIn {
-  0% {opacity:0;}
-  100% {opacity:1;}
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 .neonText {
-  text-shadow:
-    0 0 7px #fff,
-    0 0 10px #fff,
-    0 0 21px #fff,
-    0 0 42px #08209e,
-    0 0 82px #08209e,
-    0 0 92px #08209e,
-    0 0 102px #08209e,
-    0 0 151px #08209e;
+  text-shadow: 0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff, 0 0 42px #08209e,
+    0 0 82px #08209e, 0 0 92px #08209e, 0 0 102px #08209e, 0 0 151px #08209e;
 }

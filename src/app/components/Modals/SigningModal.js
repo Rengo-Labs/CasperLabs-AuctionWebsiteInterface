@@ -9,7 +9,7 @@ import Spinner from "../Spinner/Spinner";
 
 function SigningModal(props) {
     return (
-        <Modal style={{borderRadius: '15px'}} centered show={props.show}>
+        <Modal centered show={props.show}>
             <Modal.Header>
                 <Modal.Title>Sign transaction </Modal.Title>
             </Modal.Header>

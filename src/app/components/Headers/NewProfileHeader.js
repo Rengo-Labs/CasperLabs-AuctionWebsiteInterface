@@ -99,13 +99,8 @@ export default function HeaderMenuAppBar(props) {
 
           <div className={classes.title}>
             <NavLink to={"/"}>
-              <img
-                src={logo}
-                alt={"Wise"}
-                width="80"
-                height="70"
-              />
-              Wise
+              <img src={logo} alt={"Wise Swap"} width="80" height="70" />
+              Wise Swap
             </NavLink>
           </div>
           <div>
