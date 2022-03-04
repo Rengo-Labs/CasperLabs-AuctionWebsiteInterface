@@ -7,7 +7,7 @@ import { Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../../assets/css/bootstrap.min.css";
 import "../../assets/css/style.css";
-import Logo from "../../assets/img/Logo.png";
+import Logo from "../../assets/img/Logo.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import WalletModal from "../Modals/WalletModal";
