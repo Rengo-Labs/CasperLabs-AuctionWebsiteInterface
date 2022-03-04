@@ -317,7 +317,7 @@ function HeaderHome(props) {
                   style={{ color: "e84646" }}
                 >
                   <span className="sr-only">Loading...</span>
-                </Spinner> */}style={{ color: "#ea3429" }}
+                </Spinner> */}
               </div>
             ) : localStorage.getItem("Address") &&
               localStorage.getItem("Address") !== null &&
