@@ -18,7 +18,11 @@ function SlippageModal(props) {
     <Modal centered show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Transaction Settings <i className="fas fa-cog"></i>{" "}
+          <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+            <strong>
+              Transaction Settings <i className="fas fa-cog"></i>{" "}
+            </strong>
+          </Typography>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

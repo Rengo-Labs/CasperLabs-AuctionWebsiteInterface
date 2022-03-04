@@ -40,7 +40,7 @@ function WalletModal(props) {
             localStorage.setItem("selectedWallet", "Torus");
           }}
           className="custom-card"
-          style={{ borderRadius: "8px", padding: "20px" }}
+          style={{ borderRadius: "8px"}}
         >
           <CardHeader
             avatar={<Avatar src={Torus} aria-label="Torus Wallet" />}
@@ -56,7 +56,7 @@ function WalletModal(props) {
             props.setSelectedWallet("Casper");
           }}
           className="custom-card"
-          style={{ borderRadius: "8px", padding: "20px" }}
+          style={{ borderRadius: "8px" }}
         >
           <CardHeader
             avatar={<Avatar src={Casper} aria-label="Casper Signer" />}
