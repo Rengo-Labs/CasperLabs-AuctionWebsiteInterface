@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "14.x"
+    "node": "16.14.0",
+    "npm":"8.5.1"
   },
   "dependencies": {
     "@date-io/date-fns": "^2.11.0",
