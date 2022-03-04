@@ -1,5 +1,7 @@
 import {
-  Accordion, AccordionSummary, Avatar,
+  Accordion,
+  AccordionSummary,
+  Avatar,
   Box,
   Card,
   CardContent,
@@ -7,7 +9,8 @@ import {
   Checkbox,
   FormControlLabel,
   FormGroup,
-  Slider, Typography
+  Slider,
+  Typography,
 } from "@material-ui/core/";
 import Torus from "@toruslabs/casper-embed";
 import axios from "axios";
@@ -18,7 +21,7 @@ import {
   CLKey,
   CLPublicKey,
   CLValueBuilder,
-  RuntimeArgs
+  RuntimeArgs,
 } from "casper-js-sdk";
 import { useSnackbar } from "notistack";
 import numeral from "numeral";
@@ -32,7 +35,7 @@ import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import {
   ROUTER_CONTRACT_HASH,
-  ROUTER_PACKAGE_HASH
+  ROUTER_PACKAGE_HASH,
 } from "../../../components/blockchain/AccountHashes/Addresses";
 import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
 import { getStateRootHash } from "../../../components/blockchain/GetStateRootHash/GetStateRootHash";
@@ -44,10 +47,25 @@ import { signdeploywithcaspersigner } from "../../../components/blockchain/SignD
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import HeaderHome, {
   CHAINS,
-  SUPPORTED_NETWORKS
+  SUPPORTED_NETWORKS,
 } from "../../../components/Headers/Header";
 import SigningModal from "../../../components/Modals/SigningModal";
 import SlippageModal from "../../../components/Modals/SlippageModal";
+import { makeStyles } from "@material-ui/core/styles";
+import StyledEngineProvider from "@mui/material/StyledEngineProvider";
+import "../../../assets/css/sliderCss.css";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    color: "#000052",
+    height: 3,
+    opacity: 1,
+  },
+  rail: {
+    height: 3,
+    opacity: 1,
+  },
+}));
 
 const marks = [
   {
@@ -73,6 +91,7 @@ const marks = [
 ];
 
 function RemoveLiquidity(props) {
+  const classes = useStyles();
   let { tokenAAddress, tokenBAddress } = useParams();
   const { enqueueSnackbar } = useSnackbar();
   let [tokenA, setTokenA] = useState();
@@ -200,7 +219,7 @@ function RemoveLiquidity(props) {
                   if (
                     rat0 < rat1 &&
                     parseInt(res.data.userpairs[i].reserve0) <
-                    parseInt(res.data.userpairs[i].reserve1)
+                      parseInt(res.data.userpairs[i].reserve1)
                   ) {
                     console.log("1");
                     res.data.userpairs[i].rat0 = res.data.userpairs[i].reserve1;
@@ -208,7 +227,7 @@ function RemoveLiquidity(props) {
                   } else if (
                     rat0 < rat1 &&
                     parseInt(res.data.userpairs[i].reserve0) >
-                    parseInt(res.data.userpairs[i].reserve1)
+                      parseInt(res.data.userpairs[i].reserve1)
                   ) {
                     console.log("2");
                     res.data.userpairs[i].rat0 = res.data.userpairs[i].reserve0;
@@ -216,7 +235,7 @@ function RemoveLiquidity(props) {
                   } else if (
                     rat0 > rat1 &&
                     parseInt(res.data.userpairs[i].reserve0) <
-                    parseInt(res.data.userpairs[i].reserve1)
+                      parseInt(res.data.userpairs[i].reserve1)
                   ) {
                     console.log("3");
                     res.data.userpairs[i].rat0 = res.data.userpairs[i].reserve0;
@@ -224,7 +243,7 @@ function RemoveLiquidity(props) {
                   } else if (
                     rat0 > rat1 &&
                     parseInt(res.data.userpairs[i].reserve0) >
-                    parseInt(res.data.userpairs[i].reserve1)
+                      parseInt(res.data.userpairs[i].reserve1)
                   ) {
                     console.log("4");
                     res.data.userpairs[i].rat0 = res.data.userpairs[i].reserve1;
@@ -378,6 +397,7 @@ function RemoveLiquidity(props) {
           // let Torus = new Torus();
           torus = new Torus();
           console.log("torus", torus);
+          // Slider;
           await torus.init({
             buildEnv: "testing",
             showTorusButton: true,
@@ -467,8 +487,16 @@ function RemoveLiquidity(props) {
         token_a: new CLKey(_token_a),
         token_b: new CLKey(_token_b),
         liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
-        amount_a_min: CLValueBuilder.u256(convertToStr(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
-        amount_b_min: CLValueBuilder.u256(convertToStr(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+        amount_a_min: CLValueBuilder.u256(
+          convertToStr(
+            Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
+          )
+        ),
+        amount_b_min: CLValueBuilder.u256(
+          convertToStr(
+            Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9)
+          )
+        ),
         to: createRecipientAddress(publicKey),
         deadline: CLValueBuilder.u256(deadline),
       });
@@ -570,8 +598,16 @@ function RemoveLiquidity(props) {
       const runtimeArgs = RuntimeArgs.fromMap({
         token: new CLKey(_token),
         liquidity: CLValueBuilder.u256(convertToStr((liquidity * value) / 100)),
-        amount_cspr_min: CLValueBuilder.u256(convertToStr(Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9))),
-        amount_token_min: CLValueBuilder.u256(convertToStr(Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9))),
+        amount_cspr_min: CLValueBuilder.u256(
+          convertToStr(
+            Number(cspr_Amount - (cspr_Amount * slippage) / 100).toFixed(9)
+          )
+        ),
+        amount_token_min: CLValueBuilder.u256(
+          convertToStr(
+            Number(token_Amount - (token_Amount * slippage) / 100).toFixed(9)
+          )
+        ),
         to: createRecipientAddress(publicKey),
         to_purse: CLValueBuilder.uref(
           Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -686,8 +722,11 @@ function RemoveLiquidity(props) {
                               <div className="login-header">
                                 <h3>
                                   <div style={{ textAlign: "center" }}>
-
-                                    <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+                                    <Typography
+                                      variant="h5"
+                                      style={{ color: "#000027" }}
+                                      gutterBottom
+                                    >
                                       <strong>
                                         Remove Liquidity
                                         <span
@@ -695,38 +734,47 @@ function RemoveLiquidity(props) {
                                           style={{
                                             float: "right",
                                             cursor: "pointer",
-
                                           }}
                                         >
                                           <i className="fas fa-cog"></i>
                                         </span>
                                       </strong>
                                     </Typography>
-
                                   </div>
                                 </h3>
                               </div>
 
                               <form>
-                                <Row style={{ marginBottom: '20px' }}>
+                                <Row style={{ marginBottom: "20px" }}>
                                   <Col xs={10} md={10}>
-                                    <Box style={{ margin: '10px' }}>
+                                    <Box style={{ margin: "10px" }}>
                                       <strong>
-                                        <Slider
-                                          style={{ color: '#ea3429' }}
-                                          aria-label="Custom marks"
-                                          defaultValue={25}
-                                          getAriaValueText={valuetext}
-                                          step={1}
-                                          valueLabelDisplay="auto"
-                                          marks={marks}
-                                        />
+                                        <StyledEngineProvider injectFirst>
+                                          <Slider
+                                            aria-label="Custom marks"
+                                            defaultValue={25}
+                                            getAriaValueText={valuetext}
+                                            step={1}
+                                            valueLabelDisplay="auto"
+                                            marks={marks}
+                                            className="slider"
+                                          />
+                                        </StyledEngineProvider>
                                       </strong>
                                     </Box>
                                   </Col>
                                   <Col xs={2} md={2}>
-                                    <div style={{ marginTop: '10px' }}>
-                                      <h2 style={{ textAlign: "center", color: '#ea3429' }}>{value}%</h2>
+                                    <div>
+                                      <span
+                                        style={{
+                                          textAlign: "center",
+                                          color: "#ea3429",
+                                          fontSize: "36px",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {value}%
+                                      </span>
                                     </div>
                                   </Col>
                                 </Row>
@@ -734,19 +782,26 @@ function RemoveLiquidity(props) {
                                   <>
                                     <Accordion
                                       key={0}
-                                      style={{ borderRadius: "15px 15px 0px 0px" }}
+                                      style={{
+                                        borderRadius: "15px 15px 0px 0px",
+                                      }}
                                     >
                                       <AccordionSummary
-                                        expandIcon={<Typography variant="h5" style={{
-                                          color: '#000027',
-                                          fontWeight: '550'
-                                        }} gutterBottom >
-                                          <strong>
-                                            {numeral(
-                                              tokenAAmountPercent
-                                            ).format("0,0.000000000")}
-                                          </strong>
-                                        </Typography>
+                                        expandIcon={
+                                          <Typography
+                                            variant="h5"
+                                            style={{
+                                              color: "#000027",
+                                              fontWeight: "550",
+                                            }}
+                                            gutterBottom
+                                          >
+                                            <strong>
+                                              {numeral(
+                                                tokenAAmountPercent
+                                              ).format("0,0.000000000")}
+                                            </strong>
+                                          </Typography>
                                         }
                                         aria-controls="panel1bh-content"
                                         id="panel1bh-header"
@@ -765,14 +820,20 @@ function RemoveLiquidity(props) {
                                     </Accordion>
                                     <Accordion
                                       key={1}
-                                      style={{ borderRadius: "0px 0px 15px 15px" }}
+                                      style={{
+                                        borderRadius: "0px 0px 15px 15px",
+                                      }}
                                     >
                                       <AccordionSummary
                                         expandIcon={
-                                          <Typography variant="h5" style={{
-                                            color: '#000027',
-                                            fontWeight: '550'
-                                          }} gutterBottom >
+                                          <Typography
+                                            variant="h5"
+                                            style={{
+                                              color: "#000027",
+                                              fontWeight: "550",
+                                            }}
+                                            gutterBottom
+                                          >
                                             <strong>
                                               {numeral(
                                                 tokenBAmountPercent
@@ -797,13 +858,18 @@ function RemoveLiquidity(props) {
                                     </Accordion>
                                     <br />
                                     {activePublicKey !== "null" &&
-                                      activePublicKey !== null &&
-                                      activePublicKey !== undefined ? (
-                                      <Row style={{
-                                        color: '#000027',
-                                        fontWeight: '550'
-                                      }}>
-                                        <Col xs={{ span: 2, offset: 1 }} md={{ span: 2, offset: 1 }}>
+                                    activePublicKey !== null &&
+                                    activePublicKey !== undefined ? (
+                                      <Row
+                                        style={{
+                                          color: "#000027",
+                                          fontWeight: "550",
+                                        }}
+                                      >
+                                        <Col
+                                          xs={{ span: 2, offset: 1 }}
+                                          md={{ span: 2, offset: 1 }}
+                                        >
                                           <Typography
                                             variant="body2"
                                             component="p"
@@ -812,16 +878,20 @@ function RemoveLiquidity(props) {
                                           </Typography>
                                         </Col>
                                         <Col xs={9} md={9}>
-                                          <CardContent style={{ padding: '0px' }} className="text-right">
+                                          <CardContent
+                                            style={{ padding: "0px" }}
+                                            className="text-right"
+                                          >
                                             <Typography
                                               variant="body2"
                                               component="p"
                                             >
                                               {`1 ${tokenA.name} = ${numeral(
                                                 tokenBAmountPercent /
-                                                tokenAAmountPercent
-                                              ).format("0,0.000000000")} ${tokenB.name
-                                                }`}
+                                                  tokenAAmountPercent
+                                              ).format("0,0.000000000")} ${
+                                                tokenB.name
+                                              }`}
                                             </Typography>
                                             <Typography
                                               variant="body2"
@@ -829,9 +899,10 @@ function RemoveLiquidity(props) {
                                             >
                                               {`1 ${tokenB.name} = ${numeral(
                                                 tokenAAmountPercent /
-                                                tokenBAmountPercent
-                                              ).format("0,0.000000000")} ${tokenA.name
-                                                }`}
+                                                  tokenBAmountPercent
+                                              ).format("0,0.000000000")} ${
+                                                tokenA.name
+                                              }`}
                                             </Typography>
                                           </CardContent>
                                         </Col>
@@ -840,10 +911,15 @@ function RemoveLiquidity(props) {
                                   </>
                                 ) : null}
                                 {tokenA &&
-                                  tokenB &&
-                                  (tokenA.symbol === "WCSPR" ||
-                                    tokenB.symbol === "WCSPR") ? (
-                                  <FormGroup style={{ color: '#000052', fontWeight: '550' }}>
+                                tokenB &&
+                                (tokenA.symbol === "WCSPR" ||
+                                  tokenB.symbol === "WCSPR") ? (
+                                  <FormGroup
+                                    style={{
+                                      color: "#000052",
+                                      fontWeight: "550",
+                                    }}
+                                  >
                                     <FormControlLabel
                                       labelPlacement="start"
                                       onClick={() => {
@@ -862,10 +938,10 @@ function RemoveLiquidity(props) {
                                   </FormGroup>
                                 ) : null}
                                 {tokenA &&
-                                  tokenAAmount > 0 &&
-                                  tokenB &&
-                                  tokenBAmount > 0 &&
-                                  parseInt((liquidity * 10 ** 9 * value) / 100) >
+                                tokenAAmount > 0 &&
+                                tokenB &&
+                                tokenBAmount > 0 &&
+                                parseInt((liquidity * 10 ** 9 * value) / 100) >
                                   pairAllowance ? (
                                   approveAIsLoading ? (
                                     <div className="text-center">
@@ -886,7 +962,11 @@ function RemoveLiquidity(props) {
                                     activePublicKey === null ||
                                     activePublicKey === undefined ? (
                                     <button
-                                      style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                      style={{
+                                        borderRadius: "15px",
+                                        fontSize: "15px",
+                                        fontWeight: "550",
+                                      }}
                                       className="btn btn-block btn-lg "
                                       disabled
                                     >
@@ -895,7 +975,11 @@ function RemoveLiquidity(props) {
                                   ) : (
                                     <button
                                       className="btn btn-block btn-lg"
-                                      style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                      style={{
+                                        borderRadius: "15px",
+                                        fontSize: "15px",
+                                        fontWeight: "550",
+                                      }}
                                       onClick={async () => {
                                         setApproveAIsLoading(true);
                                         await approveMakeDeploy();
@@ -936,7 +1020,11 @@ function RemoveLiquidity(props) {
                                   isRemoveLiquidityCSPR ? (
                                     <button
                                       className="btn btn-block btn-lg"
-                                      style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                      style={{
+                                        borderRadius: "15px",
+                                        fontSize: "15px",
+                                        fontWeight: "550",
+                                      }}
                                       onClick={async () =>
                                         await RemoveLiquidityCSPRMakeDeploy()
                                       }
@@ -946,7 +1034,11 @@ function RemoveLiquidity(props) {
                                   ) : (
                                     <button
                                       className="btn btn-block btn-lg"
-                                      style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                      style={{
+                                        borderRadius: "15px",
+                                        fontSize: "15px",
+                                        fontWeight: "550",
+                                      }}
                                       onClick={async () =>
                                         await RemoveLiquidityMakeDeploy()
                                       }
@@ -959,7 +1051,11 @@ function RemoveLiquidity(props) {
                                   activePublicKey === undefined ? (
                                   <button
                                     className="btn btn-block btn-lg"
-                                    style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                    style={{
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
+                                    }}
                                     disabled
                                   >
                                     Connect to Signer
@@ -967,7 +1063,11 @@ function RemoveLiquidity(props) {
                                 ) : isRemoveLiquidityCSPR ? (
                                   <button
                                     className="btn btn-block btn-lg"
-                                    style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                    style={{
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
+                                    }}
                                     disabled
                                   >
                                     Remove Liquidity CSPR
@@ -975,13 +1075,16 @@ function RemoveLiquidity(props) {
                                 ) : (
                                   <button
                                     className="btn btn-block btn-lg"
-                                    style={{ borderRadius: '15px', fontSize: '15px', fontWeight: '550' }}
+                                    style={{
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
+                                    }}
                                     disabled
                                   >
                                     Remove Liquidity
                                   </button>
                                 )}
-
                               </form>
                               {/* <br></br> */}
                               {/* {tokenA && tokenB && liquidity ? (

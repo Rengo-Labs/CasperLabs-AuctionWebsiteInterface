@@ -1,0 +1,38 @@
+.slider {
+  /* color: #000052; */
+}
+
+.slider .MuiSlider-rail {
+  color: #000052;
+  opacity: 1;
+  height: 3px;
+}
+
+.slider .MuiSlider-track {
+  color: #ea3429;
+}
+
+.slider .MuiSlider-markActive {
+  opacity: 1;
+  background-color: #fff;
+}
+
+.slider .MuiSlider-mark {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  border-radius: 0;
+  background-color: white;
+  opacity: 1;
+}
+
+.slider .MuiSlider-thumb {
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  color: #ea3429;
+}
+
+.slider .MuiSlider-valueLabel {
+  left: 0;
+}
