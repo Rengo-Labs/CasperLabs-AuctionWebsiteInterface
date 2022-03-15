@@ -7,7 +7,7 @@ import {
   CardContent,
   CardHeader,
   FormControl,
-  FormHelperText
+  FormHelperText,
 } from "@material-ui/core/";
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { makeStyles } from "@material-ui/core/styles";
@@ -22,7 +22,7 @@ import {
   CLOption,
   CLPublicKey,
   CLValueBuilder,
-  RuntimeArgs
+  RuntimeArgs,
 } from "casper-js-sdk";
 import { useSnackbar } from "notistack";
 import numeral from "numeral";
@@ -37,7 +37,7 @@ import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import {
   ROUTER_CONTRACT_HASH,
-  ROUTER_PACKAGE_HASH
+  ROUTER_PACKAGE_HASH,
 } from "../../../components/blockchain/AccountHashes/Addresses";
 import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
 import { getStateRootHash } from "../../../components/blockchain/GetStateRootHash/GetStateRootHash";
@@ -49,7 +49,7 @@ import { signdeploywithcaspersigner } from "../../../components/blockchain/SignD
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import HeaderHome, {
   CHAINS,
-  SUPPORTED_NETWORKS
+  SUPPORTED_NETWORKS,
 } from "../../../components/Headers/Header";
 import SigningModal from "../../../components/Modals/SigningModal";
 import SlippageModal from "../../../components/Modals/SlippageModal";
@@ -64,11 +64,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 const regex = /^\s*-?(\d+(\.\d{1,9})?|\.\d{1,9})\s*$/;
 // let RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
-function AddLiquidity(props) {
+function Refer(props) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  let [activePublicKey, setActivePublicKey] = useState(localStorage.getItem("Address"));
-  let [selectedWallet, setSelectedWallet] = useState(localStorage.getItem("selectedWallet"));
+  let [activePublicKey, setActivePublicKey] = useState(
+    localStorage.getItem("Address")
+  );
+  let [selectedWallet, setSelectedWallet] = useState(
+    localStorage.getItem("selectedWallet")
+  );
   let [torus, setTorus] = useState();
   let [mainPurse, setMainPurse] = useState();
   let [tokenA, setTokenA] = useState();
@@ -268,9 +272,9 @@ function AddLiquidity(props) {
                       console.log("address1", address1);
                       if (
                         address0.toLowerCase() ===
-                        tokenA.address.slice(5).toLowerCase() &&
+                          tokenA.address.slice(5).toLowerCase() &&
                         address1.toLowerCase() ===
-                        tokenB.address.slice(5).toLowerCase()
+                          tokenB.address.slice(5).toLowerCase()
                       ) {
                         setIsInvalidPair(false);
                         liquiditySetter(res1.data.pairList[i]);
@@ -282,9 +286,9 @@ function AddLiquidity(props) {
                         break;
                       } else if (
                         address0.toLowerCase() ===
-                        tokenB.address.slice(5).toLowerCase() &&
+                          tokenB.address.slice(5).toLowerCase() &&
                         address1.toLowerCase() ===
-                        tokenA.address.slice(5).toLowerCase()
+                          tokenA.address.slice(5).toLowerCase()
                       ) {
                         setIsInvalidPair(false);
                         liquiditySetter(res1.data.pairList[i]);
@@ -407,7 +411,7 @@ function AddLiquidity(props) {
               if (
                 rat0 < rat1 &&
                 parseInt(res.data.userpairs[i].reserve0) <
-                parseInt(res.data.userpairs[i].reserve1)
+                  parseInt(res.data.userpairs[i].reserve1)
               ) {
                 console.log("1");
                 setReserve0(res.data.userpairs[i].reserve1 / 10 ** 9);
@@ -415,7 +419,7 @@ function AddLiquidity(props) {
               } else if (
                 rat0 < rat1 &&
                 parseInt(res.data.userpairs[i].reserve0) >
-                parseInt(res.data.userpairs[i].reserve1)
+                  parseInt(res.data.userpairs[i].reserve1)
               ) {
                 console.log("2");
                 setReserve0(res.data.userpairs[i].reserve0 / 10 ** 9);
@@ -423,7 +427,7 @@ function AddLiquidity(props) {
               } else if (
                 rat0 > rat1 &&
                 parseInt(res.data.userpairs[i].reserve0) <
-                parseInt(res.data.userpairs[i].reserve1)
+                  parseInt(res.data.userpairs[i].reserve1)
               ) {
                 console.log("3");
                 setReserve0(res.data.userpairs[i].reserve0 / 10 ** 9);
@@ -431,7 +435,7 @@ function AddLiquidity(props) {
               } else if (
                 rat0 > rat1 &&
                 parseInt(res.data.userpairs[i].reserve0) >
-                parseInt(res.data.userpairs[i].reserve1)
+                  parseInt(res.data.userpairs[i].reserve1)
               ) {
                 console.log("4");
                 setReserve0(res.data.userpairs[i].reserve1 / 10 ** 9);
@@ -780,10 +784,26 @@ function AddLiquidity(props) {
         try {
           const runtimeArgs = RuntimeArgs.fromMap({
             token: new CLKey(_token_b),
-            amount_cspr_desired: CLValueBuilder.u256(convertToStr(token_AAmount)),
-            amount_token_desired: CLValueBuilder.u256(convertToStr(token_BAmount)),
-            amount_cspr_min: CLValueBuilder.u256(convertToStr(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
-            amount_token_min: CLValueBuilder.u256(convertToStr(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+            amount_cspr_desired: CLValueBuilder.u256(
+              convertToStr(token_AAmount)
+            ),
+            amount_token_desired: CLValueBuilder.u256(
+              convertToStr(token_BAmount)
+            ),
+            amount_cspr_min: CLValueBuilder.u256(
+              convertToStr(
+                Number(
+                  token_AAmount - (token_AAmount * slippage) / 100
+                ).toFixed(9)
+              )
+            ),
+            amount_token_min: CLValueBuilder.u256(
+              convertToStr(
+                Number(
+                  token_BAmount - (token_BAmount * slippage) / 100
+                ).toFixed(9)
+              )
+            ),
             to: createRecipientAddress(publicKey),
             purse: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -873,8 +893,20 @@ function AddLiquidity(props) {
             amount_token_desired: CLValueBuilder.u256(
               convertToStr(token_AAmount)
             ),
-            amount_cspr_min: CLValueBuilder.u256(convertToStr(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
-            amount_token_min: CLValueBuilder.u256(convertToStr(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
+            amount_cspr_min: CLValueBuilder.u256(
+              convertToStr(
+                Number(
+                  token_BAmount - (token_BAmount * slippage) / 100
+                ).toFixed(9)
+              )
+            ),
+            amount_token_min: CLValueBuilder.u256(
+              convertToStr(
+                Number(
+                  token_AAmount - (token_AAmount * slippage) / 100
+                ).toFixed(9)
+              )
+            ),
             to: createRecipientAddress(publicKey),
             purse: CLValueBuilder.uref(
               Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
@@ -958,16 +990,34 @@ function AddLiquidity(props) {
         }
       } else {
         // eslint-disable-next-line
-        console.log("token_AAmount", (token_AAmount - (token_AAmount * slippage) / 100).toFixed(9));
-        console.log("token_BAmount", token_BAmount - (token_BAmount * slippage) / 100);
+        console.log(
+          "token_AAmount",
+          (token_AAmount - (token_AAmount * slippage) / 100).toFixed(9)
+        );
+        console.log(
+          "token_BAmount",
+          token_BAmount - (token_BAmount * slippage) / 100
+        );
         // try {
         const runtimeArgs = RuntimeArgs.fromMap({
           token_a: new CLKey(_token_a),
           token_b: new CLKey(_token_b),
           amount_a_desired: CLValueBuilder.u256(convertToStr(token_AAmount)),
           amount_b_desired: CLValueBuilder.u256(convertToStr(token_BAmount)),
-          amount_a_min: CLValueBuilder.u256(convertToStr(Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(9))),
-          amount_b_min: CLValueBuilder.u256(convertToStr(Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(9))),
+          amount_a_min: CLValueBuilder.u256(
+            convertToStr(
+              Number(token_AAmount - (token_AAmount * slippage) / 100).toFixed(
+                9
+              )
+            )
+          ),
+          amount_b_min: CLValueBuilder.u256(
+            convertToStr(
+              Number(token_BAmount - (token_BAmount * slippage) / 100).toFixed(
+                9
+              )
+            )
+          ),
           to: createRecipientAddress(publicKey),
           deadline: CLValueBuilder.u256(deadline),
           pair: new CLOption(Some(new CLKey(pair))),
@@ -1058,7 +1108,7 @@ function AddLiquidity(props) {
             setSelectedWallet={setSelectedWallet}
             selectedWallet={selectedWallet}
             setTorus={setTorus}
-            selectedNav={"Pool"}
+            selectedNav={"Refer"}
           />
           <div style={{ backgroundColor: "#000052" }} className="card">
             <div className="container-fluid">
@@ -1083,7 +1133,11 @@ function AddLiquidity(props) {
                               <div className="login-header">
                                 <h3>
                                   <div style={{ textAlign: "center" }}>
-                                    <Typography variant="h5" style={{ color: '#000027' }} gutterBottom >
+                                    <Typography
+                                      variant="h5"
+                                      style={{ color: "#000027" }}
+                                      gutterBottom
+                                    >
                                       <strong>
                                         Add Liquidity
                                         <span
@@ -1091,7 +1145,6 @@ function AddLiquidity(props) {
                                           style={{
                                             float: "right",
                                             cursor: "pointer",
-
                                           }}
                                         >
                                           <i className="fas fa-cog"></i>
@@ -1110,8 +1163,8 @@ function AddLiquidity(props) {
                                           className="custom-card"
                                           style={{
                                             borderRadius: "8px",
-                                            color: '#000027',
-                                            fontWeight: '550'
+                                            color: "#000027",
+                                            fontWeight: "550",
                                           }}
                                         >
                                           <CardHeader
@@ -1246,8 +1299,8 @@ function AddLiquidity(props) {
                                           className="custom-card"
                                           style={{
                                             borderRadius: "8px",
-                                            color: '#000027',
-                                            fontWeight: '550'
+                                            color: "#000027",
+                                            fontWeight: "550",
                                           }}
                                         >
                                           <CardHeader
@@ -1376,8 +1429,9 @@ function AddLiquidity(props) {
                                     expanded={expanded === 0}
                                     onChange={handleChange(0)}
                                     style={{
-                                      borderRadius: "8px", color: '#000027',
-                                      fontWeight: '550'
+                                      borderRadius: "8px",
+                                      color: "#000027",
+                                      fontWeight: "550",
                                     }}
                                   >
                                     <AccordionSummary
@@ -1440,8 +1494,8 @@ function AddLiquidity(props) {
                                     style={{
                                       marginBottom: "10px",
                                       borderRadius: "8px",
-                                      color: '#000027',
-                                      fontWeight: '550'
+                                      color: "#000027",
+                                      fontWeight: "550",
                                     }}
                                     key={1}
                                     expanded={expanded === 1}
@@ -1504,10 +1558,10 @@ function AddLiquidity(props) {
                                 ) : null}
                                 <Row>
                                   {tokenA &&
-                                    tokenA.name !== "Casper" &&
-                                    tokenAAmount > 0 &&
-                                    tokenAAmount * 10 ** 9 > tokenAAllowance &&
-                                    !isInvalidPair ? (
+                                  tokenA.name !== "Casper" &&
+                                  tokenAAmount > 0 &&
+                                  tokenAAmount * 10 ** 9 > tokenAAllowance &&
+                                  !isInvalidPair ? (
                                     approveAIsLoading ? (
                                       <Col>
                                         <div className="text-center">
@@ -1531,7 +1585,9 @@ function AddLiquidity(props) {
                                           className="btn btn-block btn-lg "
                                           disabled
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                         >
@@ -1545,7 +1601,9 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                           onClick={async () => {
@@ -1566,7 +1624,9 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1578,10 +1638,10 @@ function AddLiquidity(props) {
                                   ) : null}
 
                                   {tokenB &&
-                                    tokenB.name !== "Casper" &&
-                                    tokenBAmount > 0 &&
-                                    tokenBAmount * 10 ** 9 > tokenBAllowance &&
-                                    !isInvalidPair ? (
+                                  tokenB.name !== "Casper" &&
+                                  tokenBAmount > 0 &&
+                                  tokenBAmount * 10 ** 9 > tokenBAllowance &&
+                                  !isInvalidPair ? (
                                     approveBIsLoading ? (
                                       <Col>
                                         <div className="text-center">
@@ -1604,7 +1664,9 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg "
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1619,7 +1681,9 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                           onClick={async () => {
@@ -1640,7 +1704,9 @@ function AddLiquidity(props) {
                                         <button
                                           className="btn btn-block btn-lg"
                                           style={{
-                                            borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                            borderRadius: "15px",
+                                            fontSize: "15px",
+                                            fontWeight: "550",
                                             padding: "10px",
                                           }}
                                           disabled
@@ -1653,28 +1719,35 @@ function AddLiquidity(props) {
                                 </Row>
                                 <br></br>
                                 {tokenA && tokenB && !isInvalidPair ? (
-                                  <Row style={{
-                                    color: '#000027',
-                                    fontWeight: '550', marginBottom: '10px'
-                                  }}>
-                                    <Col xs={{ span: 2, offset: 1 }} md={{ span: 2, offset: 1 }}>
-                                      <Typography
-                                        variant="body2"
-                                        component="p"
-                                      >
+                                  <Row
+                                    style={{
+                                      color: "#000027",
+                                      fontWeight: "550",
+                                      marginBottom: "10px",
+                                    }}
+                                  >
+                                    <Col
+                                      xs={{ span: 2, offset: 1 }}
+                                      md={{ span: 2, offset: 1 }}
+                                    >
+                                      <Typography variant="body2" component="p">
                                         Price
                                       </Typography>
                                     </Col>
                                     <Col xs={9} md={9}>
-                                      <CardContent style={{ padding: '0px' }} className="text-right">
+                                      <CardContent
+                                        style={{ padding: "0px" }}
+                                        className="text-right"
+                                      >
                                         <Typography
                                           variant="body2"
                                           component="p"
                                         >
                                           {`1 ${tokenA.name} = ${numeral(
                                             ratio0
-                                          ).format("0,0.000000000")} ${tokenB.name
-                                            }`}
+                                          ).format("0,0.000000000")} ${
+                                            tokenB.name
+                                          }`}
                                         </Typography>
                                         <Typography
                                           variant="body2"
@@ -1682,8 +1755,9 @@ function AddLiquidity(props) {
                                         >
                                           {`1 ${tokenB.name} = ${numeral(
                                             ratio1
-                                          ).format("0,0.000000000")} ${tokenA.name
-                                            }`}
+                                          ).format("0,0.000000000")} ${
+                                            tokenA.name
+                                          }`}
                                         </Typography>
                                       </CardContent>
                                     </Col>
@@ -1706,7 +1780,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1721,7 +1797,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1734,7 +1812,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1747,7 +1827,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg "
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1766,7 +1848,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     onClick={async () =>
@@ -1781,7 +1865,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1792,7 +1878,9 @@ function AddLiquidity(props) {
                                   <button
                                     className="btn btn-block btn-lg"
                                     style={{
-                                      borderRadius: '15px', fontSize: '15px', fontWeight: '550',
+                                      borderRadius: "15px",
+                                      fontSize: "15px",
+                                      fontWeight: "550",
                                       padding: "10px",
                                     }}
                                     disabled
@@ -1803,10 +1891,10 @@ function AddLiquidity(props) {
                               </form>
                               <br></br>
                               {tokenA &&
-                                tokenB &&
-                                liquidity &&
-                                liquidity !== "0.000000000" &&
-                                !isInvalidPair ? (
+                              tokenB &&
+                              liquidity &&
+                              liquidity !== "0.000000000" &&
+                              !isInvalidPair ? (
                                 <Card>
                                   <CardContent>
                                     <h3>Your Position</h3>
@@ -1902,4 +1990,4 @@ function AddLiquidity(props) {
   );
 }
 
-export default AddLiquidity;
+export default Refer;

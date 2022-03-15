@@ -227,8 +227,7 @@ function HeaderHome(props) {
     borderRadius: "5px",
   };
   const selectedNavStyle = {
-    Swap: props.selectedNav === "Swap" ? selectedStyling : defaultStyling,
-    Pool: props.selectedNav === "Pool" ? selectedStyling : defaultStyling,
+    Refer: props.selectedNav === "Refer" ? selectedStyling : defaultStyling,
     Tokens: props.selectedNav === "Tokens" ? selectedStyling : defaultStyling,
     Home: props.selectedNav === "Home" ? selectedStyling : defaultStyling,
     Pairs: props.selectedNav === "pairs" ? selectedStyling : defaultStyling,
@@ -390,8 +389,8 @@ function HeaderHome(props) {
               className="login-link "
             >
               {localStorage.getItem("Address") &&
-                localStorage.getItem("Address") !== null &&
-                localStorage.getItem("Address") !== "null" ? (
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
                 <a
                   href="#"
                   className=" align-items-center justify-content-center text-center"
@@ -411,30 +410,34 @@ function HeaderHome(props) {
               </Link>
             </li>
             <li>
-              <Link
+              <a
+                href={"https://wise-swap.herokuapp.com/swap"}
+                target={"_blank"}
+                rel={"noreferrer noopener"}
                 className=" align-items-center justify-content-center text-center"
                 to="/swap"
                 style={{ color: "#ea3429" }}
               >
                 <span style={selectedNavStyle.Swap}>Swap</span>
-              </Link>
+              </a>
             </li>
+            {/* Men at Work */}
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/pool"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Pool}>Pool</span>
+                <span style={selectedNavStyle.Pool}>Wise Staking</span>
               </Link>
             </li>
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
-                to="/tokens"
+                to="/refer"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Tokens}>Tokens</span>
+                <span style={selectedNavStyle.Refer}>Referal System</span>
               </Link>
             </li>
             <li>
@@ -443,9 +446,10 @@ function HeaderHome(props) {
                 to="/pairs"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Pairs}>Pairs</span>
+                <span style={selectedNavStyle.Pairs}>Your Portfolio</span>
               </Link>
             </li>
+            {/* /Men at Work */}
           </ul>
         </div>
         <ul className="nav header-navbar-rht">
@@ -479,7 +483,11 @@ function HeaderHome(props) {
             ) : signerLocked && signerConnected ? (
               <>
                 <Button
-                  style={{ borderRadius: "8px", backgroundColor: '#ea3429', borderColor: '#ea3429' }}
+                  style={{
+                    borderRadius: "8px",
+                    backgroundColor: "#ea3429",
+                    borderColor: "#ea3429",
+                  }}
                   variant="primary"
                   className="fade-in-text"
                   onClick={
@@ -497,7 +505,11 @@ function HeaderHome(props) {
             ) : (
               <>
                 <Button
-                  style={{ borderRadius: "8px", backgroundColor: '#ea3429', borderColor: '#ea3429' }}
+                  style={{
+                    borderRadius: "8px",
+                    backgroundColor: "#ea3429",
+                    borderColor: "#ea3429",
+                  }}
                   variant="primary"
                   className="fade-in-text"
                   onClick={() => {
@@ -513,8 +525,8 @@ function HeaderHome(props) {
           </li>
           <li>
             {localStorage.getItem("Address") &&
-              localStorage.getItem("Address") !== null &&
-              localStorage.getItem("Address") !== "null" ? (
+            localStorage.getItem("Address") !== null &&
+            localStorage.getItem("Address") !== "null" ? (
               <span
                 style={{ cursor: "pointer", color: "#ea3429" }}
                 onClick={() => {
