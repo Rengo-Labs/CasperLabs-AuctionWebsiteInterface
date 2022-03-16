@@ -8,7 +8,15 @@ import {
   CardHeader,
   FormControl,
   FormHelperText,
+  Button
 } from "@material-ui/core/";
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import { FaSitemap } from 'react-icons/fa';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -1099,6 +1107,7 @@ function Refer(props) {
       setIsLoading(false);
     }
   }
+  const [table, setTable] = useState(0);
   return (
     <div className="account-page">
       <div className="main-wrapper">
@@ -1110,882 +1119,100 @@ function Refer(props) {
             setTorus={setTorus}
             selectedNav={"Refer"}
           />
-          <div style={{ backgroundColor: "#000052" }} className="card">
-            <div className="container-fluid">
-              <div
-                className="content"
-                style={{ paddingTop: "150px", minHeight: "100vh" }}
-                position="absolute"
-              >
-                <div className="container-fluid">
-                  <div
-                    className="row"
-                    style={{
-                      height: `${props.windowHeight}`,
-                      marginRight: "px",
-                    }}
-                  >
-                    <div className="col-md-10 offset-md-1">
-                      <div className="account-content">
-                        <div className="row align-items-center justify-content-center">
-                          <div className="col-md-12 col-lg-6 login-right">
-                            <>
-                              <div className="login-header">
-                                <h3>
-                                  <div style={{ textAlign: "center" }}>
-                                    <Typography
-                                      variant="h5"
-                                      style={{ color: "#000027" }}
-                                      gutterBottom
-                                    >
-                                      <strong>
-                                        Add Liquidity
-                                        <span
-                                          onClick={handleShowSlippage}
-                                          style={{
-                                            float: "right",
-                                            cursor: "pointer",
-                                          }}
-                                        >
-                                          <i className="fas fa-cog"></i>
-                                        </span>
-                                      </strong>
-                                    </Typography>
-                                  </div>
-                                </h3>
-                              </div>
-                              <form>
-                                <div className="row">
-                                  <div className="col-md-12 col-lg-5">
-                                    <div className="filter-widget">
-                                      {tokenA ? (
-                                        <Card
-                                          className="custom-card"
-                                          style={{
-                                            borderRadius: "8px",
-                                            color: "#000027",
-                                            fontWeight: "550",
-                                          }}
-                                        >
-                                          <CardHeader
-                                            onClick={() => {
-                                              handleShowTokenAModal();
-                                            }}
-                                            avatar={
-                                              <Avatar
-                                                src={tokenA.logoURI}
-                                                aria-label="Artist"
-                                              />
-                                            }
-                                            title={tokenA.name}
-                                            subheader={tokenA.symbol}
-                                          />
-                                        </Card>
-                                      ) : (
-                                        <Card
-                                          onClick={() => {
-                                            handleShowTokenAModal();
-                                          }}
-                                          className="custom-card"
-                                          style={{
-                                            borderRadius: "8px",
-                                            padding: "25px",
-                                          }}
-                                        >
-                                          Select Token{" "}
-                                          <i
-                                            style={{ float: "right" }}
-                                            className="fas fa-chevron-down"
-                                          ></i>
-                                        </Card>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-md-12 col-lg-7 pt-md-2">
-                                    {tokenB && tokenA ? (
-                                      <div className="row">
-                                        <div className="col-8">
-                                          <FormControl
-                                            fullWidth
-                                            variant="outlined"
-                                          >
-                                            <OutlinedInput
-                                              step="any"
-                                              type="number"
-                                              min={0}
-                                              id="outlined-adornment-weight"
-                                              value={tokenAAmount}
-                                              onChange={(e) => {
-                                                console.log(
-                                                  "regex.test(e.target.value)",
-                                                  regex.test(e.target.value)
-                                                );
-                                                if (
-                                                  regex.test(e.target.value)
-                                                ) {
-                                                  if (e.target.value >= 0) {
-                                                    setTokenAAmount(
-                                                      e.target.value
-                                                    );
-                                                    setTokenBAmount(
-                                                      parseFloat(
-                                                        e.target.value * ratio0
-                                                      ).toFixed(9)
-                                                    );
-                                                  } else {
-                                                    setTokenAAmount(0);
-                                                    setTokenBAmount(0);
-                                                  }
-                                                } else {
-                                                  setTokenAAmount(tokenAAmount);
-                                                  setTokenBAmount(tokenBAmount);
-                                                }
-                                              }}
-                                              aria-describedby="outlined-weight-helper-text"
-                                              inputProps={{
-                                                "aria-label": "weight",
-                                              }}
-                                              style={{ borderRadius: "35px" }}
-                                            />
-                                          </FormControl>
-                                        </div>
-                                        <div className="col-4 align-self-center">
-                                          <FormHelperText id="outlined-weight-helper-text">
-                                            <strong>Balance: </strong>
-                                            {(tokenABalance / 10 ** 9).toFixed(
-                                              9
-                                            )}
-                                          </FormHelperText>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div className="row">
-                                        <div className="col-8">
-                                          <FormControl
-                                            fullWidth
-                                            variant="outlined"
-                                          >
-                                            <OutlinedInput
-                                              step="any"
-                                              type="number"
-                                              min={0}
-                                              placeholder="0"
-                                              disabled
-                                              id="outlined-adornment-weight"
-                                              aria-describedby="outlined-weight-helper-text"
-                                              inputProps={{
-                                                "aria-label": "weight",
-                                              }}
-                                              style={{ borderRadius: "35px" }}
-                                            />
-                                          </FormControl>
-                                        </div>
-
-                                        <div className="col-4 align-self-center">
-                                          <FormHelperText id="standard-weight-helper-text">
-                                            <strong>Balance: </strong>
-                                            {"0"}
-                                          </FormHelperText>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="row">
-                                  <div className="col-md-12 col-lg-5">
-                                    <div className="filter-widget">
-                                      {tokenB ? (
-                                        <Card
-                                          className="custom-card"
-                                          style={{
-                                            borderRadius: "8px",
-                                            color: "#000027",
-                                            fontWeight: "550",
-                                          }}
-                                        >
-                                          <CardHeader
-                                            onClick={() => {
-                                              handleShowTokenBModal();
-                                            }}
-                                            avatar={
-                                              <Avatar
-                                                src={tokenB.logoURI}
-                                                aria-label="Artist"
-                                              />
-                                            }
-                                            title={tokenB.name}
-                                            subheader={tokenB.symbol}
-                                          />
-                                        </Card>
-                                      ) : (
-                                        <Card
-                                          onClick={() => {
-                                            handleShowTokenBModal();
-                                          }}
-                                          style={{
-                                            borderRadius: "8px",
-                                            padding: "25px",
-                                          }}
-                                          className="custom-card"
-                                        >
-                                          Select Token
-                                          <i
-                                            style={{ float: "right" }}
-                                            className="fas fa-chevron-down"
-                                          ></i>
-                                        </Card>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-md-12 col-lg-7 pt-md-2">
-                                    {tokenB && tokenA ? (
-                                      <div className="row">
-                                        <div className="col-8">
-                                          <FormControl
-                                            fullWidth
-                                            variant="outlined"
-                                          >
-                                            <OutlinedInput
-                                              step="any"
-                                              type="number"
-                                              min={0}
-                                              max={50}
-                                              id="outlined-adornment-weight"
-                                              value={tokenBAmount}
-                                              onChange={(e) => {
-                                                if (
-                                                  regex.test(e.target.value)
-                                                ) {
-                                                  if (e.target.value >= 0) {
-                                                    setTokenBAmount(
-                                                      e.target.value
-                                                    );
-                                                    setTokenAAmount(
-                                                      parseFloat(
-                                                        e.target.value * ratio1
-                                                      ).toFixed(9)
-                                                    );
-                                                  } else {
-                                                    setTokenAAmount(0);
-                                                    setTokenBAmount(0);
-                                                  }
-                                                } else {
-                                                  setTokenAAmount(tokenAAmount);
-                                                  setTokenBAmount(tokenBAmount);
-                                                }
-                                              }}
-                                              aria-describedby="outlined-weight-helper-text"
-                                              inputProps={{
-                                                "aria-label": "weight",
-                                              }}
-                                              style={{ borderRadius: "35px" }}
-                                            />
-                                          </FormControl>
-                                        </div>
-                                        <div className="col-4 align-self-center">
-                                          <FormHelperText id="outlined-weight-helper-text">
-                                            <strong>Balance: </strong>
-                                            {(tokenBBalance / 10 ** 9).toFixed(
-                                              9
-                                            )}
-                                          </FormHelperText>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div className="row">
-                                        <div className="col-8">
-                                          <FormControl
-                                            fullWidth
-                                            variant="outlined"
-                                          >
-                                            <OutlinedInput
-                                              step="any"
-                                              type="number"
-                                              min={0}
-                                              placeholder="0"
-                                              disabled
-                                              id="outlined-adornment-weight"
-                                              aria-describedby="outlined-weight-helper-text"
-                                              inputProps={{
-                                                "aria-label": "weight",
-                                              }}
-                                              style={{ borderRadius: "35px" }}
-                                            />
-                                          </FormControl>
-                                        </div>
-                                        <div className="col-4 align-self-center">
-                                          <FormHelperText id="outlined-weight-helper-text">
-                                            <strong>Balance: </strong>
-                                            {"0"}
-                                          </FormHelperText>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                {tokenA ? (
-                                  <Accordion
-                                    key={0}
-                                    expanded={expanded === 0}
-                                    onChange={handleChange(0)}
-                                    style={{
-                                      borderRadius: "8px",
-                                      color: "#000027",
-                                      fontWeight: "550",
-                                    }}
-                                  >
-                                    <AccordionSummary
-                                      expandIcon={
-                                        tokenA.address !== "" ? (
-                                          <i className="fas fa-chevron-down"></i>
-                                        ) : null
-                                      }
-                                      aria-controls="panel1bh-content"
-                                      id="panel1bh-header"
-                                    >
-                                      <CardHeader
-                                        avatar={
-                                          <Avatar
-                                            src={tokenA.logoURI}
-                                            aria-label="Artist"
-                                            className={classes.avatar}
-                                          />
-                                        }
-                                        title={tokenA.name}
-                                        subheader={tokenA.symbol}
-                                      />
-                                    </AccordionSummary>
-                                    {tokenA.address !== "" ? (
-                                      <AccordionDetails>
-                                        <Card
-                                          style={{
-                                            backgroundColor: "#ccc",
-                                            borderRadius: "8px",
-                                          }}
-                                          className={classes.root}
-                                        >
-                                          <CardContent>
-                                            <Typography
-                                              style={{ margin: "10px" }}
-                                              variant="body2"
-                                              color="textSecondary"
-                                              component="p"
-                                            >
-                                              <strong>Contract Hash: </strong>
-                                              {tokenA.address}
-                                            </Typography>
-                                            <Typography
-                                              style={{ margin: "10px" }}
-                                              variant="body2"
-                                              color="textSecondary"
-                                              component="p"
-                                            >
-                                              <strong>Package Hash: </strong>
-                                              {tokenA.packageHash}
-                                            </Typography>
-                                          </CardContent>
-                                        </Card>
-                                      </AccordionDetails>
-                                    ) : null}
-                                  </Accordion>
-                                ) : null}
-                                {tokenB ? (
-                                  <Accordion
-                                    style={{
-                                      marginBottom: "10px",
-                                      borderRadius: "8px",
-                                      color: "#000027",
-                                      fontWeight: "550",
-                                    }}
-                                    key={1}
-                                    expanded={expanded === 1}
-                                    onChange={handleChange(1)}
-                                  >
-                                    <AccordionSummary
-                                      expandIcon={
-                                        tokenB.address !== "" ? (
-                                          <i className="fas fa-chevron-down"></i>
-                                        ) : null
-                                      }
-                                      aria-controls="panel1bh-content"
-                                      id="panel1bh-header"
-                                    >
-                                      <CardHeader
-                                        avatar={
-                                          <Avatar
-                                            src={tokenB.logoURI}
-                                            aria-label="Artist"
-                                            className={classes.avatar}
-                                          />
-                                        }
-                                        title={tokenB.name}
-                                        subheader={tokenB.symbol}
-                                      />
-                                    </AccordionSummary>
-                                    {tokenB.address !== "" ? (
-                                      <AccordionDetails>
-                                        <Card
-                                          style={{
-                                            backgroundColor: "#ccc",
-                                            borderRadius: "8px",
-                                          }}
-                                          className={classes.root}
-                                        >
-                                          <CardContent>
-                                            <Typography
-                                              style={{ margin: "10px" }}
-                                              variant="body2"
-                                              color="textSecondary"
-                                              component="p"
-                                            >
-                                              <strong>Contract Hash: </strong>
-                                              {tokenB.address}
-                                            </Typography>
-                                            <Typography
-                                              style={{ margin: "10px" }}
-                                              variant="body2"
-                                              color="textSecondary"
-                                              component="p"
-                                            >
-                                              <strong>Package Hash: </strong>
-                                              {tokenB.packageHash}
-                                            </Typography>
-                                          </CardContent>
-                                        </Card>
-                                      </AccordionDetails>
-                                    ) : null}
-                                  </Accordion>
-                                ) : null}
-                                <Row>
-                                  {tokenA &&
-                                  tokenA.name !== "Casper" &&
-                                  tokenAAmount > 0 &&
-                                  tokenAAmount * 10 ** 9 > tokenAAllowance &&
-                                  !isInvalidPair ? (
-                                    approveAIsLoading ? (
-                                      <Col>
-                                        <div className="text-center">
-                                          <Spinner
-                                            animation="border"
-                                            role="status"
-                                            style={{ color: "#6476bf" }}
-                                          >
-                                            <span className="sr-only">
-                                              Loading...
-                                            </span>
-                                          </Spinner>
-                                        </div>
-                                      </Col>
-                                    ) : activePublicKey !== "null" &&
-                                      activePublicKey !== null &&
-                                      activePublicKey !== undefined &&
-                                      tokenABalance < tokenAAmount * 10 ** 9 ? (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg "
-                                          disabled
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                        >
-                                          Insufficient Balance
-                                        </button>
-                                      </Col>
-                                    ) : activePublicKey !== "null" &&
-                                      activePublicKey !== null &&
-                                      activePublicKey !== undefined ? (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg"
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                          onClick={async () => {
-                                            setApproveAIsLoading(true);
-                                            await approveMakeDeploy(
-                                              tokenA.address,
-                                              tokenAAmount,
-                                              "tokenA"
-                                            );
-                                            setApproveAIsLoading(false);
-                                          }}
-                                        >
-                                          Approve {tokenA.symbol}
-                                        </button>
-                                      </Col>
-                                    ) : (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg"
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                          disabled
-                                        >
-                                          Connect to Signer First
-                                        </button>
-                                      </Col>
-                                    )
-                                  ) : null}
-
-                                  {tokenB &&
-                                  tokenB.name !== "Casper" &&
-                                  tokenBAmount > 0 &&
-                                  tokenBAmount * 10 ** 9 > tokenBAllowance &&
-                                  !isInvalidPair ? (
-                                    approveBIsLoading ? (
-                                      <Col>
-                                        <div className="text-center">
-                                          <Spinner
-                                            animation="border"
-                                            role="status"
-                                            style={{ color: "#6476bf" }}
-                                          >
-                                            <span className="sr-only">
-                                              Loading...
-                                            </span>
-                                          </Spinner>
-                                        </div>
-                                      </Col>
-                                    ) : activePublicKey !== "null" &&
-                                      activePublicKey !== null &&
-                                      activePublicKey !== undefined &&
-                                      tokenBBalance < tokenBAmount * 10 ** 9 ? (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg "
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                          disabled
-                                        >
-                                          Insufficient Balance
-                                        </button>
-                                      </Col>
-                                    ) : activePublicKey !== "null" &&
-                                      activePublicKey !== null &&
-                                      activePublicKey !== undefined ? (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg"
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                          onClick={async () => {
-                                            setApproveBIsLoading(true);
-                                            await approveMakeDeploy(
-                                              tokenB.address,
-                                              tokenBAmount,
-                                              "tokenB"
-                                            );
-                                            setApproveBIsLoading(false);
-                                          }}
-                                        >
-                                          Approve {tokenB.symbol}
-                                        </button>
-                                      </Col>
-                                    ) : (
-                                      <Col>
-                                        <button
-                                          className="btn btn-block btn-lg"
-                                          style={{
-                                            borderRadius: "15px",
-                                            fontSize: "15px",
-                                            fontWeight: "550",
-                                            padding: "10px",
-                                          }}
-                                          disabled
-                                        >
-                                          Connect to Signer First
-                                        </button>
-                                      </Col>
-                                    )
-                                  ) : null}
-                                </Row>
-                                <br></br>
-                                {tokenA && tokenB && !isInvalidPair ? (
-                                  <Row
-                                    style={{
-                                      color: "#000027",
-                                      fontWeight: "550",
-                                      marginBottom: "10px",
-                                    }}
-                                  >
-                                    <Col
-                                      xs={{ span: 2, offset: 1 }}
-                                      md={{ span: 2, offset: 1 }}
-                                    >
-                                      <Typography variant="body2" component="p">
-                                        Price
-                                      </Typography>
-                                    </Col>
-                                    <Col xs={9} md={9}>
-                                      <CardContent
-                                        style={{ padding: "0px" }}
-                                        className="text-right"
-                                      >
-                                        <Typography
-                                          variant="body2"
-                                          component="p"
-                                        >
-                                          {`1 ${tokenA.name} = ${numeral(
-                                            ratio0
-                                          ).format("0,0.000000000")} ${
-                                            tokenB.name
-                                          }`}
-                                        </Typography>
-                                        <Typography
-                                          variant="body2"
-                                          component="p"
-                                        >
-                                          {`1 ${tokenB.name} = ${numeral(
-                                            ratio1
-                                          ).format("0,0.000000000")} ${
-                                            tokenA.name
-                                          }`}
-                                        </Typography>
-                                      </CardContent>
-                                    </Col>
-                                  </Row>
-                                ) : null}
-
-                                {isLoading ? (
-                                  <div className="text-center">
-                                    <Spinner
-                                      animation="border"
-                                      role="status"
-                                      style={{ color: "#6476bf" }}
-                                    >
-                                      <span className="sr-only">
-                                        Loading...
-                                      </span>
-                                    </Spinner>
-                                  </div>
-                                ) : isInvalidPair ? (
-                                  <button
-                                    className="btn btn-block btn-lg"
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Invalid Pair
-                                  </button>
-                                ) : activePublicKey !== "null" &&
-                                  activePublicKey !== null &&
-                                  activePublicKey !== undefined &&
-                                  (tokenABalance < tokenAAmount * 10 ** 9 ||
-                                    tokenBBalance < tokenBAmount * 10 ** 9) ? (
-                                  <button
-                                    className="btn btn-block btn-lg "
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Insufficient Balance
-                                  </button>
-                                ) : tokenA &&
-                                  tokenA.name !== "Casper" &&
-                                  tokenAAmount * 10 ** 9 > tokenAAllowance ? (
-                                  <button
-                                    className="btn btn-block btn-lg "
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Approve {tokenA.name} First
-                                  </button>
-                                ) : tokenB &&
-                                  tokenB.name !== "Casper" &&
-                                  tokenBAmount * 10 ** 9 > tokenBAllowance ? (
-                                  <button
-                                    className="btn btn-block btn-lg "
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Approve {tokenB.name} First
-                                  </button>
-                                ) : activePublicKey !== "null" &&
-                                  activePublicKey !== null &&
-                                  activePublicKey !== undefined &&
-                                  tokenAAmount !== 0 &&
-                                  tokenBAmount !== 0 &&
-                                  tokenAAmount !== "0.000000000" &&
-                                  tokenBAmount !== "0.000000000" &&
-                                  tokenAAmount !== undefined &&
-                                  tokenBAmount !== undefined ? (
-                                  <button
-                                    className="btn btn-block btn-lg"
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    onClick={async () =>
-                                      await addLiquidityMakeDeploy()
-                                    }
-                                  >
-                                    Supply
-                                  </button>
-                                ) : activePublicKey === "null" ||
-                                  activePublicKey === null ||
-                                  activePublicKey === undefined ? (
-                                  <button
-                                    className="btn btn-block btn-lg"
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Connect to Casper Signer
-                                  </button>
-                                ) : (
-                                  <button
-                                    className="btn btn-block btn-lg"
-                                    style={{
-                                      borderRadius: "15px",
-                                      fontSize: "15px",
-                                      fontWeight: "550",
-                                      padding: "10px",
-                                    }}
-                                    disabled
-                                  >
-                                    Enter an Amount
-                                  </button>
-                                )}
-                              </form>
-                              <br></br>
-                              {tokenA &&
-                              tokenB &&
-                              liquidity &&
-                              liquidity !== "0.000000000" &&
-                              !isInvalidPair ? (
-                                <Card>
-                                  <CardContent>
-                                    <h3>Your Position</h3>
-                                    <Row>
-                                      <Col>
-                                        <CardHeader
-                                          subheader={`Your total pool tokens (${tokenA.symbol}-${tokenB.symbol}):`}
-                                        />
-                                      </Col>
-                                      <Col style={{ textAlign: "right" }}>
-                                        <CardHeader
-                                          subheader={numeral(
-                                            liquidity / 10 ** 9
-                                          ).format("0,0.000000000")}
-                                        />
-                                      </Col>
-                                    </Row>
-                                    <Row>
-                                      <Col>
-                                        <CardHeader
-                                          subheader={`Pooled ${tokenA.name}:`}
-                                        />
-                                      </Col>
-                                      <Col style={{ textAlign: "right" }}>
-                                        <CardHeader
-                                          subheader={numeral(reserve0).format(
-                                            "0,0.000000000"
-                                          )}
-                                        />
-                                      </Col>
-                                    </Row>
-                                    <Row>
-                                      <Col>
-                                        <CardHeader
-                                          subheader={`Pooled ${tokenB.name}:`}
-                                        />
-                                      </Col>
-                                      <Col style={{ textAlign: "right" }}>
-                                        <CardHeader
-                                          subheader={numeral(reserve1).format(
-                                            "0,0.000000000"
-                                          )}
-                                        />
-                                      </Col>
-                                    </Row>
-                                  </CardContent>
-                                </Card>
-                              ) : null}
-                            </>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <div style={{paddingTop:100}}>
+          <div className="container">
+            <div className="d-flex">
+              <div className="refer-icon mt-2 mb-3">
+                <RecordVoiceOverIcon fontsize='large'/>
+                
+              </div>
+              <div className="ml-5">
+                <h2 className="text-dark text-weight-bolder">Wise Referrals</h2>
+                <p className="text-dark">Stakes opened with your referral address</p>
               </div>
             </div>
+            <div className="refer-table">
+              <div className="d-flex justify-content-between bb">
+                <div className="d-flex">
+                  <div className="refer-status ml-2  my-4 rounded-circle px-2 pt-2 ">
+                      <h3 className="text-white">0%</h3>
+                  </div>
+                  <div className="ml-2">
+                    <p className="text-secondary pt-3">status not achieved</p>
+                    <h4 className="text-dark">Critical Mass Referrer</h4>
+                  </div>
+                </div>
+                <div className="d-flex mr-2">
+                  <div className="refer-table-icon my-4">
+                    <AddBoxIcon fontSize="small"/>
+                  </div>
+                  <div className="refer-table-icon my-4">
+                    <FilterListIcon fontSize="small"/>
+                  </div>
+                  <div className="refer-table-icon my-4">
+                    <AutorenewIcon fontSize="small"/>
+                  </div>
+                </div>
+
+              </div>
+              {table===0?
+                <div className="py-2 px-4 bb">
+                <div className="d-flex justify-content-between pt-3">
+                  <p className="text-dark font-weight-bold">Reffered stake start</p>
+                  <p className="text-dark font-weight-bold">Refferal Spin</p>
+                  <p className="text-dark font-weight-bold">Contributor</p>
+                  <p className="text-dark font-weight-bold">Refferal ID</p>
+                  <p className="text-dark font-weight-bold">Stake ID</p>
+                  <p className="text-dark font-weight-bold">Reffered Amount</p>
+                  <p className="text-dark font-weight-bold">Rewards/Shares</p>
+                  <p className="text-dark font-weight-bold">Actions</p>
+                </div>
+                <div className="pt-5 text-center justify-content-center">
+                    <div className="">
+                        <FaSitemap className='refer-table-body-icon'/>
+                      
+                    </div>
+                    <h3 className="pt-5">You don't have critical mass referrer status yet</h3>
+                    <h5 className="text-dark">Start <span className="font-weight-bold">promoting</span> Wise by creating your <span className="font-weight-bold">referral link</span></h5>
+                    {/* <button className="btn btn-outline-primary">Create Wise Refferal Link</button> */}
+                    <Button className="my-3" variant="outlined" color="primary">Create Wise Refferal Link</Button>
+                </div>
+                
+              </div>:
+               <table className=" table table-borderless">
+               <thead>
+                 <tr className="text-dark">
+                   <th>Reffered stake start</th>
+                   <th>Refferal Spin</th>
+                   <th>Contributor</th>
+                   <th>Refferal ID</th>
+                   <th>Stake ID</th>
+                   <th>Reffered Amount</th>
+                   <th>Rewards/Shares</th>
+                   <th>Actions</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 
+               </tbody>
+             </table>
+              }
+              <div className="py-3 bg-light refer-table-footer">
+                <div className="d-flex justify-content-center">
+                  <ArrowBackIosNewIcon fontSize="large"/>
+                  <ArrowForwardIosIcon fontSize="large"/>
+                </div>
+              </div>
+                
+            </div>
           </div>
+
         </div>
+          
+        </div>
+        
       </div>
-      <SlippageModal
-        slippage={slippage}
-        setSlippage={setSlippage}
-        show={openSlippage}
-        handleClose={handleCloseSlippage}
-      />
-      <SigningModal show={openSigning} />
-      <TokenAModal
-        setTokenAAmount={setTokenAAmount}
-        setTokenBAmount={setTokenBAmount}
-        token={tokenA}
-        setToken={setTokenA}
-        setTokenList={setTokenList}
-        isTokenList={isTokenList}
-        tokenList={tokenList}
-        show={openTokenAModal}
-        handleClose={handleCloseTokenAModal}
-        activePublicKey={activePublicKey}
-      />
-      <TokenBModal
-        setTokenAAmount={setTokenAAmount}
-        setTokenBAmount={setTokenBAmount}
-        token={tokenB}
-        setToken={setTokenB}
-        setTokenList={setTokenList}
-        isTokenList={isTokenList}
-        tokenList={tokenList}
-        show={openTokenBModal}
-        handleClose={handleCloseTokenBModal}
-        activePublicKey={activePublicKey}
-      />
+      
     </div>
   );
 }

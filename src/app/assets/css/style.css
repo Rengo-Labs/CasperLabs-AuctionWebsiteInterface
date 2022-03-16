@@ -8210,3 +8210,49 @@ object:hover {
   left: 0px;
   top: -32px;
 }
+
+
+
+.refer-icon{
+  padding: 20px;
+  color: #08209E;
+  box-shadow: 0 0 5px 2px gray;
+  border-radius: 5px;
+}
+
+.refer-table{
+  border: 0.5px solid gray;
+  box-shadow: 0 0 5px 2px gray;
+  margin-top: 30px;
+  border-radius: 10px;
+}
+
+ .refer-status{
+  background-color: #08209E;
+  
+} 
+
+.refer-table-icon{
+  border: 2px solid;
+  padding: 10px;
+  margin-left: 10px;
+  border-radius: 10px;
+}
+.bb{
+  border-bottom: 1px solid gray;
+}
+
+.refer-table-body-icon{
+  font-size: 70px;
+}
+.refer-table-body-icon-body{
+  background-color: #c0c0c0;
+  margin-left: 43%;
+  margin-right: 43%;
+  border-radius: 50%;
+}
+
+.refer-table-footer{
+  border-bottom-left-radius: 8px; 
+  border-bottom-right-radius: 8px;  
+}
