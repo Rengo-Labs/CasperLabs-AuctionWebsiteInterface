@@ -227,9 +227,10 @@ function HeaderHome(props) {
     borderRadius: "5px",
   };
   const selectedNavStyle = {
+    Home: props.selectedNav === "Home" ? selectedStyling : defaultStyling,
+    Staking: props.selectedNav === "Staking" ? selectedStyling : defaultStyling,
     Refer: props.selectedNav === "Refer" ? selectedStyling : defaultStyling,
     Tokens: props.selectedNav === "Tokens" ? selectedStyling : defaultStyling,
-    Home: props.selectedNav === "Home" ? selectedStyling : defaultStyling,
     Pairs: props.selectedNav === "pairs" ? selectedStyling : defaultStyling,
   };
 
@@ -425,10 +426,10 @@ function HeaderHome(props) {
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
-                to="/pool"
+                to="/staking"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Pool}>Wise Staking</span>
+                <span style={selectedNavStyle.Staking}>Wise Staking</span>
               </Link>
             </li>
             <li>

@@ -1,0 +1,24 @@
+.MuiTabs-scroller .MuiTabs-flexContainer button {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 2.5rem;
+}
+.MuiTabs-scroller .MuiTabs-flexContainer button.Mui-selected {
+  color: #08209e;
+}
+
+.MuiTabs-scroller .MuiTabs-flexContainer .MuiTab-root {
+  color: #a6a6b9;
+}
+
+.MuiTabs-scroller .MuiTabs-flexContainer button:hover {
+  color: #070919;
+}
+
+.MuiTabs-scroller .MuiTabs-flexContainer button.Mui-selected:hover {
+  color: #08209e;
+}
+
+.MuiTabs-scroller .MuiTabs-indicator {
+  background-color: #08209e;
+}

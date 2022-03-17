@@ -1,0 +1,27 @@
+.icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eceef7;
+}
+
+.wiseTableDefaultWrapper {
+  margin: 3.5rem 0;
+}
+
+.wiseTableDefaultPropStyles {
+  margin-top: 30px;
+}
+
+.wiseTableDefaultPropStyles h2 {
+  font-weight: bold;
+  color: rgb(234, 52, 41);
+}
+
+.wiseTableDefaultPropStyles p {
+  color: black;
+  font-size: 16px;
+}
