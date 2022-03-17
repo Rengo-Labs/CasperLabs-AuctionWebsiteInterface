@@ -15,6 +15,7 @@ import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
 
 // Components
 import WiseStakingTable from "../Tables/WiseStakingTable";
+import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 
 //Custom CSS
 import "../../assets/css/wiseStakingTabs.css";
@@ -52,7 +53,7 @@ function a11yProps(index) {
   };
 }
 
-function WiseStakingTabs() {
+function WiseStakingTabs({handleShowStakingWiseModal}) {
   const [value, setValue] = React.useState(0);
   const [regularStaking, setRegularStaking] = useState(0);
   const [insuranceStaking, setInsuranceStaking] = useState(0);
@@ -72,6 +73,7 @@ function WiseStakingTabs() {
         sx={{
           padding: "20px",
           border: 1,
+          borderBottom: 0,
           borderColor: "divider",
           borderTopRightRadius: "8px",
           borderTopLeftRadius: "8px",
@@ -108,7 +110,8 @@ function WiseStakingTabs() {
         </StyledEngineProvider>
       </Box>
       <TabPanel value={value} index={0}>
-        <WiseStakingTable />
+        <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} />
+        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <WiseStakingTable />

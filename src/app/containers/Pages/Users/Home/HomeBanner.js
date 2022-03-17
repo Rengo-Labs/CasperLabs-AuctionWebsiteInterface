@@ -5,7 +5,7 @@ function HomeBanner() {
       <div className="container-fluid">
         <div className="banner-wrapper" style={{ paddingTop: "110px" }}>
           <div className="banner-header text-center" >
-            <h1 style={{ color: 'white' }}>WISE SWAP PROTOCOL</h1>
+            <h1 style={{ color: 'white' }}>WISE TOKEN PROTOCOL</h1>
             <p style={{ color: 'white' }}>
               Swap, earn, and build on the leading decentralized crypto trading protocol.
             </p>

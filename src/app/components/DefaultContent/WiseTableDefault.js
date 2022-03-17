@@ -28,6 +28,12 @@ const WiseTableDefault = (props) => {
             <p className="text-center">{props.advice}</p>
           </section>
         </div>
+        <div className="row no-gutters justify-content-center align-items-center">
+          <section className="wiseTableDefaultPropStyles">
+          <button onClick={props.handleShowStakingWiseModal}>Create Wise Stake</button>
+          </section>
+        </div>
+        
       </div>
     </>
   );

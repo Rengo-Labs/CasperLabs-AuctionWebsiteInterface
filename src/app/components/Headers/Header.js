@@ -441,7 +441,7 @@ function HeaderHome(props) {
                 <span style={selectedNavStyle.Refer}>Referal System</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
                 to="/pairs"
@@ -449,7 +449,7 @@ function HeaderHome(props) {
               >
                 <span style={selectedNavStyle.Pairs}>Your Portfolio</span>
               </Link>
-            </li>
+            </li> */}
             {/* /Men at Work */}
           </ul>
         </div>
