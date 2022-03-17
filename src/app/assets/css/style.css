@@ -8228,22 +8228,25 @@ object:hover {
 }
 
  .refer-status{
-  background-color: #08209E;
+  background-color: #EA3429;
   
 } 
 
-.refer-table-icon{
+ .refer-table-icon{
   border: 2px solid;
   padding: 10px;
   margin-left: 10px;
   border-radius: 10px;
-}
+} 
 .bb{
-  border-bottom: 1px solid gray;
+  border: 0.05px solid #F0F0F0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .refer-table-body-icon{
-  font-size: 70px;
+  font-size: 44px;
+  color: #EA3429;
 }
 .refer-table-body-icon-body{
   background-color: #c0c0c0;
@@ -8255,4 +8258,29 @@ object:hover {
 .refer-table-footer{
   border-bottom-left-radius: 8px; 
   border-bottom-right-radius: 8px;  
+}
+.table-theme-color{
+ color: #EA3429; 
+}
+
+.MuiTablePagination {
+  padding: 15px !important;
+  text-align: center;
+  border-top: 1px solid rgba(7, 9, 25, 0.125);
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  background-color: #f8f9ff;
+}
+
+.MuiTablePagination .MuiTablePagination-selectLabel,
+.MuiTablePagination .MuiTablePagination-displayedRows {
+  margin-bottom: 0;
+}
+
+.MuiTablePagination .MuiTablePagination-spacer {
+  display: none;
+}
+
+.MuiTablePagination .MuiTablePagination-toolbar {
+  justify-content: center;
 }

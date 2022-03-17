@@ -10,6 +10,17 @@ import {
   FormHelperText,
   Button
 } from "@material-ui/core/";
+import { Modal } from "react-bootstrap";
+import Box from '@mui/material/Box';
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
+import { StyledEngineProvider } from "@mui/styled-engine";
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -17,6 +28,8 @@ import { FaSitemap } from 'react-icons/fa';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CancelIcon from '@mui/icons-material/Cancel';
+import HelpIcon from '@mui/icons-material/Help';
 import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -1108,6 +1121,32 @@ function Refer(props) {
     }
   }
   const [table, setTable] = useState(0);
+  function createData(name, calories, fat, carbs, protein) {
+    return { name, calories, fat, carbs, protein };
+  }
+  
+  const rows = [
+    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+    createData("Eclair", 262, 16.0, 24, 6.0),
+    createData("Cupcake", 305, 3.7, 67, 4.3),
+    createData("Gingerbread", 356, 16.0, 49, 3.9),
+  ];
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+  
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+  
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(0);
+    };
+    const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [modalShow, setModalShow] = React.useState(false);
   return (
     <div className="account-page">
       <div className="main-wrapper">
@@ -1120,7 +1159,7 @@ function Refer(props) {
             selectedNav={"Refer"}
           />
           <div style={{paddingTop:100}}>
-          <div className="container">
+          <div className="container-fluid">
             <div className="d-flex">
               <div className="refer-icon mt-2 mb-3">
                 <RecordVoiceOverIcon fontsize='large'/>
@@ -1131,11 +1170,12 @@ function Refer(props) {
                 <p className="text-dark">Stakes opened with your referral address</p>
               </div>
             </div>
-            <div className="refer-table">
-              <div className="d-flex justify-content-between bb">
+            
+            <div>
+            <div className="d-flex justify-content-between bb">
                 <div className="d-flex">
-                  <div className="refer-status ml-2  my-4 rounded-circle px-2 pt-2 ">
-                      <h3 className="text-white">0%</h3>
+                  <div className=" ml-2  my-4 rounded-circle px-3 pt-3 " style={{backgroundColor:'#484DA4'}}>
+                      <h5 className="text-white">0%</h5>
                   </div>
                   <div className="ml-2">
                     <p className="text-secondary pt-3">status not achieved</p>
@@ -1155,65 +1195,111 @@ function Refer(props) {
                 </div>
 
               </div>
-              {table===0?
-                <div className="py-2 px-4 bb">
-                <div className="d-flex justify-content-between pt-3">
-                  <p className="text-dark font-weight-bold">Reffered stake start</p>
-                  <p className="text-dark font-weight-bold">Refferal Spin</p>
-                  <p className="text-dark font-weight-bold">Contributor</p>
-                  <p className="text-dark font-weight-bold">Refferal ID</p>
-                  <p className="text-dark font-weight-bold">Stake ID</p>
-                  <p className="text-dark font-weight-bold">Reffered Amount</p>
-                  <p className="text-dark font-weight-bold">Rewards/Shares</p>
-                  <p className="text-dark font-weight-bold">Actions</p>
-                </div>
-                <div className="pt-5 text-center justify-content-center">
-                    <div className="">
+            <Paper sx={{ width: "100%", mb: 2 }}>
+            
+              <TableContainer sx={{ p: 3 }}>
+                <Table aria-label="Wise Staking" >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        REFFERED STAKE START
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        REFFERAL SPIN
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        {" "}
+                        CONTRIBUTOR
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        {" "}
+                        REFFERAL ID
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        STAKE ID
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        REFFERED AMOUNT
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        REWARDS/SHARES
+                      </TableCell>
+                      <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                        ACTIONS
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+             
+                  </TableBody>
+                </Table>
+                  <div className="pt-5 text-center" >
+                    <div className="mx-auto w-100">
+                      <div className="row no-gutters justify-content-center align-items-center" >
+                        <div className="d-flex justify-content-center align-items-center" style={{height:80,width:80, backgroundColor:'#eceef7', borderRadius:'50%'}}>
                         <FaSitemap className='refer-table-body-icon'/>
+                      </div>
                       
                     </div>
-                    <h3 className="pt-5">You don't have critical mass referrer status yet</h3>
+                    <h3 className="pt-5" style={{color: '#EA3429'}}>You don't have critical mass referrer status yet</h3>
                     <h5 className="text-dark">Start <span className="font-weight-bold">promoting</span> Wise by creating your <span className="font-weight-bold">referral link</span></h5>
-                    {/* <button className="btn btn-outline-primary">Create Wise Refferal Link</button> */}
-                    <Button className="my-3" variant="outlined" color="primary">Create Wise Refferal Link</Button>
+                    <Button onClick={() => setModalShow(true)} className="my-3" variant="outlined" color="primary">Create Wise Refferal Link</Button>
+                    <Modal
+                      show={modalShow}
+                      onHide={() => setModalShow(false)}
+                      size="lg"
+                      aria-labelledby="contained-modal-title-vcenter"
+                      centered
+                      className="text-white"
+                     >
+                      <Modal.Header closeButton style={{backgroundColor:'#484DA4'}}>
+                        <Modal.Title id="contained-modal-title-vcenter" style={{marginLeft:'40%'}}>
+                          Your Refferal Link
+                        </Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body className="text-dark">
+                        <p className="text-center">
+                        Stakes opened through this link will generate rewards for staker and referrer.
+                         To participate you must have CM referrer status by referring total of $10,000 equivalent in WISE stakes.
+                        </p>
+                        <p className="text-center">Note: referrer rewards are only generated for stakes with minimum duration of 365 days.</p>
+                        <h3 className="text-center">https://wisetoken.net/?w=YOUR-WALLET-ADDRESS</h3>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <div className="mx-auto">
+                        <button className=" btn" style={{backgroundColor:'#484DA4'}}>Copy Refferal Link</button>
+                        </div>
+                      </Modal.Footer>
+                    </Modal>
+                  </div>
                 </div>
-                
-              </div>:
-               <table className=" table table-borderless">
-               <thead>
-                 <tr className="text-dark">
-                   <th>Reffered stake start</th>
-                   <th>Refferal Spin</th>
-                   <th>Contributor</th>
-                   <th>Refferal ID</th>
-                   <th>Stake ID</th>
-                   <th>Reffered Amount</th>
-                   <th>Rewards/Shares</th>
-                   <th>Actions</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 
-               </tbody>
-             </table>
-              }
-              <div className="py-3 bg-light refer-table-footer">
-                <div className="d-flex justify-content-center">
-                  <ArrowBackIosNewIcon fontSize="large"/>
-                  <ArrowForwardIosIcon fontSize="large"/>
-                </div>
-              </div>
-                
-            </div>
+              </TableContainer>
+              <StyledEngineProvider injectFirst>
+                <TablePagination
+            
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={rows.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  className="MuiTablePagination "
+                />
+              </StyledEngineProvider>
+            </Paper>
           </div>
 
+           
         </div>
-          
-        </div>
-        
+
       </div>
-      
+          
     </div>
+        
+  </div>
+      
+</div>
   );
 }
 
