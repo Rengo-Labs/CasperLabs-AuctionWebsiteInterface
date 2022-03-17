@@ -1252,8 +1252,8 @@ function Refer(props) {
                       centered
                       className="text-white"
                      >
-                      <Modal.Header closeButton style={{backgroundColor:'#484DA4'}}>
-                        <Modal.Title id="contained-modal-title-vcenter" style={{marginLeft:'40%'}}>
+                      <Modal.Header closeButton style={{backgroundColor:'white'}}>
+                        <Modal.Title id="contained-modal-title-vcenter" style={{marginLeft:'40%', color:'#484DA4'}}>
                           Your Refferal Link
                         </Modal.Title>
                       </Modal.Header>
