@@ -14,7 +14,8 @@ import "../../../assets/css/bootstrap.min.css";
 
 // Custom Styling
 import "../../../assets/css/stakingStyles.css";
-import StakingWiseModal from "../../../components/Modals/StakingWiseModal";
+import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
+import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 
 // Content
 function Staking() {
@@ -24,12 +25,19 @@ function Staking() {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
-  const [openStakingWiseModal, setOpenStakingWiseModal] = useState(false);
-  const handleCloseStakingWiseModal = () => {
-    setOpenStakingWiseModal(false);
+  const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
+  const handleCloseStakingWISEModal = () => {
+    setOpenStakingWISEModal(false);
   };
-  const handleShowStakingWiseModal = () => {
-    setOpenStakingWiseModal(true);
+  const handleShowStakingWISEModal = () => {
+    setOpenStakingWISEModal(true);
+  };
+  const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
+  const handleCloseStakingCSPRModal = () => {
+    setOpenStakingCSPRModal(false);
+  };
+  const handleShowStakingCSPRModal = () => {
+    setOpenStakingCSPRModal(true);
   };
   let [torus, setTorus] = useState();
   return (
@@ -71,12 +79,17 @@ function Staking() {
             </section>
           </div>
         </div>
-        <WiseStakingTabs handleShowStakingWiseModal={handleShowStakingWiseModal} />
+        <WiseStakingTabs handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} />
       </div>
       <footer style={{ height: "3rem", width: "100%" }}></footer>
-      <StakingWiseModal
-        show={openStakingWiseModal}
-        handleClose={handleCloseStakingWiseModal}
+      <StakingWISEModal
+        show={openStakingWISEModal}
+        handleClose={handleCloseStakingWISEModal}
+        activePublicKey={activePublicKey}
+      />
+      <StakingCSPRModal
+        show={openStakingCSPRModal}
+        handleClose={handleCloseStakingCSPRModal}
         activePublicKey={activePublicKey}
       />
     </div>

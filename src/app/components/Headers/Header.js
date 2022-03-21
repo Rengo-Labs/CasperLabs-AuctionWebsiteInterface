@@ -438,7 +438,7 @@ function HeaderHome(props) {
                 to="/refer"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Refer}>Referal System</span>
+                <span style={selectedNavStyle.Refer}>Referral System</span>
               </Link>
             </li>
             {/* <li>

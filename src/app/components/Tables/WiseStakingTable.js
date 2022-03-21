@@ -36,7 +36,7 @@ const rows = [
   createData("Gingerbread", 356, 16.0, 49, 3.9),
 ];
 
-function WiseStakingTable({handleShowStakingWiseModal}) {
+function WiseStakingTable({handleShowStakingWISEModal,handleShowStakingCSPRModal}) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -108,7 +108,8 @@ function WiseStakingTable({handleShowStakingWiseModal}) {
               <WiseTableDefault
                 message="You don't have regular stakes at the moment"
                 advice="Start earning interest by creating your first stake"
-                handleShowStakingWiseModal={handleShowStakingWiseModal}
+                handleShowStakingWISEModal={handleShowStakingWISEModal}
+                handleShowStakingCSPRModal={handleShowStakingCSPRModal}
               />
             </div>
           </TableContainer>

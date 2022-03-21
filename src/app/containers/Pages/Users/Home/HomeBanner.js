@@ -31,7 +31,7 @@ function HomeBanner() {
           <div className="col-12 col-md-3">
             <div
               onClick={() => history.push("/refer")}
-              id="referals"
+              id="referrals"
               style={{ cursor: "pointer" }}
             >
               <HomeCards title={"YOUR REFEREALS"} />

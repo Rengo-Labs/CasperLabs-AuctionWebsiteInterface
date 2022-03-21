@@ -53,8 +53,10 @@ function a11yProps(index) {
   };
 }
 
-function WiseStakingTabs({handleShowStakingWiseModal}) {
+function WiseStakingTabs({ handleShowStakingWISEModal, handleShowStakingCSPRModal }) {
   const [value, setValue] = React.useState(0);
+  const [stakes, setStakes] = React.useState([]);
+
   const [regularStaking, setRegularStaking] = useState(0);
   const [insuranceStaking, setInsuranceStaking] = useState(0);
   const [collateralStaking, setCollateralStaking] = useState(0);
@@ -78,7 +80,7 @@ function WiseStakingTabs({handleShowStakingWiseModal}) {
           borderTopRightRadius: "8px",
           borderTopLeftRadius: "8px",
         }}
-        // className="shadow"
+      // className="shadow"
       >
         <StyledEngineProvider injectFirst>
           <Tabs
@@ -110,25 +112,30 @@ function WiseStakingTabs({handleShowStakingWiseModal}) {
         </StyledEngineProvider>
       </Box>
       <TabPanel value={value} index={0}>
-        <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
-        </div>
-        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
+        {stakes.length !== 0 ? (
+          <div className="row no-gutters buttonsWrapper">
+            <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (WISE)"} />
+            <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (CSPR)"} />
+          </div>
+        ) : (
+          null
+        )}
+
+        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-      <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
+        <div className="row no-gutters buttonsWrapper">
+          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Insurance Stake (WISE)"} />
+          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Insurance Stake (CSPR)"} />
         </div>
-        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
+        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-      <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
+        <div className="row no-gutters buttonsWrapper">
+          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (CSPR)"} />
         </div>
-        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
+        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal}/>
       </TabPanel>
     </Box>
   );

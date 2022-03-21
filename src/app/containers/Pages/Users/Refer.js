@@ -1189,8 +1189,8 @@ function Refer(props) {
                 <div className="d-flex justify-content-between bb">
                   <div className="d-flex">
                     <div
-                      className=" ml-2  my-4 rounded-circle px-3 pt-3 "
-                      style={{ backgroundColor: "#484DA4" }}
+                      className=" ml-2 my-4 px-3 pt-3 "
+                      style={{ backgroundColor: "#484DA4", borderRadius:'500px' }}
                     >
                       <h5 className="text-white">0%</h5>
                     </div>
