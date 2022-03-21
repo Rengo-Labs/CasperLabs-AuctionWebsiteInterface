@@ -22,3 +22,11 @@
 .MuiTabs-scroller .MuiTabs-indicator {
   background-color: #08209e;
 }
+
+.buttonsWrapper {
+  width: 100%;
+  background-color: aliceblue;
+  padding: 20px 40px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}

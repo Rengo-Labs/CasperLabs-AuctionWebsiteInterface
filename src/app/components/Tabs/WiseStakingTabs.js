@@ -15,6 +15,7 @@ import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
 
 // Components
 import WiseStakingTable from "../Tables/WiseStakingTable";
+import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 
 //Custom CSS
 import "../../assets/css/wiseStakingTabs.css";
@@ -72,6 +73,7 @@ function WiseStakingTabs() {
         sx={{
           padding: "20px",
           border: 1,
+          borderBottom: 0,
           borderColor: "divider",
           borderTopRightRadius: "8px",
           borderTopLeftRadius: "8px",
@@ -108,6 +110,10 @@ function WiseStakingTabs() {
         </StyledEngineProvider>
       </Box>
       <TabPanel value={value} index={0}>
+        <div className="row no-gutters buttonsWrapper">
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (ETH)"} />
+        </div>
         <WiseStakingTable />
       </TabPanel>
       <TabPanel value={value} index={1}>

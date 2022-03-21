@@ -12,6 +12,9 @@ import LanIcon from "@mui/icons-material/Lan";
 // Custom Styling
 import "../../assets/css/wiseTableDefault.css";
 
+// Components
+import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
+
 // Content
 const WiseTableDefault = (props) => {
   return (
@@ -27,6 +30,10 @@ const WiseTableDefault = (props) => {
             <h2>{props.message}</h2>
             <p className="text-center">{props.advice}</p>
           </section>
+        </div>
+        <div className="row no-gutters justify-content-center align-items-center">
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (ETH)"} />
         </div>
       </div>
     </>

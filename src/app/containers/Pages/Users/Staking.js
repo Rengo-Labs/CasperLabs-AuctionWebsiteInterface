@@ -65,7 +65,7 @@ function Staking() {
         </div>
         <WiseStakingTabs />
       </div>
-      <footer className="mt-5"></footer>
+      <footer style={{ height: "3rem", width: "100%" }}></footer>
     </div>
   );
 }

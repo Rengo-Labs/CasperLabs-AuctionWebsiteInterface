@@ -53,40 +53,42 @@ function WiseStakingTable() {
     <Box
       sx={{
         width: "100%",
+        borderTop: 0,
       }}
     >
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <TableContainer sx={{ p: 3 }}>
-          <Table aria-label="Wise Staking">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  STAKE CREATED
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  STAKE PROGRESS
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  {" "}
-                  LOCK UP
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  {" "}
-                  STAKE ID
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  AMOUNT STAKED
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  INTEREST/APY
-                </TableCell>
-                <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                  ACTIONS
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/*{rows.map((row) => (
+      <StyledEngineProvider injectFirst>
+        <Paper sx={{ width: "100%", mb: 2 }} className="MuiPaper">
+          <TableContainer sx={{ p: 3 }}>
+            <Table aria-label="Wise Staking">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    STAKE CREATED
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    STAKE PROGRESS
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    {" "}
+                    LOCK UP
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    {" "}
+                    STAKE ID
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    AMOUNT STAKED
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    INTEREST/APY
+                  </TableCell>
+                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    ACTIONS
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/*{rows.map((row) => (
             <TableRow
               key={row.name}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -100,28 +102,29 @@ function WiseStakingTable() {
               <TableCell align="right">{row.protein}</TableCell>
             </TableRow>
           ))}  */}
-            </TableBody>
-          </Table>
-          <div className="m-auto w-100">
-            <WiseTableDefault
-              message="You don't have regular stakes at the moment"
-              advice="Start earning interest by creating your first stake"
+              </TableBody>
+            </Table>
+            <div className="m-auto w-100">
+              <WiseTableDefault
+                message="You don't have regular stakes at the moment"
+                advice="Start earning interest by creating your first stake"
+              />
+            </div>
+          </TableContainer>
+          <StyledEngineProvider injectFirst>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              className="MuiTablePagination"
             />
-          </div>
-        </TableContainer>
-        <StyledEngineProvider injectFirst>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            className="MuiTablePagination"
-          />
-        </StyledEngineProvider>
-      </Paper>
+          </StyledEngineProvider>
+        </Paper>
+      </StyledEngineProvider>
     </Box>
   );
 }
