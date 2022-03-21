@@ -32,8 +32,8 @@ const WiseTableDefault = (props) => {
           </section>
         </div>
         <div className="row no-gutters justify-content-center align-items-center">
-          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons btnContent={"Create Regular Stake (ETH)"} />
+          <WiseStakingTableButtons  handleShowStakingWiseModal={props.handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (ETH)"} handleShowStakingWiseModal={props.handleShowStakingWiseModal} />
         </div>
       </div>
     </>

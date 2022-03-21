@@ -17,7 +17,7 @@ function Footer(props) {
               <div className="col-md-6 col-lg-6">
                 <div className="copyright-text">
                   <p className="mb-0">
-                    &copy; 2020 Wise Swap. All rights reserved.
+                    &copy; 2020 Wise Token. All rights reserved.
                   </p>
                 </div>
               </div>

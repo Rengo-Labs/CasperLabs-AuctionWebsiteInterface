@@ -3,8 +3,6 @@ import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 // import AddLiquidity from "../Pages/Users/AddLiquidity";
 import HomeScreen from "../Pages/Users/HomeScreen";
-import Pairs from "../Pages/Users/Pairs";
-import Tokens from "../Pages/Users/Tokens";
 import Refer from "../Pages/Users/Refer";
 import Staking from "../Pages/Users/Staking";
 
@@ -14,10 +12,6 @@ function App() {
       return <Route component={Staking} />;
     } else if (path === "/refer") {
       return <Route component={Refer} />;
-    } else if (path === "/tokens") {
-      return <Route component={Tokens} />;
-    } else if (path === "/pairs") {
-      return <Route component={Pairs} />;
     } else {
       return <Route component={HomeScreen} />;
     }
@@ -35,8 +29,8 @@ function App() {
 
           <Route exact path="/staking" component={Staking} />
           <Route path="/refer" component={Refer} />
-          <Route path="/tokens" component={Tokens} />
-          <Route path="/pairs" component={Pairs} />
+          {/* <Route path="/tokens" component={Tokens} />
+          <Route path="/pairs" component={Pairs} /> */}
         </Switch>
       </BrowserRouter>
     </SnackbarProvider>

@@ -11,3 +11,10 @@ button.tableBtn:hover {
   color: white;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
+.buttonsWrapper {
+  width: 100%;
+  background-color: aliceblue;
+  padding: 20px 40px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}

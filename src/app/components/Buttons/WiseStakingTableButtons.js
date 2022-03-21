@@ -11,7 +11,7 @@ import "../../assets/css/WiseStakingTableButtons.css";
 const WiseStakingTableButtons = (props) => {
   return (
     <div>
-      <button className="mr-3 tableBtn">{props.btnContent}</button>
+      <button className="mr-3 tableBtn" onClick={props.handleShowStakingWiseModal}>{props.btnContent}</button>
     </div>
   );
 };

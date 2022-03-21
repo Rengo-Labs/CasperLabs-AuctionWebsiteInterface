@@ -486,8 +486,8 @@ button.bg-danger:hover {
 }
 .btn-primary.disabled,
 .btn-primary:disabled {
-  background-color: #c06d6d;
-  border-color: #6476bf;
+  background-color: #a6a6b9;
+  border-color: #a6a6b9;
   color: #fff;
 }
 .btn-secondary.active:focus:not(:disabled):not(.disabled),

@@ -14,6 +14,7 @@ import "../../../assets/css/bootstrap.min.css";
 
 // Custom Styling
 import "../../../assets/css/stakingStyles.css";
+import StakingWiseModal from "../../../components/Modals/StakingWiseModal";
 
 // Content
 function Staking() {
@@ -23,6 +24,13 @@ function Staking() {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
+  const [openStakingWiseModal, setOpenStakingWiseModal] = useState(false);
+  const handleCloseStakingWiseModal = () => {
+    setOpenStakingWiseModal(false);
+  };
+  const handleShowStakingWiseModal = () => {
+    setOpenStakingWiseModal(true);
+  };
   let [torus, setTorus] = useState();
   return (
     <div>
@@ -63,9 +71,14 @@ function Staking() {
             </section>
           </div>
         </div>
-        <WiseStakingTabs />
+        <WiseStakingTabs handleShowStakingWiseModal={handleShowStakingWiseModal} />
       </div>
       <footer style={{ height: "3rem", width: "100%" }}></footer>
+      <StakingWiseModal
+        show={openStakingWiseModal}
+        handleClose={handleCloseStakingWiseModal}
+        activePublicKey={activePublicKey}
+      />
     </div>
   );
 }

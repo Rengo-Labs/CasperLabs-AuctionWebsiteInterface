@@ -53,7 +53,7 @@ function a11yProps(index) {
   };
 }
 
-function WiseStakingTabs() {
+function WiseStakingTabs({handleShowStakingWiseModal}) {
   const [value, setValue] = React.useState(0);
   const [regularStaking, setRegularStaking] = useState(0);
   const [insuranceStaking, setInsuranceStaking] = useState(0);
@@ -111,16 +111,24 @@ function WiseStakingTabs() {
       </Box>
       <TabPanel value={value} index={0}>
         <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons btnContent={"Create Regular Stake (ETH)"} />
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
         </div>
-        <WiseStakingTable />
+        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <WiseStakingTable />
+      <div className="row no-gutters buttonsWrapper">
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
+        </div>
+        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <WiseStakingTable />
+      <div className="row no-gutters buttonsWrapper">
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons handleShowStakingWiseModal={handleShowStakingWiseModal} btnContent={"Create Regular Stake (ETH)"} />
+        </div>
+        <WiseStakingTable handleShowStakingWiseModal={handleShowStakingWiseModal} />
       </TabPanel>
     </Box>
   );
