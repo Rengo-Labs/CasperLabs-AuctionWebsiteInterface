@@ -10,7 +10,7 @@ import {
   FormHelperText,
   Button,
 } from "@material-ui/core/";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 import { Modal } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -1191,7 +1191,10 @@ function Refer(props) {
                   <div className="d-flex">
                     <div
                       className=" ml-2 my-4 px-3 pt-3 "
-                      style={{ backgroundColor: "#484DA4", borderRadius:'500px' }}
+                      style={{
+                        backgroundColor: "#484DA4",
+                        borderRadius: "500px",
+                      }}
                     >
                       <h5 className="text-white">0%</h5>
                     </div>
@@ -1314,34 +1317,50 @@ function Refer(props) {
                               Note: referrer rewards are only generated for
                               stakes with minimum duration of 365 days.
                             </p>
-                            
-                              {activePublicKey=== null?
-                               <h4 className="text-center"> https://wisetoken.net/?w=YOUR-WALLET-ADDRESS</h4> :
-                               <h4 className="text-center">https://wisetoken.net/?w={activePublicKey}</h4>
-                               }
-              
+
+                            {activePublicKey === null ? (
+                              <h4 className="text-center">
+                                {" "}
+                                https://wisetoken.net/?w=YOUR-WALLET-ADDRESS
+                              </h4>
+                            ) : (
+                              <h4 className="text-center">
+                                https://wisetoken.net/?w={activePublicKey}
+                              </h4>
+                            )}
                           </Modal.Body>
                           <Modal.Footer>
-                            {activePublicKey=== null?
+                            {activePublicKey === null ? (
                               <div className="mx-auto">
-                                <button disabled
+                                <button
+                                  disabled
                                   className="btn disabled"
-                                  onClick={()=>{navigator.clipboard.writeText(activePublicKey)}}
-                                  >
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      activePublicKey
+                                    );
+                                  }}
+                                >
                                   Copy Refferal Link
                                 </button>
-                              </div>:
+                              </div>
+                            ) : (
                               <div className="mx-auto">
                                 <button
                                   className="tableBtn"
-                                  onClick={()=>{navigator.clipboard.writeText('https://wisetoken.net/?w='+activePublicKey); toast.success('Successfully Copied wallet')}}
-                                  >
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(
+                                      "https://wisetoken.net/?w=" +
+                                        activePublicKey
+                                    );
+                                    toast.success("Successfully Copied wallet");
+                                  }}
+                                >
                                   Copy Refferal Link
                                 </button>
                                 <Toaster />
                               </div>
-                              }
-                            
+                            )}
                           </Modal.Footer>
                         </Modal>
                       </div>
