@@ -10,6 +10,7 @@ import {
   FormHelperText,
   Button,
 } from "@material-ui/core/";
+import toast, { Toaster } from 'react-hot-toast';
 import { Modal } from "react-bootstrap";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -1313,19 +1314,34 @@ function Refer(props) {
                               Note: referrer rewards are only generated for
                               stakes with minimum duration of 365 days.
                             </p>
-                            <h3 className="text-center">
-                              https://wisetoken.net/?w=YOUR-WALLET-ADDRESS
-                            </h3>
+                            
+                              {activePublicKey=== null?
+                               <h4 className="text-center"> https://wisetoken.net/?w=YOUR-WALLET-ADDRESS</h4> :
+                               <h4 className="text-center">https://wisetoken.net/?w={activePublicKey}</h4>
+                               }
+              
                           </Modal.Body>
                           <Modal.Footer>
-                            <div className="mx-auto">
-                              <button
-                                className=" btn"
-                                style={{ backgroundColor: "#484DA4" }}
-                              >
-                                Copy Refferal Link
-                              </button>
-                            </div>
+                            {activePublicKey=== null?
+                              <div className="mx-auto">
+                                <button disabled
+                                  className="btn disabled"
+                                  onClick={()=>{navigator.clipboard.writeText(activePublicKey)}}
+                                  >
+                                  Copy Refferal Link
+                                </button>
+                              </div>:
+                              <div className="mx-auto">
+                                <button
+                                  className="tableBtn"
+                                  onClick={()=>{navigator.clipboard.writeText('https://wisetoken.net/?w='+activePublicKey); toast.success('Successfully Copied wallet')}}
+                                  >
+                                  Copy Refferal Link
+                                </button>
+                                <Toaster />
+                              </div>
+                              }
+                            
                           </Modal.Footer>
                         </Modal>
                       </div>
