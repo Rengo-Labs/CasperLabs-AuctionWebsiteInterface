@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { useState } from "react";
+import { useState, createContext } from "react";
 
 // Components
 import HeaderHome from "../../../components/Headers/Header";
@@ -18,6 +18,11 @@ import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
 import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 
 // Content
+
+const handleStakingWISEModal = createContext();
+const handleStakingCSPRModal = createContext();
+
+// Component Function
 function Staking() {
   let [activePublicKey, setActivePublicKey] = useState(
     localStorage.getItem("Address")
@@ -40,6 +45,7 @@ function Staking() {
     setOpenStakingCSPRModal(true);
   };
   let [torus, setTorus] = useState();
+
   return (
     <div>
       {/* Header */}
@@ -79,7 +85,11 @@ function Staking() {
             </section>
           </div>
         </div>
-        <WiseStakingTabs handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} />
+        <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
+          <handleStakingCSPRModal.Provider value={handleShowStakingCSPRModal}>
+            <WiseStakingTabs />
+          </handleStakingCSPRModal.Provider>
+        </handleStakingWISEModal.Provider>
       </div>
       <footer style={{ height: "3rem", width: "100%" }}></footer>
       <StakingWISEModal
@@ -97,3 +107,4 @@ function Staking() {
 }
 
 export default Staking;
+export { handleStakingWISEModal, handleStakingCSPRModal };

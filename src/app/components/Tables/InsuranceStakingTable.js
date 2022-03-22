@@ -37,8 +37,8 @@ const rows = [
   createData("Gingerbread", 356, 16.0, 49, 3.9),
 ];
 
-function WiseStakingTable() {
-  const [stakes, setStakes] = React.useState([]);
+function InsuranceStakingTable() {
+  const [stakes, setStakes] = React.useState(["test"]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -109,15 +109,16 @@ function WiseStakingTable() {
             {stakes.length !== 0 ? null : (
               <div className="m-auto w-100">
                 <TableDefault
-                  message="You don't have regular stakes at the moment"
+                  message="You don't have insurance stakes at the moment"
                   advice="Start earning interest by creating your first stake"
                 />
+
                 <div className="row no-gutters justify-content-center align-items-center">
                   <WiseStakingTableButtons
-                    btnContent={"Create Regular Stake (WISE)"}
+                    btnContent={"Create Insurance Stake (WISE)"}
                   />
                   <WiseStakingTableButtons
-                    btnContent={"Create Regular Stake (CSPR)"}
+                    btnContent={"Create Insurance Stake (CSPR)"}
                     cspr={true}
                   />
                 </div>
@@ -142,4 +143,4 @@ function WiseStakingTable() {
   );
 }
 
-export default WiseStakingTable;
+export default InsuranceStakingTable;

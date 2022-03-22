@@ -15,10 +15,12 @@ import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
 
 // Components
 import WiseStakingTable from "../Tables/WiseStakingTable";
+import InsuranceStakingTable from "../Tables/InsuranceStakingTable";
+import CollateralStakingTable from "../Tables/CollateralStakingTable";
 import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 
 //Custom CSS
-import "../../assets/css/wiseStakingTabs.css";
+import "../../assets/css/stakingTabs.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,7 +55,7 @@ function a11yProps(index) {
   };
 }
 
-function WiseStakingTabs({ handleShowStakingWISEModal, handleShowStakingCSPRModal }) {
+function WiseStakingTabs() {
   const [value, setValue] = React.useState(0);
   const [stakes, setStakes] = React.useState([]);
 
@@ -80,7 +82,7 @@ function WiseStakingTabs({ handleShowStakingWISEModal, handleShowStakingCSPRModa
           borderTopRightRadius: "8px",
           borderTopLeftRadius: "8px",
         }}
-      // className="shadow"
+        // className="shadow"
       >
         <StyledEngineProvider injectFirst>
           <Tabs
@@ -114,28 +116,45 @@ function WiseStakingTabs({ handleShowStakingWISEModal, handleShowStakingCSPRModa
       <TabPanel value={value} index={0}>
         {stakes.length !== 0 ? (
           <div className="row no-gutters buttonsWrapper">
-            <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (WISE)"} />
-            <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (CSPR)"} />
+            <WiseStakingTableButtons
+              btnContent={"Create Regular Stake (WISE)"}
+            />
+            <WiseStakingTableButtons
+              btnContent={"Create Regular Stake (CSPR)"}
+              cspr={true}
+            />
           </div>
-        ) : (
-          null
-        )}
+        ) : null}
 
-        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal}/>
+        <WiseStakingTable />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Insurance Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Insurance Stake (CSPR)"} />
-        </div>
-        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} />
+        {stakes.length !== 0 ? (
+          <div className="row no-gutters buttonsWrapper">
+            <WiseStakingTableButtons
+              btnContent={"Create Insurance Stake (WISE)"}
+            />
+            <WiseStakingTableButtons
+              btnContent={"Create Insurance Stake (CSPR)"}
+              cspr={true}
+            />
+          </div>
+        ) : null}
+        <InsuranceStakingTable />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <div className="row no-gutters buttonsWrapper">
-          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal} btnContent={"Create Regular Stake (CSPR)"} />
-        </div>
-        <WiseStakingTable handleShowStakingWISEModal={handleShowStakingWISEModal} handleShowStakingCSPRModal={handleShowStakingCSPRModal}/>
+        {stakes.length !== 0 ? (
+          <div className="row no-gutters buttonsWrapper">
+            <WiseStakingTableButtons
+              btnContent={"Create Collateral Stake (WISE)"}
+            />
+            <WiseStakingTableButtons
+              btnContent={"Create Collateral Stake (CSPR)"}
+              cspr={true}
+            />
+          </div>
+        ) : null}
+        <CollateralStakingTable />
       </TabPanel>
     </Box>
   );

@@ -10,13 +10,13 @@ import LanIcon from "@mui/icons-material/Lan";
 // Material UI
 
 // Custom Styling
-import "../../assets/css/wiseTableDefault.css";
+import "../../assets/css/tableDefault.css";
 
 // Components
 import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 
 // Content
-const WiseTableDefault = (props) => {
+const TableDefault = (props) => {
   return (
     <>
       <div className=" wiseTableDefaultWrapper">
@@ -31,13 +31,16 @@ const WiseTableDefault = (props) => {
             <p className="text-center">{props.advice}</p>
           </section>
         </div>
-        <div className="row no-gutters justify-content-center align-items-center">
-          <WiseStakingTableButtons handleShowStakingWISEModal={props.handleShowStakingWISEModal} handleShowStakingCSPRModal={props.handleShowStakingCSPRModal} btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons handleShowStakingWISEModal={props.handleShowStakingWISEModal} handleShowStakingCSPRModal={props.handleShowStakingCSPRModal} btnContent={"Create Regular Stake (CSPR)"} />
-        </div>
+        {/* <div className="row no-gutters justify-content-center align-items-center">
+          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
+          <WiseStakingTableButtons
+            btnContent={"Create Regular Stake (CSPR)"}
+            cspr={true}
+          />
+        </div> */}
       </div>
     </>
   );
 };
 
-export default WiseTableDefault;
+export default TableDefault;
