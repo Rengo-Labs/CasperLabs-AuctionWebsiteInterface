@@ -12,7 +12,7 @@ import axios from "axios";
 if (process.env.REACT_APP_BACKEND_SERVER_ADDRESS)
   axios.defaults.baseURL = `${process.env.REACT_APP_BACKEND_SERVER_ADDRESS}`;
 // else axios.defaults.baseURL = `http://localhost:3000`;
-else axios.defaults.baseURL = `https://casper-uniswap-v2-graphql.herokuapp.com/`;
+else axios.defaults.baseURL = `https://wise-graphql-backend.herokuapp.com/`;
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
