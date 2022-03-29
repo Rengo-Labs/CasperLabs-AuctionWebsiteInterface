@@ -1171,7 +1171,7 @@ function Refer(props) {
                 {/* <div className="refer-icon mt-2 mb-3"> */}
                 <div className="card shadow m-0 rounded-lg">
                   <div className="card-body accessAlarm">
-                    <RecordVoiceOverIcon fontsize="large" />
+                    <RecordVoiceOverIcon fontSize="large" />
                   </div>
                 </div>
                 {/* </div> */}

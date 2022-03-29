@@ -3,7 +3,10 @@ import React from "react";
 import { useState, createContext } from "react";
 
 // Components
-import HeaderHome from "../../../components/Headers/Header";
+import HeaderHome, {
+  CHAINS,
+  SUPPORTED_NETWORKS,
+} from "../../../components/Headers/Header";
 import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
 
 // Material UI
@@ -16,6 +19,25 @@ import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/stakingStyles.css";
 import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
 import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
+
+// Casper SDK
+import {
+  CasperServiceByJsonRPC,
+  CLByteArray,
+  CLPublicKey,
+  CLValueBuilder,
+  RuntimeArgs,
+} from "casper-js-sdk";
+import { ROUTER_PACKAGE_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
+import { createRecipientAddress } from "../../../components/blockchain/RecipientAddress/RecipientAddress";
+import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
+import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
+import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
+import { putdeploy } from "../../../components/blockchain/PutDeploy/PutDeploy";
+import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
+import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
+import { useSnackbar } from "notistack";
+import Torus from "@toruslabs/casper-embed";
 
 // Content
 
@@ -45,6 +67,119 @@ function Staking() {
     setOpenStakingCSPRModal(true);
   };
   let [torus, setTorus] = useState();
+
+  // Handlers
+  const [openSigning, setOpenSigning] = useState(false);
+  const handleCloseSigning = () => {
+    setOpenSigning(false);
+  };
+  const handleShowSigning = () => {
+    setOpenSigning(true);
+  };
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  // wiseBalanceAgainstUser
+
+  const createWiseStake = () => {};
+  const createCsprStake = () => {};
+
+  async function createStakeMakeDeploy(
+    stakingAmount,
+    stakingDuration,
+    referralAddress,
+    isCspr
+  ) {
+    handleShowSigning();
+    console.log("contractHash");
+    const publicKeyHex = activePublicKey;
+    if (
+      publicKeyHex !== null &&
+      publicKeyHex !== "null" &&
+      publicKeyHex !== undefined
+    ) {
+      const publicKey = CLPublicKey.fromHex(publicKeyHex);
+      const spender = ROUTER_PACKAGE_HASH;
+      const spenderByteArray = new CLByteArray(
+        Uint8Array.from(Buffer.from(spender, "hex"))
+      );
+      const paymentAmount = 5000000000;
+      try {
+        const runtimeArgs = RuntimeArgs.fromMap({
+          spender: createRecipientAddress(spenderByteArray),
+          // amount: CLValueBuilder.u256(convertToStr(amount)),
+        });
+        let contractHashAsByteArray = Uint8Array
+          .from
+          // Buffer.from(contractHash.slice(5), "hex")
+          ();
+        let entryPoint = !isCspr ? "createWiseStake" : "createCsprStake";
+
+        // Set contract installation deploy (unsigned).
+        let deploy = await makeDeploy(
+          publicKey,
+          contractHashAsByteArray,
+          entryPoint,
+          runtimeArgs,
+          paymentAmount
+        );
+        console.log("make deploy: ", deploy);
+        try {
+          if (selectedWallet === "Casper") {
+            let signedDeploy = await signdeploywithcaspersigner(
+              deploy,
+              publicKeyHex
+            );
+            let result = await putdeploy(signedDeploy, enqueueSnackbar);
+            console.log("result", result);
+          } else {
+            // let Torus = new Torus();
+            torus = new Torus();
+            console.log("torus", torus);
+            await torus.init({
+              buildEnv: "testing",
+              showTorusButton: true,
+              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+            });
+            console.log("Torus123", torus);
+            console.log("torus", torus.provider);
+            const casperService = new CasperServiceByJsonRPC(torus?.provider);
+            const deployRes = await casperService.deploy(deploy);
+            console.log("deployRes", deployRes.deploy_hash);
+            console.log(
+              `... Contract installation deployHash: ${deployRes.deploy_hash}`
+            );
+            let result = await getDeploy(
+              NODE_ADDRESS,
+              deployRes.deploy_hash,
+              enqueueSnackbar
+            );
+            console.log(
+              `... Contract installed successfully.`,
+              JSON.parse(JSON.stringify(result))
+            );
+            console.log("result", result);
+          }
+          // console.log('result', result);
+          handleCloseSigning();
+          let variant = "success";
+          enqueueSnackbar("Approved Successfully", { variant });
+        } catch {
+          handleCloseSigning();
+          let variant = "Error";
+          enqueueSnackbar("Unable to Approve", { variant });
+        }
+      } catch {
+        handleCloseSigning();
+        let variant = "Error";
+        enqueueSnackbar("Input values are too large", { variant });
+      }
+    } else {
+      handleCloseSigning();
+      let variant = "error";
+      enqueueSnackbar("Connect to Casper Signer Please", { variant });
+    }
+  }
 
   return (
     <div>
