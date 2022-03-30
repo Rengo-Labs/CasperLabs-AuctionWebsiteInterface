@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 // Components
 import TableDefault from "../DefaultContent/TableDefault";
@@ -24,6 +24,7 @@ import "../../assets/css/bootstrap.min.css";
 
 // Custom CSS
 import "../../assets/css/stakingTables.css";
+import {acKey} from '../../../index';
 
 
 
@@ -44,6 +45,10 @@ const rows = [
 
 
 function WiseStakingTable(props) {
+
+  const key = useContext(acKey);
+  console.log(key);
+
   const [stakes, setStakes] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -115,13 +120,13 @@ const [ifkey, setIfkey] = useState(0);
               <TableCell align="right">{row.carbs}</TableCell>
               <TableCell align="right">{row.protein}</TableCell>
             </TableRow>
-          ))}  */}{activePublicKey=== null? (null) : (props.stake)}
+          ))}  */}{key === null? (null) : (props.stake)}
 
           
               </TableBody>
             </Table>
            
-            {props.stake.length !== 0 && activePublicKey!==null ? null : (
+            {props.stake.length !== 0 && key!==null ? null : (
               <div className="m-auto w-100">
                 <TableDefault
                   message="You don't have regular stakes at the moment"

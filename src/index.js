@@ -1,4 +1,4 @@
-import React from "react";
+import React, {createContext, useState} from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import * as serviceWorker from "./serviceWorker";
@@ -13,13 +13,27 @@ if (process.env.REACT_APP_BACKEND_SERVER_ADDRESS)
   axios.defaults.baseURL = `${process.env.REACT_APP_BACKEND_SERVER_ADDRESS}`;
 // else axios.defaults.baseURL = `http://localhost:3000`;
 else axios.defaults.baseURL = `https://wise-graphql-backend.herokuapp.com/`;
+export const mainKey = createContext();
+export const acKey = createContext()
 
-ReactDOM.render(<App />, document.getElementById("root"));
 
+const [k, setk] = useState(false);
+
+ReactDOM.render(
+  
+  <mainKey.Provider value={{k,setk}}>
+  <acKey.Provider value={k}>
+    <App />
+  </acKey.Provider>
+  </mainKey.Provider>
+  , document.getElementById("root"));
+  // export {acKey};
+  // export {mainKey};
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
 
 // import React from "react";
 // import ReactDOM from "react-dom";

@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from 'axios';
 
 // Material UI
@@ -53,6 +53,7 @@ import{
 } from "../Headers/Header";
 import { getDeploy } from "../blockchain/GetDeploy/GetDeploy";
 import { NODE_ADDRESS } from "../blockchain/NodeAddress/NodeAddress";
+import {acKey} from '../../../index';
 
 
 
@@ -93,6 +94,9 @@ function a11yProps(index) {
 }
 
 function WiseStakingTabs() {
+
+  const key = useContext(acKey);
+
   const [value, setValue] = React.useState(0);
   const [stakes, setStakes] = React.useState([]);
 
@@ -144,7 +148,7 @@ function WiseStakingTabs() {
       });
 
   
-}, []);
+}, [activePublicKey]);
 
 
 
@@ -165,11 +169,14 @@ async function unstakeMakeDeploy(stakeData) {
       Uint8Array.from(Buffer.from(spender, "hex"))
     );
     const paymentAmount = 5000000000;
-    //try {
+    try {
+      console.log(stakeData);
       const runtimeArgs = RuntimeArgs.fromMap({
         // spender: createRecipientAddress(spenderByteArray),
         // amount: CLValueBuilder.u256(convertToStr(amount)),
-        stake_id : CLValueBuilder.string(stakeData.stake_id)
+        stake_id : CLValueBuilder.string(stakeData.id)
+
+        
       });
 
       let contractHashAsByteArray = Uint8Array.from(
@@ -186,7 +193,7 @@ async function unstakeMakeDeploy(stakeData) {
       );
       console.log("make deploy: ", deploy);
       console.log(selectedWallet);
-      //try {
+      try {
         if (selectedWallet === "Casper") {
           let signedDeploy = await signdeploywithcaspersigner(
             deploy,
@@ -195,7 +202,6 @@ async function unstakeMakeDeploy(stakeData) {
           let result = await putdeploy(signedDeploy, enqueueSnackbar);
           console.log("result", result);
         } else {
-          // let Torus = new Torus();
           torus = new Torus();
           console.log("torus", torus);
           await torus.init({
@@ -231,16 +237,16 @@ async function unstakeMakeDeploy(stakeData) {
         handleCloseSigning();
         let variant = "success";
         enqueueSnackbar("unstaked Succesfully", { variant });
-      // } catch {
-      //   handleCloseSigning();
-      //   let variant = "Error";
-      //   enqueueSnackbar("Unable to Unstake", { variant });
-      // }
-    // } catch {
-    //   handleCloseSigning();
-    //   let variant = "Error";
-    //   enqueueSnackbar("Input values are too large", { variant });
-    // }
+      } catch {
+        handleCloseSigning();
+        let variant = "Error";
+        enqueueSnackbar("Unable to Unstake", { variant });
+      }
+    } catch {
+      handleCloseSigning();
+      let variant = "Error";
+      enqueueSnackbar("Input values are too large", { variant });
+    }
   } else {
     handleCloseSigning();
     let variant = "error";
@@ -256,13 +262,13 @@ const stake = stakeData.map((stakeData,index)=>{
             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
           >
             <TableCell>
-              {stakeData.cmShares}
+              {stakeData.createdAt}
             </TableCell>
-            <TableCell>{stakeData.cmShares}</TableCell>
-            <TableCell >{stakeData.cmShares}</TableCell>
-            <TableCell >{stakeData.cmShares}</TableCell>
-            <TableCell >{stakeData.cmShares}</TableCell>
-            <TableCell >{stakeData.cmShares}</TableCell>
+            <TableCell>{stakeData.lockDays}</TableCell>
+            <TableCell >{stakeData.lockDays}</TableCell>
+            <TableCell >{stakeData.id}</TableCell>
+            <TableCell >{stakeData.principal}</TableCell>
+            <TableCell >{stakeData.reward}</TableCell>
            <TableCell ><button onClick={()=>unstakeMakeDeploy(stakeData)} className="btn">Unstake</button></TableCell>
           </TableRow>
   )
@@ -315,7 +321,7 @@ const stake = stakeData.map((stakeData,index)=>{
         </StyledEngineProvider>
       </Box>
       <TabPanel value={value} index={0}>
-        {stake.length !== 0 && activePublicKey!==null ? (
+        {stake.length !== 0 && key!==null ? (
           <div className="row no-gutters buttonsWrapper">
             <WiseStakingTableButtons
               btnContent={"Create Regular Stake (WISE)"}

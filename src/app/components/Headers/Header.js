@@ -2,7 +2,7 @@ import Torus from "@toruslabs/casper-embed";
 import { Signer } from "casper-js-sdk";
 import Cookies from "js-cookie";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../../assets/css/bootstrap.min.css";
@@ -11,6 +11,9 @@ import Logo from "../../assets/img/Logo.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import WalletModal from "../Modals/WalletModal";
+import {mainKey } from "../../../index";
+
+
 
 export const CHAINS = {
   CASPER_MAINNET: "casper",
@@ -43,13 +46,19 @@ export const SUPPORTED_NETWORKS = {
 let torus = null;
 console.log("torus", torus);
 
+
+
 function HeaderHome(props) {
+
+  const {k, setk} = useContext(mainKey);
+
   const { enqueueSnackbar } = useSnackbar();
   let [menuOpenedClass, setMenuOpenedClass] = useState();
   let [signerLocked, setSignerLocked] = useState();
   let [signerConnected, setSignerConnected] = useState(false);
   let [isLoading, setIsLoading] = useState(false);
   let [, setAccount] = useState("");
+  const [keyContext, setKeyContext] = useState(false);
 
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const handleCloseWalletModal = () => {
@@ -145,6 +154,7 @@ function HeaderHome(props) {
       props.setActivePublicKey((loginaccs || [])[0]);
       setAccount((loginaccs || [])[0] || "");
       handleCloseWalletModal();
+      setk(true);
     } catch (error) {
       console.error(error);
       await torus?.clearInit();
@@ -423,6 +433,7 @@ function HeaderHome(props) {
               </a>
             </li>
             {/* Men at Work */}
+            
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
@@ -432,6 +443,7 @@ function HeaderHome(props) {
                 <span style={selectedNavStyle.Staking}>Wise Staking</span>
               </Link>
             </li>
+           
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
