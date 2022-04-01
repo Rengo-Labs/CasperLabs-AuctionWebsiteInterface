@@ -30,7 +30,7 @@ import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import {
   AccessRights,
@@ -43,8 +43,10 @@ import {
   RuntimeArgs,
 } from "casper-js-sdk";
 import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
+import { usePublicKey } from "../../containers/App/Application";
 
 function StakingWISEModal(props) {
+  const publicKey = useContext(usePublicKey);
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
   const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState();
@@ -56,27 +58,36 @@ function StakingWISEModal(props) {
   const [addyOpen, setAddyOpen] = useState(false);
   const [referrer, setReferrer] = useState();
   const [referrerAddress, setReferrerAddress] = useState();
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
+  const [referrerCheck, setReferrerCheck] = useState(false);
+  const [daysCheck, setDaysCheck] = useState(false);
+  const [amountCheck, setAmountCheck] = useState(false);
+  const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
   // -------------------- LIFE CYCLE METHODS --------------------
-
   useEffect(() => {
-    axios
-      .post("/wiseBalanceAgainstUser", {
-        contractHash: WISE_CONTRACT_HASH,
-        user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
-      })
-      .then((res) => {
-        console.log("wiseBalanceAgainstUser", res);
-        // userBalance = res.data.balance;
-        setwiseBalanceAgainstUser(res.data.balance);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
+    let cancel = false;
+    publicKey &&
+      axios
+        .post("/wiseBalanceAgainstUser", {
+          contractHash: WISE_CONTRACT_HASH,
+          user: CLPublicKey.fromHex(publicKey).toAccountHashStr(),
+        })
+        .then((res) => {
+          if (cancel) return;
+          console.log(
+            "wiseBalanceAgainstUser type: ",
+            typeof parseInt(res.data.balance)
+          );
+          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+        });
+
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -85,7 +96,7 @@ function StakingWISEModal(props) {
         stakerId: "123",
       })
       .then((res) => {
-        console.log("Referer: ", res.data.stakesData[0].referrer);
+        // console.log("Referer: ", res.data.stakesData[0].referrer);
         setReferrer(res.data.stakesData[0].referrer);
       })
       .catch((error) => {
@@ -93,6 +104,12 @@ function StakingWISEModal(props) {
         console.log(error.response);
       });
   }, []);
+
+  useEffect(() => {
+    if (amountCheck && daysCheck && referrerCheck) {
+      setRenderButtonInactive(false);
+    }
+  }, [amountCheck, daysCheck, referrerCheck]);
 
   // -------------------- EVENT HANDLERS --------------------
 
@@ -115,6 +132,7 @@ function StakingWISEModal(props) {
     let value = event.target.value;
     setBalance(value);
     setPercentagedBalance((wiseBalanceAgainstUser * value) / 100);
+    setAmountCheck(true);
   };
 
   const handleBalanceClose = () => {
@@ -128,6 +146,7 @@ function StakingWISEModal(props) {
   const handleDaysChange = (event) => {
     setYear(event.target.value);
     setDays(event.target.value * 365);
+    setDaysCheck(true);
   };
 
   const handleDaysClose = () => {
@@ -141,6 +160,7 @@ function StakingWISEModal(props) {
   const handleAddyChange = (event) => {
     setAddy(event.target.value);
     setReferrerAddress(referrer);
+    setReferrerCheck(true);
   };
 
   const handleAddyClose = () => {
@@ -290,7 +310,7 @@ function StakingWISEModal(props) {
                           id="outlined-adornment-amount"
                           value={referrerAddress}
                           // onChange={handleChange('amount')}
-                          placeholder="hash-000000000000...000000000000"
+                          placeholder="account-hash-000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
                               <RecordVoiceOverOutlinedIcon />
@@ -346,15 +366,34 @@ function StakingWISEModal(props) {
                     </Typography>
                   </div>
                   <div className="row">
-                    <Button
-                      style={{ marginBottom: "20px" }}
-                      variant="primary"
-                      // disabled
-                      block
-                      size="lg"
-                    >
-                      Create Stake
-                    </Button>
+                    {renderButtonInactive ? (
+                      <Button
+                        style={{ marginBottom: "20px" }}
+                        variant="primary"
+                        disabled
+                        block
+                        size="lg"
+                      >
+                        Create Stake
+                      </Button>
+                    ) : (
+                      <Button
+                        style={{ marginBottom: "20px" }}
+                        variant="primary"
+                        block
+                        size="lg"
+                        onClick={() => {
+                          props.createStakeMakeDeploy(
+                            percentagedBalance,
+                            days,
+                            referrerAddress,
+                            false
+                          );
+                        }}
+                      >
+                        Create Stake
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="col-md-12 col-lg-6">

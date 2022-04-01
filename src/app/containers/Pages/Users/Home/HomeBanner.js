@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import HomeCards from "../../../../components/Cards/HomeCards";
-
+import usePublicKey from "../../../App/Application";
 
 // Material UI Icons
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 function HomeBanner() {
+  const publicKey = useContext(usePublicKey);
   let history = useHistory();
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
 
   return (
     <section className="section section-search">
       <div className="container-fluid">
         <div className="banner-wrapper" style={{ paddingTop: "100px" }}>
           <div className="banner-header text-center">
-            <h1 style={{ color: "white" }}>Welcome, {activePublicKey ? (activePublicKey.slice(0, 10) + "...") : ("Visitor")}</h1>
+            <h1 style={{ color: "white" }}>
+              Welcome, {publicKey ? publicKey.slice(0, 10) + "..." : "Visitor"}
+            </h1>
             <p style={{ color: "white" }}>
               WISE is an asset-backed cryptocurrency designed to be a highly
               secure store of value. Additionally, WISE staking allows you to
@@ -178,7 +178,6 @@ function HomeBanner() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>

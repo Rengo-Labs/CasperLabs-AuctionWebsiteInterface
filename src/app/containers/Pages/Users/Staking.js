@@ -1,6 +1,6 @@
 // React
 import React from "react";
-import { useState, createContext } from "react";
+import { useState, createContext, useContext } from "react";
 
 // Components
 import HeaderHome, {
@@ -8,6 +8,7 @@ import HeaderHome, {
   SUPPORTED_NETWORKS,
 } from "../../../components/Headers/Header";
 import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
+import { usePublicKey } from "../../App/Application";
 
 // Material UI
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
@@ -22,13 +23,18 @@ import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 
 // Casper SDK
 import {
+  AccessRights,
   CasperServiceByJsonRPC,
   CLByteArray,
+  CLKey,
   CLPublicKey,
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
-import { ROUTER_PACKAGE_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
+import {
+  ROUTER_PACKAGE_HASH,
+  WISE_CONTRACT_HASH,
+} from "../../../components/blockchain/AccountHashes/Addresses";
 import { createRecipientAddress } from "../../../components/blockchain/RecipientAddress/RecipientAddress";
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
@@ -46,20 +52,24 @@ const handleStakingCSPRModal = createContext();
 
 // Component Function
 function Staking() {
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
+  // States
+  const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
+  const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
+  const [openSigning, setOpenSigning] = useState(false);
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
-  const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
+  const publicKey = useContext(usePublicKey);
+
+  // Handlers
+
   const handleCloseStakingWISEModal = () => {
     setOpenStakingWISEModal(false);
   };
   const handleShowStakingWISEModal = () => {
     setOpenStakingWISEModal(true);
   };
-  const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
+
   const handleCloseStakingCSPRModal = () => {
     setOpenStakingCSPRModal(false);
   };
@@ -68,8 +78,6 @@ function Staking() {
   };
   let [torus, setTorus] = useState();
 
-  // Handlers
-  const [openSigning, setOpenSigning] = useState(false);
   const handleCloseSigning = () => {
     setOpenSigning(false);
   };
@@ -79,41 +87,46 @@ function Staking() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  // wiseBalanceAgainstUser
-
-  const createWiseStake = () => {};
-  const createCsprStake = () => {};
-
   async function createStakeMakeDeploy(
     stakingAmount,
     stakingDuration,
     referralAddress,
-    isCspr
+    isCspr,
+    mainPurse
   ) {
     handleShowSigning();
     console.log("contractHash");
-    const publicKeyHex = activePublicKey;
+    const publicKeyHex = publicKey;
     if (
       publicKeyHex !== null &&
       publicKeyHex !== "null" &&
       publicKeyHex !== undefined
     ) {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
-      const spender = ROUTER_PACKAGE_HASH;
-      const spenderByteArray = new CLByteArray(
-        Uint8Array.from(Buffer.from(spender, "hex"))
-      );
       const paymentAmount = 5000000000;
+      console.log("checking staking amount: ", mainPurse);
       try {
-        const runtimeArgs = RuntimeArgs.fromMap({
-          spender: createRecipientAddress(spenderByteArray),
-          // amount: CLValueBuilder.u256(convertToStr(amount)),
-        });
-        let contractHashAsByteArray = Uint8Array
-          .from
-          // Buffer.from(contractHash.slice(5), "hex")
-          ();
-        let entryPoint = !isCspr ? "createWiseStake" : "createCsprStake";
+        const runtimeArgs = isCspr
+          ? RuntimeArgs.fromMap({
+              amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
+              lock_days: CLValueBuilder.u64(stakingDuration),
+              referrer: new CLKey(publicKey),
+              purse: CLValueBuilder.uref(
+                Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+                AccessRights.READ_ADD_WRITE
+              ),
+            })
+          : RuntimeArgs.fromMap({
+              staked_amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
+              lock_days: CLValueBuilder.u64(stakingDuration),
+              referrer: new CLKey(publicKey),
+            });
+        let contractHashAsByteArray = Uint8Array.from(
+          Buffer.from(WISE_CONTRACT_HASH, "hex")
+        );
+        let entryPoint = !isCspr
+          ? "create_stake_Jsclient"
+          : "create_stake_with_cspr_Jsclient";
 
         // Set contract installation deploy (unsigned).
         let deploy = await makeDeploy(
@@ -187,7 +200,7 @@ function Staking() {
       <div className="main-wrapper">
         <div className="home-section home-full-height">
           <HeaderHome
-            setActivePublicKey={setActivePublicKey}
+            // setActivePublicKey={setActivePublicKey}
             setSelectedWallet={setSelectedWallet}
             selectedWallet={selectedWallet}
             setTorus={setTorus}
@@ -230,12 +243,12 @@ function Staking() {
       <StakingWISEModal
         show={openStakingWISEModal}
         handleClose={handleCloseStakingWISEModal}
-        activePublicKey={activePublicKey}
+        createStakeMakeDeploy={createStakeMakeDeploy}
       />
       <StakingCSPRModal
         show={openStakingCSPRModal}
         handleClose={handleCloseStakingCSPRModal}
-        activePublicKey={activePublicKey}
+        createStakeMakeDeploy={createStakeMakeDeploy}
       />
     </div>
   );

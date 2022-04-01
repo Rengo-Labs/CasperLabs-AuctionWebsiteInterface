@@ -2,7 +2,7 @@ import Torus from "@toruslabs/casper-embed";
 import { Signer } from "casper-js-sdk";
 import Cookies from "js-cookie";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../../assets/css/bootstrap.min.css";
@@ -11,6 +11,7 @@ import Logo from "../../assets/img/Logo.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import WalletModal from "../Modals/WalletModal";
+import { setPublicKey } from "../../containers/App/Application";
 
 export const CHAINS = {
   CASPER_MAINNET: "casper",
@@ -41,7 +42,7 @@ export const SUPPORTED_NETWORKS = {
 };
 
 let torus = null;
-console.log("torus", torus);
+// console.log("torus", torus);
 
 function HeaderHome(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -50,7 +51,7 @@ function HeaderHome(props) {
   let [signerConnected, setSignerConnected] = useState(false);
   let [isLoading, setIsLoading] = useState(false);
   let [, setAccount] = useState("");
-
+  const plantPublicKey = useContext(setPublicKey);
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const handleCloseWalletModal = () => {
     setOpenWalletModal(false);
@@ -59,10 +60,10 @@ function HeaderHome(props) {
     setOpenWalletModal(true);
   };
   useEffect(() => {
-    console.log(
-      "localStorage.getItem(selectedWallet)",
-      localStorage.getItem("selectedWallet")
-    );
+    // console.log(
+    //   "localStorage.getItem(selectedWallet)",
+    //   localStorage.getItem("selectedWallet")
+    // );
     if (
       props.selectedWallet === "Casper" ||
       localStorage.getItem("selectedWallet") === "Casper"
@@ -76,53 +77,57 @@ function HeaderHome(props) {
         }
       }, 100);
       if (signerConnected) {
+        console.log("signer is connected!");
         handleCloseWalletModal();
         let res = getActiveKeyFromSigner();
+        // console.log("address res: ", res);
         localStorage.setItem("Address", res);
-        props.setActivePublicKey(res);
+        plantPublicKey(res);
       }
       window.addEventListener("signer:connected", (msg) => {
         handleCloseWalletModal();
+        console.log("the message is: ", msg);
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(true);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
+        console.log("publick key in header to find: ", msg.detail.activeKey);
       });
       window.addEventListener("signer:disconnected", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(false);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:tabUpdated", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:activeKeyChanged", (msg) => {
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:locked", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:unlocked", (msg) => {
         handleCloseWalletModal();
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:initialState", (msg) => {
-        console.log("Initial State: ", msg.detail);
+        // console.log("Initial State: ", msg.detail);
         handleCloseWalletModal();
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        props.setActivePublicKey(msg.detail.activeKey);
+        plantPublicKey(msg.detail.activeKey);
       });
     }
     // eslint-disable-next-line
@@ -132,7 +137,7 @@ function HeaderHome(props) {
     try {
       setIsLoading(true);
       torus = new Torus();
-      console.log("torus", torus);
+      // console.log("torus", torus);
       await torus.init({
         buildEnv: "testing",
         showTorusButton: true,
@@ -142,7 +147,7 @@ function HeaderHome(props) {
       props.setTorus(torus);
       localStorage.setItem("torus", JSON.stringify(torus));
       localStorage.setItem("Address", (loginaccs || [])[0]);
-      props.setActivePublicKey((loginaccs || [])[0]);
+      plantPublicKey((loginaccs || [])[0]);
       setAccount((loginaccs || [])[0] || "");
       handleCloseWalletModal();
     } catch (error) {
@@ -172,7 +177,7 @@ function HeaderHome(props) {
 
   const logout = async () => {
     try {
-      console.log("logout", torus);
+      // console.log("logout", torus);
       await torus?.logout();
       setAccount("");
       props.setTorus("");
@@ -181,7 +186,7 @@ function HeaderHome(props) {
       localStorage.removeItem("selectedWallet");
       window.location.reload();
     } catch (error) {
-      console.log("logout error", error);
+      // console.log("logout error", error);
       let variant = "Error";
       enqueueSnackbar("Unable to Logout", { variant });
     }
@@ -235,11 +240,11 @@ function HeaderHome(props) {
   };
 
   let Disconnect = (e) => {
-    console.log("Disconnect");
+    // console.log("Disconnect");
     Cookies.remove("Authorization");
     localStorage.removeItem("Address");
     localStorage.removeItem("selectedWallet");
-    props.setActivePublicKey("");
+    plantPublicKey("");
     props.setSelectedWallet();
     try {
       Signer.disconnectFromSite();

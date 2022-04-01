@@ -47,9 +47,10 @@ import {
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
+import { usePublicKey } from "../../App/Application";
 import { useSnackbar } from "notistack";
 import numeral from "numeral";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import { Col, Row } from "react-bootstrap";
 import Spinner from "react-bootstrap/Spinner";
 import { Some } from "ts-results";
@@ -74,10 +75,7 @@ import HeaderHome, {
   CHAINS,
   SUPPORTED_NETWORKS,
 } from "../../../components/Headers/Header";
-import SigningModal from "../../../components/Modals/SigningModal";
-import SlippageModal from "../../../components/Modals/SlippageModal";
-import TokenAModal from "../../../components/Modals/TokenAModal";
-import TokenBModal from "../../../components/Modals/TokenBModal";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -86,13 +84,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const regex = /^\s*-?(\d+(\.\d{1,9})?|\.\d{1,9})\s*$/;
-// let RecipientType = CLPublicKey | CLAccountHash | CLByteArray;
+
 function Refer(props) {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
@@ -118,6 +113,8 @@ function Refer(props) {
   const [reserve0, setReserve0] = useState(1);
   const [reserve1, setReserve1] = useState(1);
   const [openSlippage, setOpenSlippage] = useState(false);
+  const publicKey = useContext(usePublicKey);
+
   const handleCloseSlippage = () => {
     setOpenSlippage(false);
   };
@@ -186,7 +183,7 @@ function Refer(props) {
           client
             .getBlockState(
               stateRootHash,
-              CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+              CLPublicKey.fromHex(publicKey).toAccountHashStr(),
               []
             )
             .then((result) => {
@@ -212,7 +209,7 @@ function Refer(props) {
           let param = {
             contractHash: holdArr[i].address.slice(5),
             user: Buffer.from(
-              CLPublicKey.fromHex(activePublicKey).toAccountHash()
+              CLPublicKey.fromHex(publicKey).toAccountHash()
             ).toString("hex"),
           };
           await axios
@@ -238,16 +235,12 @@ function Refer(props) {
         console.log(error);
         console.log(error.response);
       });
-  }, [activePublicKey]);
+  }, [publicKey]);
   useEffect(() => {
-    if (
-      activePublicKey !== "null" &&
-      activePublicKey !== null &&
-      activePublicKey !== undefined
-    ) {
+    if (publicKey !== "null" && publicKey !== null && publicKey !== undefined) {
       getTokenData();
     }
-  }, [getTokenData, activePublicKey]);
+  }, [getTokenData, publicKey]);
   useEffect(() => {
     if (tokenA && tokenB) {
       if (tokenA.name === tokenB.name) {
@@ -415,7 +408,7 @@ function Refer(props) {
     function getUserReservers(pair, rat0, rat1) {
       let param = {
         user: Buffer.from(
-          CLPublicKey.fromHex(activePublicKey).toAccountHash()
+          CLPublicKey.fromHex(publicKey).toAccountHash()
         ).toString("hex"),
       };
       axios
@@ -475,15 +468,15 @@ function Refer(props) {
     function liquiditySetter(pair) {
       let param = {
         to: Buffer.from(
-          CLPublicKey.fromHex(activePublicKey).toAccountHash()
+          CLPublicKey.fromHex(publicKey).toAccountHash()
         ).toString("hex"),
         pairid: pair.id,
       };
       console.log(
         "await Signer.getSelectedPublicKeyBase64()",
-        Buffer.from(
-          CLPublicKey.fromHex(activePublicKey).toAccountHash()
-        ).toString("hex")
+        Buffer.from(CLPublicKey.fromHex(publicKey).toAccountHash()).toString(
+          "hex"
+        )
       );
       axios
         .post("/liquidityagainstuserandpair", param)
@@ -497,12 +490,12 @@ function Refer(props) {
           console.log(error.response);
         });
     }
-  }, [activePublicKey, tokenA, tokenB]);
+  }, [publicKey, tokenA, tokenB]);
 
   async function approveMakeDeploy(contractHash, amount, tokenApproved) {
     handleShowSigning();
     console.log("contractHash", contractHash);
-    const publicKeyHex = activePublicKey;
+    const publicKeyHex = publicKey;
     if (
       publicKeyHex !== null &&
       publicKeyHex !== "null" &&
@@ -597,7 +590,7 @@ function Refer(props) {
     let balanceParam = {
       contractHash: tokenA.address.slice(5),
       user: Buffer.from(
-        CLPublicKey.fromHex(activePublicKey).toAccountHash()
+        CLPublicKey.fromHex(publicKey).toAccountHash()
       ).toString("hex"),
     };
     axios
@@ -614,7 +607,7 @@ function Refer(props) {
 
     let allowanceParam = {
       contractHash: tokenA.address.slice(5),
-      owner: CLPublicKey.fromHex(activePublicKey).toAccountHashStr().slice(13),
+      owner: CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13),
       spender: ROUTER_PACKAGE_HASH,
     };
     console.log("allowanceParam0", allowanceParam);
@@ -629,7 +622,7 @@ function Refer(props) {
         console.log(error);
         console.log(error.response);
       });
-  }, [activePublicKey, tokenA]);
+  }, [publicKey, tokenA]);
   const getCurrencyBalance = useCallback(() => {
     const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
     getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
@@ -637,7 +630,7 @@ function Refer(props) {
       client
         .getBlockState(
           stateRootHash,
-          CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+          CLPublicKey.fromHex(publicKey).toAccountHashStr(),
           []
         )
         .then((result) => {
@@ -656,28 +649,28 @@ function Refer(props) {
           }
         });
     });
-  }, [activePublicKey]);
+  }, [publicKey]);
   useEffect(() => {
-    if (tokenA && tokenA.name !== "Casper" && activePublicKey) {
+    if (tokenA && tokenA.name !== "Casper" && publicKey) {
       getTokenBalance();
     }
     if (
       tokenA &&
       tokenA.name === "Casper" &&
-      activePublicKey !== "null" &&
-      activePublicKey !== null &&
-      activePublicKey !== undefined
+      publicKey !== "null" &&
+      publicKey !== null &&
+      publicKey !== undefined
     ) {
       getCurrencyBalance();
     }
-  }, [getTokenBalance, getCurrencyBalance, activePublicKey, tokenA]);
+  }, [getTokenBalance, getCurrencyBalance, publicKey, tokenA]);
 
   useEffect(() => {
-    if (tokenB && tokenB.name !== "Casper" && activePublicKey) {
+    if (tokenB && tokenB.name !== "Casper" && publicKey) {
       let balanceParam = {
         contractHash: tokenB.address.slice(5),
         user: Buffer.from(
-          CLPublicKey.fromHex(activePublicKey).toAccountHash()
+          CLPublicKey.fromHex(publicKey).toAccountHash()
         ).toString("hex"),
       };
       axios
@@ -694,9 +687,7 @@ function Refer(props) {
 
       let allowanceParam = {
         contractHash: tokenB.address.slice(5),
-        owner: CLPublicKey.fromHex(activePublicKey)
-          .toAccountHashStr()
-          .slice(13),
+        owner: CLPublicKey.fromHex(publicKey).toAccountHashStr().slice(13),
         spender: ROUTER_PACKAGE_HASH,
       };
       console.log("allowanceParam0", allowanceParam);
@@ -715,9 +706,9 @@ function Refer(props) {
     if (
       tokenB &&
       tokenB.name === "Casper" &&
-      activePublicKey !== "null" &&
-      activePublicKey !== null &&
-      activePublicKey !== undefined
+      publicKey !== "null" &&
+      publicKey !== null &&
+      publicKey !== undefined
     ) {
       const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
       getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
@@ -725,7 +716,7 @@ function Refer(props) {
         client
           .getBlockState(
             stateRootHash,
-            CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+            CLPublicKey.fromHex(publicKey).toAccountHashStr(),
             []
           )
           .then((result) => {
@@ -745,25 +736,21 @@ function Refer(props) {
           });
       });
     }
-  }, [activePublicKey, tokenB]);
+  }, [publicKey, tokenB]);
 
   useEffect(() => {
-    if (
-      activePublicKey !== "null" &&
-      activePublicKey !== null &&
-      activePublicKey !== undefined
-    ) {
+    if (publicKey !== "null" && publicKey !== null && publicKey !== undefined) {
       const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
       getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
         console.log("stateRootHash", stateRootHash);
         console.log(
-          "CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),",
-          CLPublicKey.fromHex(activePublicKey).toAccountHashStr()
+          "CLPublicKey.fromHex(publicKey).toAccountHashStr(),",
+          CLPublicKey.fromHex(publicKey).toAccountHashStr()
         );
         client
           .getBlockState(
             stateRootHash,
-            CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+            CLPublicKey.fromHex(publicKey).toAccountHashStr(),
             []
           )
           .then((result) => {
@@ -776,11 +763,11 @@ function Refer(props) {
           });
       });
     }
-  }, [activePublicKey]);
+  }, [publicKey]);
   async function addLiquidityMakeDeploy() {
     handleShowSigning();
     setIsLoading(true);
-    const publicKeyHex = activePublicKey;
+    const publicKeyHex = publicKey;
     if (
       publicKeyHex !== null &&
       publicKeyHex !== "null" &&
@@ -1154,7 +1141,6 @@ function Refer(props) {
       <div className="main-wrapper">
         <div className="home-section home-full-height">
           <HeaderHome
-            setActivePublicKey={setActivePublicKey}
             setSelectedWallet={setSelectedWallet}
             selectedWallet={selectedWallet}
             setTorus={setTorus}
@@ -1318,27 +1304,25 @@ function Refer(props) {
                               stakes with minimum duration of 365 days.
                             </p>
 
-                            {activePublicKey === null ? (
+                            {publicKey === null ? (
                               <h4 className="text-center">
                                 {" "}
                                 https://wisetoken.net/?w=YOUR-WALLET-ADDRESS
                               </h4>
                             ) : (
                               <h4 className="text-center">
-                                https://wisetoken.net/?w={activePublicKey}
+                                https://wisetoken.net/?w={publicKey}
                               </h4>
                             )}
                           </Modal.Body>
                           <Modal.Footer>
-                            {activePublicKey === null ? (
+                            {publicKey === null ? (
                               <div className="mx-auto">
                                 <button
                                   disabled
                                   className="btn disabled"
                                   onClick={() => {
-                                    navigator.clipboard.writeText(
-                                      activePublicKey
-                                    );
+                                    navigator.clipboard.writeText(publicKey);
                                   }}
                                 >
                                   Copy Refferal Link
@@ -1350,10 +1334,12 @@ function Refer(props) {
                                   className="tableBtn"
                                   onClick={() => {
                                     navigator.clipboard.writeText(
-                                      "https://wisetoken.net/?w=" +
-                                        activePublicKey
+                                      "https://wisetoken.net/?w=" + publicKey
                                     );
-                                    toast.success("Successfully Copied wallet");
+                                    toast.success(
+                                      "Successfully Copied wallet",
+                                      { id: "copyActivePublicKey" }
+                                    );
                                   }}
                                 >
                                   Copy Refferal Link

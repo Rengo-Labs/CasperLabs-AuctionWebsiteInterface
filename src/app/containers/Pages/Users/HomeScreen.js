@@ -9,9 +9,6 @@ import HomeBanner from "./Home/HomeBanner";
 
 function HomeScreen() {
   // eslint-disable-next-line
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
@@ -21,7 +18,6 @@ function HomeScreen() {
     <div className="main-wrapper">
       <div className="home-section home-full-height">
         <HeaderHome
-          setActivePublicKey={setActivePublicKey}
           setSelectedWallet={setSelectedWallet}
           selectedWallet={selectedWallet}
           setTorus={setTorus}

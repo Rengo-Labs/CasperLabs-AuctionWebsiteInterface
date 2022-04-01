@@ -41,21 +41,19 @@ import {
   RuntimeArgs,
 } from "casper-js-sdk";
 import { getStateRootHash } from "../blockchain/GetStateRootHash/GetStateRootHash";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { type } from "express/lib/response";
+import { usePublicKey } from "../../containers/App/Application";
 
 // -------------------- CONTENT --------------------
 
 function StakingCSPRModal(props) {
-  let [activePublicKey, setActivePublicKey] = useState(
-    localStorage.getItem("Address")
-  );
+  const publicKey = useContext(usePublicKey);
 
   const [year, setYear] = useState("");
   const [days, setDays] = useState("");
   const [daysOpen, setDaysOpen] = useState(false);
-  const [cspr, setCspr] = useState(10);
+  const [cspr, setCspr] = useState();
   const [percentagedCsprBalance, setPercentagedCsprBalance] = useState();
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
@@ -64,48 +62,74 @@ function StakingCSPRModal(props) {
   const [mainPurse, setMainPurse] = useState();
   const [referrer, setReferrer] = useState();
   const [referrerAddress, setReferrerAddress] = useState();
+  const [referrerCheck, setReferrerCheck] = useState(false);
+  const [daysCheck, setDaysCheck] = useState(false);
+  const [amountCheck, setAmountCheck] = useState(false);
+  const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
   const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
+  console.log("casper ", CLPublicKey);
   getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
-    // console.log("stateRootHash", stateRootHash);
-    client
-      .getBlockState(
-        stateRootHash,
-        CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
-        []
-      )
-      .then((result) => {
-        console.log("result of getStateRootHash: ", result);
-        setMainPurse(result.Account.mainPurse);
-        try {
-          const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
-          console.log("Root Hash:", stateRootHash);
-          client
-            .getAccountBalance(stateRootHash, result.Account.mainPurse)
-            .then((result) => {
-              console.log("CSPR balance", result.toString());
-              // setCspr(result.toString());
-            });
-        } catch (error) {
-          console.log("error", error);
-        }
-      });
+    console.log("random identifier ", publicKey);
+    publicKey &&
+      client
+        .getBlockState(stateRootHash, CLPublicKey.fromHex(publicKey), [])
+        .then((result) => {
+          console.log("result of getStateRootHash: ", result);
+          setMainPurse(result.Account.mainPurse);
+          try {
+            const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
+            console.log("Root Hash:", stateRootHash);
+            client
+              .getAccountBalance(stateRootHash, result.Account.mainPurse)
+              .then((result) => {
+                console.log("CSPR balance", result.toString());
+                setCspr(result.toString() / 10 ** 9);
+              });
+          } catch (error) {
+            console.log("error", error);
+          }
+        });
+    console.log("running casper modal");
   });
 
+  // -------------------- LIFE CYCLE METHODS --------------------
+
   useEffect(() => {
+    let cancel = false;
     axios
       .post("/getStakeData", {
         stakerId: "123",
       })
       .then((res) => {
-        console.log("Referer: ", res.data.stakesData[0].referrer);
+        if (cancel) return;
+        // console.log("Referer: ", res.data.stakesData[0].referrer);
         setReferrer(res.data.stakesData[0].referrer);
       })
       .catch((error) => {
         console.log(error);
         console.log(error.response);
       });
+
+    return () => {
+      cancel = true;
+    };
   }, []);
+
+  useEffect(() => {
+    if (amountCheck && daysCheck && referrerCheck) {
+      setRenderButtonInactive(false);
+    }
+  }, [amountCheck, daysCheck, referrerCheck]);
+
+  // -------------------- EVENT HANDLERS --------------------
+
+  const handleBalanceChange = (event) => {
+    let value = event.target.value;
+    setBalance(value);
+    setPercentagedCsprBalance((cspr * value) / 100);
+    setAmountCheck(true);
+  };
 
   const balanceOnChange = (event) => {
     let value = event.target.value;
@@ -122,12 +146,6 @@ function StakingCSPRModal(props) {
     }
   };
 
-  const handleBalanceChange = (event) => {
-    let value = event.target.value;
-    setBalance(value);
-    setPercentagedCsprBalance((cspr * value) / 100);
-  };
-
   const handleBalanceClose = () => {
     setBalanceOpen(false);
   };
@@ -139,6 +157,7 @@ function StakingCSPRModal(props) {
   const handleDaysChange = (event) => {
     setYear(event.target.value);
     setDays(event.target.value * 365);
+    setDaysCheck(true);
   };
 
   const handleDaysClose = () => {
@@ -152,6 +171,7 @@ function StakingCSPRModal(props) {
   const handleAddyChange = (event) => {
     setAddy(event.target.value);
     setReferrerAddress(referrer);
+    setReferrerCheck(true);
   };
 
   const handleAddyClose = () => {
@@ -162,7 +182,7 @@ function StakingCSPRModal(props) {
     setAddyOpen(true);
   };
 
-  // if(typeof referrerAddress !== 'undefined' && typeof )
+  // -------------------- JSX --------------------
 
   return (
     <Modal size="xl" centered show={props.show} onHide={props.handleClose}>
@@ -301,7 +321,7 @@ function StakingCSPRModal(props) {
                           id="outlined-adornment-amount"
                           value={referrerAddress}
                           // onChange={handleChange('amount')}
-                          placeholder="hash-000000000000...000000000000"
+                          placeholder="account-hash-000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
                               <RecordVoiceOverOutlinedIcon />
@@ -357,15 +377,35 @@ function StakingCSPRModal(props) {
                     </Typography>
                   </div>
                   <div className="row">
-                    <Button
-                      style={{ marginBottom: "20px" }}
-                      variant="primary"
-                      disabled
-                      block
-                      size="lg"
-                    >
-                      Create Stake
-                    </Button>
+                    {renderButtonInactive ? (
+                      <Button
+                        style={{ marginBottom: "20px" }}
+                        variant="primary"
+                        disabled
+                        block
+                        size="lg"
+                      >
+                        Create Stake
+                      </Button>
+                    ) : (
+                      <Button
+                        style={{ marginBottom: "20px" }}
+                        variant="primary"
+                        block
+                        size="lg"
+                        onClick={() => {
+                          props.createStakeMakeDeploy(
+                            percentagedCsprBalance,
+                            days,
+                            referrerAddress,
+                            true,
+                            mainPurse
+                          );
+                        }}
+                      >
+                        Create Stake
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="col-md-12 col-lg-6">

@@ -1,5 +1,5 @@
 // React
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 
 // Bootstrap
 import "../../assets/css/bootstrap.min.css";
@@ -12,21 +12,50 @@ import {
   handleStakingWISEModal,
   handleStakingCSPRModal,
 } from "../../containers/Pages/Users/Staking";
+import toast, { Toaster } from "react-hot-toast";
+import { usePublicKey } from "../../containers/App/Application";
+
+// SDK
 
 // Content
 
 // Component Function
 const WiseStakingTableButtons = (props) => {
+  const publicKey = useContext(usePublicKey);
   const wiseModal = useContext(handleStakingWISEModal);
   const csprModal = useContext(handleStakingCSPRModal);
+
+  const connectWallet = () => {
+    toast.error("Please connect your wallet first", {
+      style: {
+        padding: "16px",
+        border: "1px solid rgb(234, 52, 41)",
+        color: "#777",
+        fontSize: "14px",
+      },
+      iconTheme: {
+        primary: "#a60011",
+      },
+      // position: "bottom-center",
+      id: "connectWalletToast",
+    });
+  };
+
   return (
     <div>
       <button
         className="mr-3 tableBtn"
-        onClick={props.cspr === true ? csprModal : wiseModal}
+        onClick={
+          publicKey === null || publicKey === "null"
+            ? connectWallet
+            : props.cspr
+            ? csprModal
+            : wiseModal
+        }
       >
         {props.btnContent}
       </button>
+      <Toaster />
     </div>
   );
 };
