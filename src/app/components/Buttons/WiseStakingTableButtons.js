@@ -13,7 +13,7 @@ import {
   handleStakingCSPRModal,
 } from "../../containers/Pages/Users/Staking";
 import toast, { Toaster } from "react-hot-toast";
-import { usePublicKey } from "../../containers/App/Application";
+import { AppContext } from "../../containers/App/Application";
 
 // SDK
 
@@ -21,7 +21,7 @@ import { usePublicKey } from "../../containers/App/Application";
 
 // Component Function
 const WiseStakingTableButtons = (props) => {
-  const publicKey = useContext(usePublicKey);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
   const wiseModal = useContext(handleStakingWISEModal);
   const csprModal = useContext(handleStakingCSPRModal);
 
@@ -46,7 +46,7 @@ const WiseStakingTableButtons = (props) => {
       <button
         className="mr-3 tableBtn"
         onClick={
-          publicKey === null || publicKey === "null"
+          activePublicKey === null || activePublicKey === "null"
             ? connectWallet
             : props.cspr
             ? csprModal

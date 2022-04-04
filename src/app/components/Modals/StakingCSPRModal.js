@@ -43,18 +43,18 @@ import {
 import { getStateRootHash } from "../blockchain/GetStateRootHash/GetStateRootHash";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { usePublicKey } from "../../containers/App/Application";
+import { AppContext } from "../../containers/App/Application";
 
 // -------------------- CONTENT --------------------
 
 function StakingCSPRModal(props) {
-  const publicKey = useContext(usePublicKey);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
 
   const [year, setYear] = useState("");
   const [days, setDays] = useState("");
   const [daysOpen, setDaysOpen] = useState(false);
   const [cspr, setCspr] = useState();
-  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState();
+  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState(cspr);
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
   const [addy, setAddy] = useState("");
@@ -67,31 +67,41 @@ function StakingCSPRModal(props) {
   const [amountCheck, setAmountCheck] = useState(false);
   const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
-  const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
-  console.log("casper ", CLPublicKey);
-  getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
-    console.log("random identifier ", publicKey);
-    publicKey &&
-      client
-        .getBlockState(stateRootHash, CLPublicKey.fromHex(publicKey), [])
-        .then((result) => {
-          console.log("result of getStateRootHash: ", result);
-          setMainPurse(result.Account.mainPurse);
-          try {
-            const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
-            console.log("Root Hash:", stateRootHash);
-            client
-              .getAccountBalance(stateRootHash, result.Account.mainPurse)
-              .then((result) => {
-                console.log("CSPR balance", result.toString());
-                setCspr(result.toString() / 10 ** 9);
-              });
-          } catch (error) {
+  useEffect(() => {
+    const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
+    if (activePublicKey) {
+      getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
+        console.log("stateRootHash", stateRootHash);
+        client
+          .getBlockState(
+            stateRootHash,
+            CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+            []
+          )
+          .then((result) => {
+            console.log("result", result.Account.mainPurse);
+            try {
+              const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
+              client
+                .getAccountBalance(stateRootHash, result.Account.mainPurse)
+                .then((result) => {
+                  console.log("CSPR balance", result.toString());
+                  setCspr(result.toString() / 10 ** 9);
+                  // CSPR.balance = result.toString();
+                });
+            } catch (error) {
+              // CSPR.balance = 0;
+              setCspr(0);
+              console.log("error", error);
+            }
+          })
+          .catch((error) => {
+            setCspr(0);
             console.log("error", error);
-          }
-        });
-    console.log("running casper modal");
-  });
+          });
+      });
+    }
+  }, [activePublicKey]);
 
   // -------------------- LIFE CYCLE METHODS --------------------
 
@@ -123,11 +133,13 @@ function StakingCSPRModal(props) {
   }, [amountCheck, daysCheck, referrerCheck]);
 
   // -------------------- EVENT HANDLERS --------------------
-
+  console.log("balance before: " + percentagedCsprBalance);
+  console.log("value before: " + balance);
   const handleBalanceChange = (event) => {
     let value = event.target.value;
     setBalance(value);
     setPercentagedCsprBalance((cspr * value) / 100);
+    console.log("checking balance: " + (cspr * value) / 100);
     setAmountCheck(true);
   };
 

@@ -6,8 +6,10 @@ import HomeScreen from "../Pages/Users/HomeScreen";
 import Refer from "../Pages/Users/Refer";
 import Staking from "../Pages/Users/Staking";
 
-const usePublicKey = createContext();
-const setPublicKey = createContext();
+export const AppContext = createContext({
+  activePublicKey: null,
+  setActivePublicKey: (activePublicKey) => {},
+});
 
 function App() {
   let [activePublicKey, setActivePublicKey] = useState(
@@ -26,27 +28,29 @@ function App() {
 
   return (
     <SnackbarProvider maxSnack={3}>
-      <usePublicKey.Provider value={activePublicKey}>
-        <setPublicKey.Provider value={setActivePublicKey}>
-          <BrowserRouter>
-            <Switch>
-              <LoginRegisterRedirectCheck exact path="/" />
-              <LoginRegisterRedirectCheck exact path="/register" />
-              <LoginRegisterRedirectCheck exact path="/marketPlace" />
-              <LoginRegisterRedirectCheck exact path="/admin-login" />
-              <LoginRegisterRedirectCheck exact path="/login" />
+      <AppContext.Provider
+        value={{
+          activePublicKey,
+          setActivePublicKey,
+        }}
+      >
+        <BrowserRouter>
+          <Switch>
+            <LoginRegisterRedirectCheck exact path="/" />
+            <LoginRegisterRedirectCheck exact path="/register" />
+            <LoginRegisterRedirectCheck exact path="/marketPlace" />
+            <LoginRegisterRedirectCheck exact path="/admin-login" />
+            <LoginRegisterRedirectCheck exact path="/login" />
 
-              <Route exact path="/staking" component={Staking} />
-              <Route path="/refer" component={Refer} />
-              {/* <Route path="/tokens" component={Tokens} />
+            <Route exact path="/staking" component={Staking} />
+            <Route path="/refer" component={Refer} />
+            {/* <Route path="/tokens" component={Tokens} />
           <Route path="/pairs" component={Pairs} /> */}
-            </Switch>
-          </BrowserRouter>
-        </setPublicKey.Provider>
-      </usePublicKey.Provider>
+          </Switch>
+        </BrowserRouter>
+      </AppContext.Provider>
     </SnackbarProvider>
   );
 }
 
 export default App;
-export { usePublicKey, setPublicKey };

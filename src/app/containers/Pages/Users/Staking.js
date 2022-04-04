@@ -8,7 +8,7 @@ import HeaderHome, {
   SUPPORTED_NETWORKS,
 } from "../../../components/Headers/Header";
 import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
-import { usePublicKey } from "../../App/Application";
+import { AppContext } from "../../App/Application";
 
 // Material UI
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
@@ -59,7 +59,7 @@ function Staking() {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
-  const publicKey = useContext(usePublicKey);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
 
   // Handlers
 
@@ -96,7 +96,7 @@ function Staking() {
   ) {
     handleShowSigning();
     console.log("contractHash");
-    const publicKeyHex = publicKey;
+    const publicKeyHex = activePublicKey;
     if (
       publicKeyHex !== null &&
       publicKeyHex !== "null" &&
@@ -110,7 +110,7 @@ function Staking() {
           ? RuntimeArgs.fromMap({
               amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
               lock_days: CLValueBuilder.u64(stakingDuration),
-              referrer: new CLKey(publicKey),
+              referrer: new CLKey(activePublicKey),
               purse: CLValueBuilder.uref(
                 Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
                 AccessRights.READ_ADD_WRITE
@@ -119,7 +119,7 @@ function Staking() {
           : RuntimeArgs.fromMap({
               staked_amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
               lock_days: CLValueBuilder.u64(stakingDuration),
-              referrer: new CLKey(publicKey),
+              referrer: new CLKey(activePublicKey),
             });
         let contractHashAsByteArray = Uint8Array.from(
           Buffer.from(WISE_CONTRACT_HASH, "hex")

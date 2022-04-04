@@ -11,7 +11,7 @@ import Logo from "../../assets/img/Logo.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import WalletModal from "../Modals/WalletModal";
-import { setPublicKey } from "../../containers/App/Application";
+import { AppContext } from "../../containers/App/Application";
 
 export const CHAINS = {
   CASPER_MAINNET: "casper",
@@ -51,7 +51,7 @@ function HeaderHome(props) {
   let [signerConnected, setSignerConnected] = useState(false);
   let [isLoading, setIsLoading] = useState(false);
   let [, setAccount] = useState("");
-  const plantPublicKey = useContext(setPublicKey);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
   const [openWalletModal, setOpenWalletModal] = useState(false);
   const handleCloseWalletModal = () => {
     setOpenWalletModal(false);
@@ -80,9 +80,9 @@ function HeaderHome(props) {
         console.log("signer is connected!");
         handleCloseWalletModal();
         let res = getActiveKeyFromSigner();
-        // console.log("address res: ", res);
+        console.log("address res: ", res);
         localStorage.setItem("Address", res);
-        plantPublicKey(res);
+        setActivePublicKey(res);
       }
       window.addEventListener("signer:connected", (msg) => {
         handleCloseWalletModal();
@@ -90,36 +90,36 @@ function HeaderHome(props) {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(true);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
         console.log("publick key in header to find: ", msg.detail.activeKey);
       });
       window.addEventListener("signer:disconnected", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(false);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:tabUpdated", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:activeKeyChanged", (msg) => {
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:locked", (msg) => {
         setSignerLocked(!msg.detail.isUnlocked);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:unlocked", (msg) => {
         handleCloseWalletModal();
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
       window.addEventListener("signer:initialState", (msg) => {
         // console.log("Initial State: ", msg.detail);
@@ -127,9 +127,10 @@ function HeaderHome(props) {
         setSignerLocked(!msg.detail.isUnlocked);
         setSignerConnected(msg.detail.isConnected);
         localStorage.setItem("Address", msg.detail.activeKey);
-        plantPublicKey(msg.detail.activeKey);
+        setActivePublicKey(msg.detail.activeKey);
       });
     }
+    console.log("selected wallet from props: ", props.selectedWallet);
     // eslint-disable-next-line
   }, [props.selectedWallet]);
 
@@ -147,7 +148,7 @@ function HeaderHome(props) {
       props.setTorus(torus);
       localStorage.setItem("torus", JSON.stringify(torus));
       localStorage.setItem("Address", (loginaccs || [])[0]);
-      plantPublicKey((loginaccs || [])[0]);
+      setActivePublicKey((loginaccs || [])[0]);
       setAccount((loginaccs || [])[0] || "");
       handleCloseWalletModal();
     } catch (error) {
@@ -244,7 +245,7 @@ function HeaderHome(props) {
     Cookies.remove("Authorization");
     localStorage.removeItem("Address");
     localStorage.removeItem("selectedWallet");
-    plantPublicKey("");
+    setActivePublicKey("");
     props.setSelectedWallet();
     try {
       Signer.disconnectFromSite();

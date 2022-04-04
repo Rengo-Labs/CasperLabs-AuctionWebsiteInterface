@@ -43,10 +43,10 @@ import {
   RuntimeArgs,
 } from "casper-js-sdk";
 import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
-import { usePublicKey } from "../../containers/App/Application";
+import { AppContext } from "../../containers/App/Application";
 
 function StakingWISEModal(props) {
-  const publicKey = useContext(usePublicKey);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
   const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState();
@@ -66,11 +66,11 @@ function StakingWISEModal(props) {
   // -------------------- LIFE CYCLE METHODS --------------------
   useEffect(() => {
     let cancel = false;
-    publicKey &&
+    activePublicKey &&
       axios
         .post("/wiseBalanceAgainstUser", {
           contractHash: WISE_CONTRACT_HASH,
-          user: CLPublicKey.fromHex(publicKey).toAccountHashStr(),
+          user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
         })
         .then((res) => {
           if (cancel) return;
