@@ -1,10 +1,11 @@
 // React
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 
 // Components
 import TableDefault from "../DefaultContent/TableDefault";
 import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
+import { AppContext } from "../../containers/App/Application";
 
 // Material UI
 import Box from "@mui/material/Box";
@@ -17,6 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 import { StyledEngineProvider } from "@mui/styled-engine";
+import axios from "axios";
 
 // Bootstrap
 import "../../assets/css/bootstrap.min.css";
@@ -30,17 +32,16 @@ function createData(name, calories, fat, carbs, protein) {
 }
 
 const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
   createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
   createData("Eclair", 262, 16.0, 24, 6.0),
   createData("Cupcake", 305, 3.7, 67, 4.3),
   createData("Gingerbread", 356, 16.0, 49, 3.9),
 ];
 
-function WiseStakingTable() {
-  const [stakes, setStakes] = React.useState([]);
+function WiseStakingTable(props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -90,7 +91,7 @@ function WiseStakingTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/*{rows.map((row) => (
+                {/* {rows.map((row) => (
             <TableRow
               key={row.name}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -104,9 +105,11 @@ function WiseStakingTable() {
               <TableCell align="right">{row.protein}</TableCell>
             </TableRow>
           ))}  */}
+                {activePublicKey === null ? null : props.stake}
               </TableBody>
             </Table>
-            {stakes.length !== 0 ? null : (
+
+            {props.stake.length !== 0 && activePublicKey !== null ? null : (
               <div className="m-auto w-100">
                 <TableDefault
                   message="You don't have regular stakes at the moment"

@@ -54,7 +54,7 @@ function StakingCSPRModal(props) {
   const [days, setDays] = useState("");
   const [daysOpen, setDaysOpen] = useState(false);
   const [cspr, setCspr] = useState();
-  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState(cspr);
+  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState();
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
   const [addy, setAddy] = useState("");
@@ -133,28 +133,31 @@ function StakingCSPRModal(props) {
   }, [amountCheck, daysCheck, referrerCheck]);
 
   // -------------------- EVENT HANDLERS --------------------
-  console.log("balance before: " + percentagedCsprBalance);
-  console.log("value before: " + balance);
-  const handleBalanceChange = (event) => {
-    let value = event.target.value;
-    setBalance(value);
-    setPercentagedCsprBalance((cspr * value) / 100);
-    console.log("checking balance: " + (cspr * value) / 100);
-    setAmountCheck(true);
-  };
 
   const balanceOnChange = (event) => {
     let value = event.target.value;
-    setCspr(value);
-    if (value == 25) {
+    let percent = (100 * value) / cspr;
+
+    setPercentagedCsprBalance(value);
+    if (percent == 25) {
       setBalance(25);
-    } else if (value == 50) {
+    } else if (percent == 50) {
       setBalance(50);
-    } else if (value == 75) {
+    } else if (percent == 75) {
       setBalance(75);
     } else {
       console.log("empty");
       setBalance("");
+    }
+  };
+
+  const handleBalanceChange = (event) => {
+    let value = event.target.value;
+    setBalance(value);
+    if (cspr !== null && !isNaN(cspr)) {
+      console.log("inside the change: ", isNaN(cspr));
+      setPercentagedCsprBalance((cspr * value) / 100);
+      setAmountCheck(true);
     }
   };
 

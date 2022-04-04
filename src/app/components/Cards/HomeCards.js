@@ -18,7 +18,9 @@ function HomeCards(props) {
     <>
       <div className="card cardSkeleton border-secondary">
         <div className="card-body pb-0">
-          <div className="cardContent w-75"></div>
+          <div className="cardContent w-75">
+            <h3>{props.stake}</h3>
+            </div>
           <div className="row no-gutters justify-content-between align-items-center w-100">
             <div className="divider"></div>
             <ChevronRightIcon fontSize="large" />

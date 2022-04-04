@@ -38,7 +38,7 @@ const rows = [
 ];
 
 function InsuranceStakingTable() {
-  const [stakes, setStakes] = React.useState(["test"]);
+  const [stakes, setStakes] = React.useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 

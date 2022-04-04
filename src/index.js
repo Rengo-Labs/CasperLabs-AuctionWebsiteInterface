@@ -15,7 +15,8 @@ if (process.env.REACT_APP_BACKEND_SERVER_ADDRESS)
 else axios.defaults.baseURL = `https://wise-graphql-backend.herokuapp.com/`;
 
 ReactDOM.render(<App />, document.getElementById("root"));
-
+// export {acKey};
+// export {mainKey};
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

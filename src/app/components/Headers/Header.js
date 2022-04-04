@@ -429,6 +429,7 @@ function HeaderHome(props) {
               </a>
             </li>
             {/* Men at Work */}
+
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
@@ -438,6 +439,7 @@ function HeaderHome(props) {
                 <span style={selectedNavStyle.Staking}>Wise Staking</span>
               </Link>
             </li>
+
             <li>
               <Link
                 className=" align-items-center justify-content-center text-center"

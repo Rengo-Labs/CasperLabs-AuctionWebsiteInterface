@@ -66,24 +66,24 @@ function StakingWISEModal(props) {
   // -------------------- LIFE CYCLE METHODS --------------------
   useEffect(() => {
     let cancel = false;
-    activePublicKey &&
-      axios
-        .post("/wiseBalanceAgainstUser", {
-          contractHash: WISE_CONTRACT_HASH,
-          user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
-        })
-        .then((res) => {
-          if (cancel) return;
-          console.log(
-            "wiseBalanceAgainstUser type: ",
-            typeof parseInt(res.data.balance)
-          );
-          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-        });
+
+    axios
+      .post("/wiseBalanceAgainstUser", {
+        contractHash: WISE_CONTRACT_HASH,
+        user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+      })
+      .then((res) => {
+        if (cancel) return;
+        console.log(
+          "wiseBalanceAgainstUser type: ",
+          typeof parseInt(res.data.balance)
+        );
+        setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response);
+      });
 
     return () => {
       cancel = true;
@@ -91,11 +91,14 @@ function StakingWISEModal(props) {
   }, []);
 
   useEffect(() => {
+    let cancel = false;
+
     axios
       .post("/getStakeData", {
         stakerId: "123",
       })
       .then((res) => {
+        if (cancel) return;
         // console.log("Referer: ", res.data.stakesData[0].referrer);
         setReferrer(res.data.stakesData[0].referrer);
       })
@@ -103,6 +106,9 @@ function StakingWISEModal(props) {
         console.log(error);
         console.log(error.response);
       });
+    return () => {
+      cancel = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -115,12 +121,14 @@ function StakingWISEModal(props) {
 
   const balanceOnChange = (event) => {
     let value = event.target.value;
-    setwiseBalanceAgainstUser(value);
-    if (value == 25) {
+    let percent = (100 * value) / wiseBalanceAgainstUser;
+
+    setPercentagedBalance(value);
+    if (percent == 25) {
       setBalance(25);
-    } else if (value == 50) {
+    } else if (percent == 50) {
       setBalance(50);
-    } else if (value == 75) {
+    } else if (percent == 75) {
       setBalance(75);
     } else {
       console.log("empty");
@@ -131,8 +139,11 @@ function StakingWISEModal(props) {
   const handleBalanceChange = (event) => {
     let value = event.target.value;
     setBalance(value);
-    setPercentagedBalance((wiseBalanceAgainstUser * value) / 100);
-    setAmountCheck(true);
+    if (wiseBalanceAgainstUser !== null && !isNaN(wiseBalanceAgainstUser)) {
+      console.log("inside the change: ", isNaN(wiseBalanceAgainstUser));
+      setPercentagedBalance((wiseBalanceAgainstUser * value) / 100);
+      setAmountCheck(true);
+    }
   };
 
   const handleBalanceClose = () => {
