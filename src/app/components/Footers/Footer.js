@@ -21,29 +21,7 @@ function Footer(props) {
                   </p>
                 </div>
               </div>
-              <div className="col-md-6 col-lg-6">
-                {/* <!-- Copyright Menu --> */}
-                {/* <div className="copyright-menu">
-                  <ul className="policy-menu">
-                    <li>
-                      <Link
-                        to="/termsandconditions"
-                      >
-                        Terms and Conditions
-                      </Link>
-                    </li> 
-                    <li>
-                      <Link
-                        to="/privacy-policy"
-                        // onClick={(e) => e.preventDefault()}
-                      >
-                        Policy
-                      </Link>
-                    </li>
-                  </ul>
-                </div> */}
-                {/* <!-- /Copyright Menu --> */}
-              </div>
+              <div className="col-md-6 col-lg-6"></div>
             </div>
           </div>
           {/* <!-- /Copyright --> */}

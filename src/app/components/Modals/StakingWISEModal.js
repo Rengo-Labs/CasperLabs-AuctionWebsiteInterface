@@ -1,21 +1,10 @@
-import {
-  Card,
-  CardContent,
-  FormControlLabel,
-  Typography,
-} from "@material-ui/core";
+import { Card, CardContent, Typography } from "@material-ui/core";
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOverOutlined";
-// import SpatialAudioOffIcon from '@mui/icons-material/SpatialAudioOff';
-// import SpatialAudioOffIcon from '@material-ui-icons/SpatialAudioOff';
-// import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined';
-// import SpatialAudioOffIcon from '@mui/icons-material/SpatialAudioOff';
-import Checkbox from "@mui/material/Checkbox";
-import Chip from "@mui/material/Chip";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
@@ -32,21 +21,13 @@ import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import {
-  AccessRights,
-  CasperServiceByJsonRPC,
-  CLByteArray,
-  CLKey,
-  CLOption,
-  CLPublicKey,
-  CLValueBuilder,
-  RuntimeArgs,
-} from "casper-js-sdk";
+import { CLPublicKey } from "casper-js-sdk";
 import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
 import { AppContext } from "../../containers/App/Application";
 
+// -------------------- COMPONENT FUNCTION --------------------
 function StakingWISEModal(props) {
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
+  const { activePublicKey } = useContext(AppContext);
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
   const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState();
@@ -63,32 +44,33 @@ function StakingWISEModal(props) {
   const [amountCheck, setAmountCheck] = useState(false);
   const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
-  // -------------------- LIFE CYCLE METHODS --------------------
+  // -------------------- Life Cycle Methods--------------------
   useEffect(() => {
     let cancel = false;
-
-    axios
-      .post("/wiseBalanceAgainstUser", {
-        contractHash: WISE_CONTRACT_HASH,
-        user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
-      })
-      .then((res) => {
-        if (cancel) return;
-        console.log(
-          "wiseBalanceAgainstUser type: ",
-          typeof parseInt(res.data.balance)
-        );
-        setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-
+    if (
+      activePublicKey &&
+      activePublicKey !== null &&
+      activePublicKey !== "null" &&
+      activePublicKey !== undefined
+    ) {
+      axios
+        .post("/wiseBalanceAgainstUser", {
+          contractHash: WISE_CONTRACT_HASH,
+          user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+        })
+        .then((res) => {
+          if (cancel) return;
+          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+        });
+    }
     return () => {
       cancel = true;
     };
-  }, []);
+  }, [activePublicKey]);
 
   useEffect(() => {
     let cancel = false;
@@ -99,7 +81,6 @@ function StakingWISEModal(props) {
       })
       .then((res) => {
         if (cancel) return;
-        // console.log("Referer: ", res.data.stakesData[0].referrer);
         setReferrer(res.data.stakesData[0].referrer);
       })
       .catch((error) => {
@@ -117,13 +98,14 @@ function StakingWISEModal(props) {
     }
   }, [amountCheck, daysCheck, referrerCheck]);
 
-  // -------------------- EVENT HANDLERS --------------------
+  // -------------------- Event Handlers --------------------
 
   const balanceOnChange = (event) => {
     let value = event.target.value;
     let percent = (100 * value) / wiseBalanceAgainstUser;
 
     setPercentagedBalance(value);
+    setAmountCheck(true);
     if (percent == 25) {
       setBalance(25);
     } else if (percent == 50) {
@@ -182,7 +164,7 @@ function StakingWISEModal(props) {
     setAddyOpen(true);
   };
 
-  // -------------------- JSX --------------------
+  // -------------------- jsx --------------------
 
   return (
     <Modal size="xl" centered show={props.show} onHide={props.handleClose}>
@@ -320,7 +302,6 @@ function StakingWISEModal(props) {
                         <OutlinedInput
                           id="outlined-adornment-amount"
                           value={referrerAddress}
-                          // onChange={handleChange('amount')}
                           placeholder="account-hash-000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
@@ -359,15 +340,6 @@ function StakingWISEModal(props) {
                       </FormControl>
                     </div>
                   </div>
-                  {/* <div className="row">
-                    <FormControlLabel
-                      value="end"
-                      control={<Checkbox />}
-                      label={`I would like to open this stake as insurance Stake`}
-                      labelPlacement="end"
-                    />
-                    {<Chip label="REVIEW APPROVAL" />}
-                  </div> */}
                   <hr />
                   <div className="row">
                     <Typography gutterBottom>

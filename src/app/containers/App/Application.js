@@ -1,7 +1,6 @@
 import { SnackbarProvider } from "notistack";
 import React, { createContext, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-// import AddLiquidity from "../Pages/Users/AddLiquidity";
 import HomeScreen from "../Pages/Users/HomeScreen";
 import Refer from "../Pages/Users/Refer";
 import Staking from "../Pages/Users/Staking";
@@ -15,7 +14,7 @@ function App() {
   let [activePublicKey, setActivePublicKey] = useState(
     localStorage.getItem("Address")
   );
-  // console.log("path in application: ", activePublicKey);
+
   const LoginRegisterRedirectCheck = ({ path, ...rest }) => {
     if (path === "/staking") {
       return <Route component={Staking} />;
@@ -41,11 +40,8 @@ function App() {
             <LoginRegisterRedirectCheck exact path="/marketPlace" />
             <LoginRegisterRedirectCheck exact path="/admin-login" />
             <LoginRegisterRedirectCheck exact path="/login" />
-
             <Route exact path="/staking" component={Staking} />
             <Route path="/refer" component={Refer} />
-            {/* <Route path="/tokens" component={Tokens} />
-          <Route path="/pairs" component={Pairs} /> */}
           </Switch>
         </BrowserRouter>
       </AppContext.Provider>

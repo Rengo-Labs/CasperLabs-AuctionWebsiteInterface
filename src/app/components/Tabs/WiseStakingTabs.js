@@ -2,7 +2,6 @@
 import React from "react";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-
 // Material UI
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
@@ -15,42 +14,33 @@ import { StyledEngineProvider } from "@mui/styled-engine";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
-
 // Components
 import WiseStakingTable from "../Tables/WiseStakingTable";
 import InsuranceStakingTable from "../Tables/InsuranceStakingTable";
 import CollateralStakingTable from "../Tables/CollateralStakingTable";
 import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 import { AppContext } from "../../containers/App/Application";
-
-//Custom CSS
-import "../../assets/css/stakingTabs.css";
-
 import {
-  AccessRights,
   CasperServiceByJsonRPC,
   CLByteArray,
-  CLKey,
-  CLOption,
   CLPublicKey,
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
 import {
-  ROUTER_CONTRACT_HASH,
   ROUTER_PACKAGE_HASH,
   WISE_CONTRACT_HASH,
 } from "../blockchain/AccountHashes/Addresses";
-//import { createRecipientAddress } from "../../../components/blockchain/RecipientAddress/RecipientAddress";
-import { convertToStr } from "../ConvertToString/ConvertToString";
 import { makeDeploy } from "../blockchain/MakeDeploy/MakeDeploy";
 import { signdeploywithcaspersigner } from "../blockchain/SignDeploy/SignDeploy";
 import { putdeploy } from "../blockchain/PutDeploy/PutDeploy";
 import Torus from "@toruslabs/casper-embed";
 import { useSnackbar } from "notistack";
-import { CHAINS, SUPPORTED_NETWORKS } from "../Headers/Header";
 import { getDeploy } from "../blockchain/GetDeploy/GetDeploy";
+import { CHAINS, SUPPORTED_NETWORKS } from "../Headers/Header";
 import { NODE_ADDRESS } from "../blockchain/NodeAddress/NodeAddress";
+//Custom CSS
+import "../../assets/css/stakingTabs.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -86,13 +76,17 @@ function a11yProps(index) {
 }
 
 function WiseStakingTabs() {
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
-  const [value, setValue] = React.useState(0);
-  const [stakes, setStakes] = React.useState([]);
-
-  const [regularStaking, setRegularStaking] = useState(0);
-  const [insuranceStaking, setInsuranceStaking] = useState(0);
-  const [collateralStaking, setCollateralStaking] = useState(0);
+  const { activePublicKey } = useContext(AppContext);
+  const { enqueueSnackbar } = useSnackbar();
+  let [torus] = useState();
+  const [value, setValue] = useState(0);
+  const [stakes] = useState([]);
+  const [regularStaking] = useState(0);
+  const [insuranceStaking] = useState(0);
+  const [collateralStaking] = useState(0);
+  const [stakeData, setStakeData] = useState([]);
+  const [openSigning, setOpenSigning] = useState(false);
+  let [selectedWallet] = useState(localStorage.getItem("selectedWallet"));
 
   let regStake = `Regular Staking  (${regularStaking})`;
   let insureStake = `Insurance Staking  (${insuranceStaking})`;
@@ -102,16 +96,9 @@ function WiseStakingTabs() {
     setValue(newValue);
   };
 
-  const [stakeData, setStakeData] = useState([]);
-  const [openSigning, setOpenSigning] = useState(false);
   const handleShowSigning = () => {
     setOpenSigning(true);
   };
-  let [selectedWallet, setSelectedWallet] = useState(
-    localStorage.getItem("selectedWallet")
-  );
-  const { enqueueSnackbar } = useSnackbar();
-  let [torus, setTorus] = useState();
 
   const handleCloseSigning = () => {
     setOpenSigning(false);
@@ -125,7 +112,6 @@ function WiseStakingTabs() {
         console.log("getStakeData", res.data.stakesData);
         res.data.stakesData[1] = res.data.stakesData[0];
         setStakeData(res.data.stakesData);
-        //setTokenBBalance(res.data.balance);
       })
       .catch((error) => {
         console.log(error);
@@ -135,7 +121,6 @@ function WiseStakingTabs() {
 
   async function unstakeMakeDeploy(stakeData) {
     handleShowSigning();
-    // console.log("contractHash", contractHash);
     const publicKeyHex = activePublicKey;
     console.log(activePublicKey);
     if (
@@ -152,8 +137,6 @@ function WiseStakingTabs() {
       try {
         console.log(stakeData);
         const runtimeArgs = RuntimeArgs.fromMap({
-          // spender: createRecipientAddress(spenderByteArray),
-          // amount: CLValueBuilder.u256(convertToStr(amount)),
           stake_id: CLValueBuilder.string(stakeData.id),
         });
 
@@ -161,7 +144,6 @@ function WiseStakingTabs() {
           Buffer.from(WISE_CONTRACT_HASH, "hex")
         );
         let entryPoint = "end_stake_Jsclient";
-        // Set contract installation deploy (unsigned).
         let deploy = await makeDeploy(
           publicKey,
           contractHashAsByteArray,
@@ -206,12 +188,6 @@ function WiseStakingTabs() {
             );
             console.log("result", result);
           }
-          // if (tokenApproved === "tokenA") {
-          //   setTokenAAllowance(amount * 10 ** 9);
-          // } else {
-          //   setTokenBAllowance(amount * 10 ** 9);
-          // }
-          // console.log('result', result);
           handleCloseSigning();
           let variant = "success";
           enqueueSnackbar("unstaked Succesfully", { variant });
@@ -264,7 +240,6 @@ function WiseStakingTabs() {
           borderTopRightRadius: "8px",
           borderTopLeftRadius: "8px",
         }}
-        // className="shadow"
       >
         <StyledEngineProvider injectFirst>
           <Tabs

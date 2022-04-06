@@ -1,21 +1,10 @@
-import {
-  Card,
-  CardContent,
-  FormControlLabel,
-  Typography,
-} from "@material-ui/core";
+import { Card, CardContent, Typography } from "@material-ui/core";
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import RecordVoiceOverOutlinedIcon from "@mui/icons-material/RecordVoiceOverOutlined";
-// import SpatialAudioOffIcon from '@mui/icons-material/SpatialAudioOff';
-// import SpatialAudioOffIcon from '@material-ui-icons/SpatialAudioOff';
-// import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined';
-// import SpatialAudioOffIcon from '@mui/icons-material/SpatialAudioOff';
-import Checkbox from "@mui/material/Checkbox";
-import Chip from "@mui/material/Chip";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
@@ -30,25 +19,16 @@ import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import { NODE_ADDRESS } from "../blockchain/NodeAddress/NodeAddress";
-import {
-  AccessRights,
-  CasperServiceByJsonRPC,
-  CLByteArray,
-  CLKey,
-  CLOption,
-  CLPublicKey,
-  CLValueBuilder,
-  RuntimeArgs,
-} from "casper-js-sdk";
+import { CasperServiceByJsonRPC, CLPublicKey } from "casper-js-sdk";
 import { getStateRootHash } from "../blockchain/GetStateRootHash/GetStateRootHash";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../../containers/App/Application";
 
-// -------------------- CONTENT --------------------
+// -------------------- COMPONENT FUNCTION --------------------
 
 function StakingCSPRModal(props) {
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
+  const { activePublicKey } = useContext(AppContext);
 
   const [year, setYear] = useState("");
   const [days, setDays] = useState("");
@@ -67,11 +47,17 @@ function StakingCSPRModal(props) {
   const [amountCheck, setAmountCheck] = useState(false);
   const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
+  // -------------------- Life Cycle Methods --------------------
+
   useEffect(() => {
     const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
-    if (activePublicKey) {
+    if (
+      activePublicKey &&
+      activePublicKey !== null &&
+      activePublicKey !== "null" &&
+      activePublicKey !== undefined
+    ) {
       getStateRootHash(NODE_ADDRESS).then((stateRootHash) => {
-        console.log("stateRootHash", stateRootHash);
         client
           .getBlockState(
             stateRootHash,
@@ -79,18 +65,16 @@ function StakingCSPRModal(props) {
             []
           )
           .then((result) => {
-            console.log("result", result.Account.mainPurse);
+            console.log("this is main purse: ", result.Account.mainPurse);
+            setMainPurse(result.Account.mainPurse);
             try {
               const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
               client
                 .getAccountBalance(stateRootHash, result.Account.mainPurse)
                 .then((result) => {
-                  console.log("CSPR balance", result.toString());
                   setCspr(result.toString() / 10 ** 9);
-                  // CSPR.balance = result.toString();
                 });
             } catch (error) {
-              // CSPR.balance = 0;
               setCspr(0);
               console.log("error", error);
             }
@@ -103,8 +87,6 @@ function StakingCSPRModal(props) {
     }
   }, [activePublicKey]);
 
-  // -------------------- LIFE CYCLE METHODS --------------------
-
   useEffect(() => {
     let cancel = false;
     axios
@@ -113,7 +95,6 @@ function StakingCSPRModal(props) {
       })
       .then((res) => {
         if (cancel) return;
-        // console.log("Referer: ", res.data.stakesData[0].referrer);
         setReferrer(res.data.stakesData[0].referrer);
       })
       .catch((error) => {
@@ -132,13 +113,14 @@ function StakingCSPRModal(props) {
     }
   }, [amountCheck, daysCheck, referrerCheck]);
 
-  // -------------------- EVENT HANDLERS --------------------
+  // -------------------- Event Handlers --------------------
 
   const balanceOnChange = (event) => {
     let value = event.target.value;
     let percent = (100 * value) / cspr;
 
     setPercentagedCsprBalance(value);
+    setAmountCheck(true);
     if (percent == 25) {
       setBalance(25);
     } else if (percent == 50) {
@@ -155,7 +137,6 @@ function StakingCSPRModal(props) {
     let value = event.target.value;
     setBalance(value);
     if (cspr !== null && !isNaN(cspr)) {
-      console.log("inside the change: ", isNaN(cspr));
       setPercentagedCsprBalance((cspr * value) / 100);
       setAmountCheck(true);
     }
@@ -197,7 +178,7 @@ function StakingCSPRModal(props) {
     setAddyOpen(true);
   };
 
-  // -------------------- JSX --------------------
+  // -------------------- jsx --------------------
 
   return (
     <Modal size="xl" centered show={props.show} onHide={props.handleClose}>
@@ -374,15 +355,6 @@ function StakingCSPRModal(props) {
                       </FormControl>
                     </div>
                   </div>
-                  {/* <div className="row">
-                    <FormControlLabel
-                      value="end"
-                      control={<Checkbox />}
-                      label={`I would like to open this stake as insurance Stake`}
-                      labelPlacement="end"
-                    />
-                    {<Chip label="REVIEW APPROVAL" />}
-                  </div> */}
                   <hr />
                   <div className="row">
                     <Typography gutterBottom>
@@ -409,6 +381,7 @@ function StakingCSPRModal(props) {
                         block
                         size="lg"
                         onClick={() => {
+                          console.log("this is address: ", mainPurse);
                           props.createStakeMakeDeploy(
                             percentagedCsprBalance,
                             days,

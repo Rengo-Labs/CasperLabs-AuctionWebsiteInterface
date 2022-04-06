@@ -1,7 +1,6 @@
 // React
 import React from "react";
 import { useState, createContext, useContext } from "react";
-
 // Components
 import HeaderHome, {
   CHAINS,
@@ -9,18 +8,14 @@ import HeaderHome, {
 } from "../../../components/Headers/Header";
 import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
 import { AppContext } from "../../App/Application";
-
 // Material UI
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
-
 // Bootstrap
 import "../../../assets/css/bootstrap.min.css";
-
 // Custom Styling
 import "../../../assets/css/stakingStyles.css";
 import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
 import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
-
 // Casper SDK
 import {
   AccessRights,
@@ -31,11 +26,7 @@ import {
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
-import {
-  ROUTER_PACKAGE_HASH,
-  WISE_CONTRACT_HASH,
-} from "../../../components/blockchain/AccountHashes/Addresses";
-import { createRecipientAddress } from "../../../components/blockchain/RecipientAddress/RecipientAddress";
+import { WISE_CONTRACT_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
 import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
@@ -46,7 +37,6 @@ import { useSnackbar } from "notistack";
 import Torus from "@toruslabs/casper-embed";
 
 // Content
-
 const handleStakingWISEModal = createContext();
 const handleStakingCSPRModal = createContext();
 
@@ -59,10 +49,9 @@ function Staking() {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
+  const { activePublicKey } = useContext(AppContext);
 
   // Handlers
-
   const handleCloseStakingWISEModal = () => {
     setOpenStakingWISEModal(false);
   };
@@ -90,7 +79,7 @@ function Staking() {
   async function createStakeMakeDeploy(
     stakingAmount,
     stakingDuration,
-    referralAddress,
+    referrerAddress,
     isCspr,
     mainPurse
   ) {
@@ -104,89 +93,85 @@ function Staking() {
     ) {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
       const paymentAmount = 5000000000;
-      console.log("checking staking amount: ", mainPurse);
-      try {
-        const runtimeArgs = isCspr
-          ? RuntimeArgs.fromMap({
-              amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
-              lock_days: CLValueBuilder.u64(stakingDuration),
-              referrer: new CLKey(activePublicKey),
-              purse: CLValueBuilder.uref(
-                Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-                AccessRights.READ_ADD_WRITE
-              ),
-            })
-          : RuntimeArgs.fromMap({
-              staked_amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
-              lock_days: CLValueBuilder.u64(stakingDuration),
-              referrer: new CLKey(activePublicKey),
-            });
-        let contractHashAsByteArray = Uint8Array.from(
-          Buffer.from(WISE_CONTRACT_HASH, "hex")
-        );
-        let entryPoint = !isCspr
-          ? "create_stake_Jsclient"
-          : "create_stake_with_cspr_Jsclient";
+      console.log("checking staking active Key: ", activePublicKey);
+      const pubicKey = new CLByteArray(
+        Uint8Array.from(Buffer.from(activePublicKey, "hex"))
+      );
+      // try {
+      const runtimeArgs = isCspr
+        ? RuntimeArgs.fromMap({
+            amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
+            lock_days: CLValueBuilder.u64(stakingDuration),
+            referrer: new CLKey(pubicKey),
+            purse: CLValueBuilder.uref(
+              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
+              AccessRights.READ_ADD_WRITE
+            ),
+          })
+        : RuntimeArgs.fromMap({
+            staked_amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
+            lock_days: CLValueBuilder.u64(stakingDuration),
+            referrer: new CLKey(pubicKey),
+          });
+      let contractHashAsByteArray = Uint8Array.from(
+        Buffer.from(WISE_CONTRACT_HASH, "hex")
+      );
+      let entryPoint = !isCspr
+        ? "create_stake_Jsclient"
+        : "create_stake_with_cspr_Jsclient";
 
-        // Set contract installation deploy (unsigned).
-        let deploy = await makeDeploy(
-          publicKey,
-          contractHashAsByteArray,
-          entryPoint,
-          runtimeArgs,
-          paymentAmount
+      // Set contract installation deploy (unsigned).
+      let deploy = await makeDeploy(
+        publicKey,
+        contractHashAsByteArray,
+        entryPoint,
+        runtimeArgs,
+        paymentAmount
+      );
+      console.log("make deploy: ", deploy);
+      // try {
+      if (selectedWallet === "Casper") {
+        let signedDeploy = await signdeploywithcaspersigner(
+          deploy,
+          publicKeyHex
         );
-        console.log("make deploy: ", deploy);
-        try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            // let Torus = new Torus();
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            console.log("Torus123", torus);
-            console.log("torus", torus.provider);
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-            console.log(
-              `... Contract installed successfully.`,
-              JSON.parse(JSON.stringify(result))
-            );
-            console.log("result", result);
-          }
-          // console.log('result', result);
-          handleCloseSigning();
-          let variant = "success";
-          enqueueSnackbar("Approved Successfully", { variant });
-        } catch {
-          handleCloseSigning();
-          let variant = "Error";
-          enqueueSnackbar("Unable to Approve", { variant });
-        }
-      } catch {
-        handleCloseSigning();
-        let variant = "Error";
-        enqueueSnackbar("Input values are too large", { variant });
+        let result = await putdeploy(signedDeploy, enqueueSnackbar);
+        console.log("result", result);
+      } else {
+        // let Torus = new Torus();
+        torus = new Torus();
+        console.log("torus", torus);
+        await torus.init({
+          buildEnv: "testing",
+          showTorusButton: true,
+          network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+        });
+        const casperService = new CasperServiceByJsonRPC(torus?.provider);
+        const deployRes = await casperService.deploy(deploy);
+        console.log("deployRes", deployRes.deploy_hash);
+        console.log(
+          `... Contract installation deployHash: ${deployRes.deploy_hash}`
+        );
+        let result = await getDeploy(
+          NODE_ADDRESS,
+          deployRes.deploy_hash,
+          enqueueSnackbar
+        );
       }
+      handleCloseSigning();
+      let variant = "success";
+      enqueueSnackbar("Approved Successfully", { variant });
+      //   }
+      //  catch {
+      //     handleCloseSigning();
+      //     let variant = "Error";
+      //     enqueueSnackbar("Unable to Approve", { variant });
+      //   }
+      // } catch {
+      //   handleCloseSigning();
+      //   let variant = "Error";
+      //   enqueueSnackbar("Input values are too large", { variant });
+      // }
     } else {
       handleCloseSigning();
       let variant = "error";
@@ -200,7 +185,6 @@ function Staking() {
       <div className="main-wrapper">
         <div className="home-section home-full-height">
           <HeaderHome
-            // setActivePublicKey={setActivePublicKey}
             setSelectedWallet={setSelectedWallet}
             selectedWallet={selectedWallet}
             setTorus={setTorus}

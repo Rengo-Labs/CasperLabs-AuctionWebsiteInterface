@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState } from "react";
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
 import "../../../assets/plugins/fontawesome/css/all.min.css";
@@ -7,27 +7,22 @@ import Footer from "../../../components/Footers/Footer";
 import HeaderHome from "../../../components/Headers/Header";
 import HomeBanner from "./Home/HomeBanner";
 
-
 function HomeScreen() {
-  // eslint-disable-next-line
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
-  console.log('from home');
+  console.log("from home");
   console.log(localStorage.getItem("Address"));
-  // eslint-disable-next-line
   let [torus, setTorus] = useState();
   return (
     <div className="main-wrapper">
       <div className="home-section home-full-height">
-      
         <HeaderHome
           setSelectedWallet={setSelectedWallet}
           selectedWallet={selectedWallet}
           setTorus={setTorus}
           selectedNav={"Home"}
         />
-        
         <div
           className="content"
           style={{ paddingTop: "100px" }}

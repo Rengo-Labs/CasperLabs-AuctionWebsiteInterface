@@ -3,30 +3,25 @@ import { useHistory } from "react-router-dom";
 import HomeCards from "../../../../components/Cards/HomeCards";
 import { AppContext } from "../../../App/Application";
 import axios from "axios";
-
 // Material UI Icons
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  AccessRights,
-  CasperServiceByJsonRPC,
-  CLByteArray,
-  CLKey,
-  CLOption,
-  CLPublicKey,
-  CLValueBuilder,
-  RuntimeArgs,
-} from "casper-js-sdk";
+import { CLPublicKey } from "casper-js-sdk";
 
 function HomeBanner() {
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
+  const { activePublicKey } = useContext(AppContext);
   let history = useHistory();
 
   const [globalData, setGlobalData] = useState({});
   const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState(0);
 
   useEffect(() => {
-    activePublicKey &&
+    if (
+      activePublicKey &&
+      activePublicKey !== null &&
+      activePublicKey !== "null" &&
+      activePublicKey !== undefined
+    ) {
       axios
         .post("/wiseBalanceAgainstUser", {
           contractHash:
@@ -42,16 +37,14 @@ function HomeBanner() {
           console.log(error);
           console.log(error.response);
         });
-  }, []);
+    }
+  }, [activePublicKey]);
 
   useEffect(() => {
     axios
       .get("/getGlobalData")
       .then((res) => {
-        console.log("getGlobalData", res.data.globalData);
-        console.log(res.data);
         setGlobalData(res.data.globalData[0]);
-        //setTokenBBalance(res.data.balance);
       })
       .catch((error) => {
         console.log(error);

@@ -1,19 +1,12 @@
 // React
 import React from "react";
-
 // Bootstrap
 import "../../assets/css/bootstrap.min.css";
-
 // Material UI Icons
 import LanIcon from "@mui/icons-material/Lan";
-
 // Material UI
-
 // Custom Styling
 import "../../assets/css/tableDefault.css";
-
-// Components
-import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 
 // Content
 const TableDefault = (props) => {
@@ -31,13 +24,6 @@ const TableDefault = (props) => {
             <p className="text-center">{props.advice}</p>
           </section>
         </div>
-        {/* <div className="row no-gutters justify-content-center align-items-center">
-          <WiseStakingTableButtons btnContent={"Create Regular Stake (WISE)"} />
-          <WiseStakingTableButtons
-            btnContent={"Create Regular Stake (CSPR)"}
-            cspr={true}
-          />
-        </div> */}
       </div>
     </>
   );

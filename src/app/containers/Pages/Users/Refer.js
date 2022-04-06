@@ -1,18 +1,5 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Avatar,
-  Card,
-  CardContent,
-  CardHeader,
-  FormControl,
-  FormHelperText,
-  Button,
-} from "@material-ui/core/";
 import toast, { Toaster } from "react-hot-toast";
 import { Modal } from "react-bootstrap";
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -25,16 +12,9 @@ import { StyledEngineProvider } from "@mui/styled-engine";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import FilterListIcon from "@mui/icons-material/FilterList";
-// import { FaSitemap } from 'react-icons/fa';
 import LanIcon from "@mui/icons-material/Lan";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import CancelIcon from "@mui/icons-material/Cancel";
-import HelpIcon from "@mui/icons-material/Help";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import Torus from "@toruslabs/casper-embed";
 import axios from "axios";
 import {
@@ -49,10 +29,7 @@ import {
 } from "casper-js-sdk";
 import { AppContext } from "../../App/Application";
 import { useSnackbar } from "notistack";
-import numeral from "numeral";
 import React, { useCallback, useEffect, useState, useContext } from "react";
-import { Col, Row } from "react-bootstrap";
-import Spinner from "react-bootstrap/Spinner";
 import { Some } from "ts-results";
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
@@ -83,10 +60,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
 }));
-const regex = /^\s*-?(\d+(\.\d{1,9})?|\.\d{1,9})\s*$/;
 
 function Refer(props) {
-  const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
@@ -99,8 +74,6 @@ function Refer(props) {
   let [tokenBAmount, setTokenBAmount] = useState(0);
   let [tokenABalance, setTokenABalance] = useState(0);
   let [tokenBBalance, setTokenBBalance] = useState(0);
-  let [approveAIsLoading, setApproveAIsLoading] = useState(false);
-  let [approveBIsLoading, setApproveBIsLoading] = useState(false);
   let [tokenAAllowance, setTokenAAllowance] = useState(0);
   let [tokenBAllowance, setTokenBAllowance] = useState(0);
   let [isInvalidPair, setIsInvalidPair] = useState(false);
@@ -112,41 +85,16 @@ function Refer(props) {
   const [ratio1, setRatio1] = useState(1);
   const [reserve0, setReserve0] = useState(1);
   const [reserve1, setReserve1] = useState(1);
-  const [openSlippage, setOpenSlippage] = useState(false);
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
-
-  const handleCloseSlippage = () => {
-    setOpenSlippage(false);
-  };
-  const handleShowSlippage = () => {
-    setOpenSlippage(true);
-  };
   const [openSigning, setOpenSigning] = useState(false);
+  let [liquidity, setLiquidity] = useState();
+  const { activePublicKey } = useContext(AppContext);
+
   const handleCloseSigning = () => {
     setOpenSigning(false);
   };
   const handleShowSigning = () => {
     setOpenSigning(true);
   };
-  const [openTokenAModal, setOpenTokenAModal] = useState(false);
-  const handleCloseTokenAModal = () => {
-    setOpenTokenAModal(false);
-  };
-  const handleShowTokenAModal = () => {
-    setOpenTokenAModal(true);
-  };
-  const [openTokenBModal, setOpenTokenBModal] = useState(false);
-  const handleCloseTokenBModal = () => {
-    setOpenTokenBModal(false);
-  };
-  const handleShowTokenBModal = () => {
-    setOpenTokenBModal(true);
-  };
-  const [expanded, setExpanded] = React.useState(false);
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
-  };
-  let [liquidity, setLiquidity] = useState();
 
   console.log("selectedWallet", selectedWallet);
   const resetData = () => {
@@ -229,7 +177,6 @@ function Refer(props) {
         console.log("holdArr", holdArr);
         setTokenList(res.data.tokens);
         setIsTokenList(true);
-        // setTokenList(oldArray => [...oldArray, CSPR])
       })
       .catch((error) => {
         console.log(error);
@@ -836,7 +783,6 @@ function Refer(props) {
             Buffer.from(caller, "hex")
           );
           let entryPoint = "add_liquidity_cspr_js_client";
-          // Set contract installation deploy (unsigned).
           let deploy = await makeDeploy(
             publicKey,
             contractHashAsByteArray,
@@ -941,7 +887,6 @@ function Refer(props) {
           );
           let entryPoint = "add_liquidity_cspr_js_client";
 
-          // Set contract installation deploy (unsigned).
           let deploy = await makeDeploy(
             publicKey,
             contractHashAsByteArray,
@@ -959,7 +904,6 @@ function Refer(props) {
               let result = await putdeploy(signedDeploy, enqueueSnackbar);
               console.log("result", result);
             } else {
-              // let Torus = new Torus();
               torus = new Torus();
               console.log("torus", torus);
               await torus.init({
@@ -1048,7 +992,6 @@ function Refer(props) {
         );
         let entryPoint = "add_liquidity_js_client";
 
-        // Set contract installation deploy (unsigned).
         let deploy = await makeDeploy(
           publicKey,
           contractHashAsByteArray,
@@ -1066,7 +1009,6 @@ function Refer(props) {
             let result = await putdeploy(signedDeploy, enqueueSnackbar);
             console.log("result", result);
           } else {
-            // let Torus = new Torus();
             torus = new Torus();
             console.log("torus", torus);
             await torus.init({

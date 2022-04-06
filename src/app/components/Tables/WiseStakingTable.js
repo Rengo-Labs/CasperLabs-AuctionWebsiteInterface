@@ -1,12 +1,10 @@
 // React
 import React from "react";
 import { useState, useEffect, useContext } from "react";
-
 // Components
 import TableDefault from "../DefaultContent/TableDefault";
 import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
 import { AppContext } from "../../containers/App/Application";
-
 // Material UI
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -18,30 +16,26 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TablePagination from "@mui/material/TablePagination";
 import { StyledEngineProvider } from "@mui/styled-engine";
-import axios from "axios";
-
 // Bootstrap
 import "../../assets/css/bootstrap.min.css";
-
 // Custom CSS
 import "../../assets/css/stakingTables.css";
 
 // Content
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
+const cells = [
+  "STAKE CREATED",
+  "STAKE PROGRESS",
+  "LOCK UP",
+  "STAKE ID",
+  "AMOUNT STAKED",
+  "INTEREST/APY",
+  "ACTIONS",
 ];
 
 function WiseStakingTable(props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const { activePublicKey, setActivePublicKey } = useContext(AppContext);
+  const { activePublicKey } = useContext(AppContext);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -65,46 +59,14 @@ function WiseStakingTable(props) {
             <Table aria-label="Wise Staking">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    STAKE CREATED
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    STAKE PROGRESS
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    {" "}
-                    LOCK UP
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    {" "}
-                    STAKE ID
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    AMOUNT STAKED
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    INTEREST/APY
-                  </TableCell>
-                  <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                    ACTIONS
-                  </TableCell>
+                  {cells.map((cell) => (
+                    <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                      {cell}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
-            </TableRow>
-          ))}  */}
                 {activePublicKey === null ? null : props.stake}
               </TableBody>
             </Table>
@@ -131,7 +93,7 @@ function WiseStakingTable(props) {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={rows.length}
+              count={cells.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
