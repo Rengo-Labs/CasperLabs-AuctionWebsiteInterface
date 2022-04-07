@@ -160,11 +160,11 @@ function Staking() {
           }
           handleCloseSigning();
           let variant = "success";
-          enqueueSnackbar("Approved Successfully", { variant });
+          enqueueSnackbar("Stake Created Successfully!", { variant });
         } catch {
           handleCloseSigning();
           let variant = "Error";
-          enqueueSnackbar("Unable to Approve", { variant });
+          enqueueSnackbar("Unable to Create Stake!", { variant });
         }
       } catch {
         handleCloseSigning();
