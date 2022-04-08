@@ -1,0 +1,20 @@
+button.tableBtn {
+  background-color: white;
+  border: 2px solid #3c44b1;
+  padding: 10px;
+  color: #3c44b1;
+  font-size: 14px;
+}
+
+button.tableBtn:hover {
+  background-color: #3c44b1;
+  color: white;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+}
+.buttonsWrapper {
+  width: 100%;
+  background-color: aliceblue;
+  padding: 20px 40px;
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+}

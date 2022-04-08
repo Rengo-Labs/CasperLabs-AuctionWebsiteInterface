@@ -1,0 +1,33 @@
+.cardSkeleton {
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.cardContent {
+  background-color: #eee;
+  min-height: 30px;
+  margin-bottom: 0.8rem;
+}
+
+.divider {
+  width: 50%;
+  background-color: #3c44b1;
+  border: 2px solid #3c44b1;
+  overflow: hidden;
+  height: 1px;
+}
+
+.titleWrapper {
+  margin-top: 2rem;
+}
+
+.helpOutlineIcon {
+  font-size: 0.875rem;
+}
+
+.helpOutlineIcon:hover {
+  color: white;
+  background-color: #3c44b1;
+  cursor: pointer;
+  border-radius: 50%;
+}
