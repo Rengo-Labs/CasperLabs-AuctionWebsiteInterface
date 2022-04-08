@@ -169,7 +169,7 @@ function Staking() {
       } catch {
         handleCloseSigning();
         let variant = "Error";
-        enqueueSnackbar("Input values are too large", { variant });
+        enqueueSnackbar("Unable to Create Stake", { variant });
       }
     } else {
       handleCloseSigning();
