@@ -4,10 +4,11 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import HomeScreen from "../Pages/Users/HomeScreen";
 import Refer from "../Pages/Users/Refer";
 import Staking from "../Pages/Users/Staking";
+import { CookiesProvider } from "react-cookie";
 
 export const AppContext = createContext({
   activePublicKey: null,
-  setActivePublicKey: (activePublicKey) => {},
+  setActivePublicKey: (activePublicKey) => { },
 });
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
       return <Route component={Staking} />;
     } else if (path === "/refer") {
       return <Route component={Refer} />;
+    } else if (path === "/home/:user") {
+      return <Route component={HomeScreen} />;
     } else {
       return <Route component={HomeScreen} />;
     }
@@ -27,24 +30,25 @@ function App() {
 
   return (
     <SnackbarProvider maxSnack={3}>
-      <AppContext.Provider
-        value={{
-          activePublicKey,
-          setActivePublicKey,
-        }}
-      >
-        <BrowserRouter>
-          <Switch>
-            <LoginRegisterRedirectCheck exact path="/" />
-            <LoginRegisterRedirectCheck exact path="/register" />
-            <LoginRegisterRedirectCheck exact path="/marketPlace" />
-            <LoginRegisterRedirectCheck exact path="/admin-login" />
-            <LoginRegisterRedirectCheck exact path="/login" />
-            <Route exact path="/staking" component={Staking} />
-            <Route path="/refer" component={Refer} />
-          </Switch>
-        </BrowserRouter>
-      </AppContext.Provider>
+      <CookiesProvider>
+        <AppContext.Provider
+          value={{
+            activePublicKey,
+            setActivePublicKey,
+          }}
+        >
+          <BrowserRouter>
+            <Switch>
+              <Route exact path="/staking" component={Staking} />
+              <Route exact path="/refer" component={Refer} />
+              <Route exact path="/home/:user" component={HomeScreen} />
+              <Route exact path="/home" component={HomeScreen} />
+              {/* <LoginRegisterRedirectCheck exact path="/:user" /> */}
+              <LoginRegisterRedirectCheck exact path="/" />
+            </Switch>
+          </BrowserRouter>
+        </AppContext.Provider>
+      </CookiesProvider>
     </SnackbarProvider>
   );
 }

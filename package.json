@@ -31,6 +31,7 @@
     "react": "^16.8.0 || ^17.0.0",
     "react-bootstrap": "^1.0.0",
     "react-bootstrap-range-slider": "^3.0.3",
+    "react-cookie": "^4.1.1",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "^16.8.0 || ^17.0.0",
     "react-hot-toast": "^2.2.0",

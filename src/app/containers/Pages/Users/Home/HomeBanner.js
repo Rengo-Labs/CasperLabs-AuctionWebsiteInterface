@@ -78,7 +78,7 @@ function HomeBanner() {
               onClick={() => history.push("/staking")}
               style={{ cursor: "pointer" }}
             >
-              <HomeCards stake={globalData.stakeCount} title={"YOUR STAKES"} />
+              <HomeCards stake={globalData.stakeCount ? globalData.stakeCount : 0} title={"YOUR STAKES"} />
             </div>
           </div>
           <div className="col-12 col-md-3">
@@ -88,7 +88,7 @@ function HomeBanner() {
               style={{ cursor: "pointer" }}
             >
               <HomeCards
-                stake={globalData.reservationReferrerCount}
+                stake={globalData.reservationReferrerCount ? globalData.reservationReferrerCount : 0}
                 title={"YOUR REFEREALS"}
               />
             </div>

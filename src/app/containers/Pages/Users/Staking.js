@@ -35,6 +35,7 @@ import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
 import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
 import { useSnackbar } from "notistack";
 import Torus from "@toruslabs/casper-embed";
+import { useCookies } from "react-cookie";
 
 // Content
 const handleStakingWISEModal = createContext();
@@ -50,7 +51,7 @@ function Staking() {
     localStorage.getItem("selectedWallet")
   );
   const { activePublicKey } = useContext(AppContext);
-
+  const [cookies, setCookie] = useCookies(["refree"]);
   // Handlers
   const handleCloseStakingWISEModal = () => {
     setOpenStakingWISEModal(false);

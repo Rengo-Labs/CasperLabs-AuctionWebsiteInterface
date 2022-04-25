@@ -13,6 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { StyledEngineProvider } from "@mui/styled-engine";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
   CasperServiceByJsonRPC, CLPublicKey
@@ -33,6 +34,8 @@ import { getStateRootHash } from "../../../components/blockchain/GetStateRootHas
 import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
 import HeaderHome from "../../../components/Headers/Header";
 import { AppContext } from "../../App/Application";
+import { useCookies } from "react-cookie";
+import ReferalModal from "../../../components/Modals/ReferalModal";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Refer(props) {
   const { enqueueSnackbar } = useSnackbar();
+  const [cookies, setCookie] = useCookies(["referee"]);
+  console.log("cookies", cookies);
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
@@ -54,9 +59,6 @@ function Refer(props) {
 
 
   console.log("selectedWallet", selectedWallet);
-
-
-
   useEffect(() => {
     if (
       activePublicKey !== "null" &&
@@ -115,6 +117,13 @@ function Refer(props) {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [modalShow, setModalShow] = React.useState(false);
+  const [openReferalModal, setOpenReferalModal] = useState(false);
+  const handleCloseReferalModal = () => {
+    setOpenReferalModal(false);
+  };
+  const handleShowReferalModal = () => {
+    setOpenReferalModal(true);
+  };
   return (
     <div className="account-page">
       <div className="main-wrapper">
@@ -247,12 +256,12 @@ function Refer(props) {
                           </span>
                         </h5>
                         <button
-                          onClick={() => setModalShow(true)}
+                          onClick={handleShowReferalModal}
                           className="my-3 tableBtn"
                         >
-                          Create Wise Refferal Link
+                          Create Wise Refferal sLink
                         </button>
-                        <Modal
+                        {/* <Modal
                           show={modalShow}
                           onHide={() => setModalShow(false)}
                           size="lg"
@@ -286,11 +295,11 @@ function Refer(props) {
                             {activePublicKey === null ? (
                               <h4 className="text-center">
                                 {" "}
-                                https://wisetoken.net/?w=YOUR-WALLET-ADDRESS
+                                http://localhost:3000/home/YOUR-WALLET-ADDRESS
                               </h4>
                             ) : (
                               <h4 className="text-center">
-                                https://wisetoken.net/?w={activePublicKey}
+                                http://localhost:3000/home/{activePublicKey}
                               </h4>
                             )}
                           </Modal.Body>
@@ -315,7 +324,7 @@ function Refer(props) {
                                   className="tableBtn"
                                   onClick={() => {
                                     navigator.clipboard.writeText(
-                                      "https://wisetoken.net/?w=" +
+                                      "http://localhost:3000/home/" +
                                       activePublicKey
                                     );
                                     toast.success(
@@ -330,7 +339,7 @@ function Refer(props) {
                               </div>
                             )}
                           </Modal.Footer>
-                        </Modal>
+                        </Modal> */}
                       </div>
                     </div>
                   </TableContainer>
@@ -352,6 +361,10 @@ function Refer(props) {
           </div>
         </div>
       </div>
+      <ReferalModal
+        show={openReferalModal}
+        handleClose={handleCloseReferalModal}
+      />
     </div>
   );
 }

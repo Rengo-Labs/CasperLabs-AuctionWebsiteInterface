@@ -4,6 +4,7 @@ import { Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
 import "../../assets/css/style.css";
 import Casper from "../../assets/img/cspr.png";
+import Exit from "../../assets/img/exit.svg";
 import Torus from "../../assets/img/torus.png";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
@@ -23,7 +24,7 @@ function WalletModal(props) {
                 fontSize: "15px",
               }}
             >
-              X
+              <img src={Exit} alt="exit" width="15" />
             </span>
           </strong>
         </Typography>
