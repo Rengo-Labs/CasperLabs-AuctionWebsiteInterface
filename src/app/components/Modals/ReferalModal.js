@@ -86,13 +86,13 @@ function ReferalModal(props) {
               <div className="text-center ">
                 <Typography gutterBottom variant="h6" >
                   {" "}
-                  http://localhost:3000/home/YOUR-WALLET-ADDRESS
+                  http://localhost:3001/home/YOUR-WALLET-ADDRESS
                 </Typography>
               </div>
             ) : (
               <div className="text-center">
                 <Typography gutterBottom variant="h6" >
-                  http://localhost:3000/home/{activePublicKey}
+                  http://localhost:3001/home/{activePublicKey}
                 </Typography>
               </div>
             )}
@@ -123,7 +123,7 @@ function ReferalModal(props) {
               className="tableBtn"
               onClick={() => {
                 navigator.clipboard.writeText(
-                  "http://localhost:3000/home/" +
+                  "http://localhost:3001/home/" +
                   activePublicKey
                 );
                 toast.success(

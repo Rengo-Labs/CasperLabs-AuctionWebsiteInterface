@@ -1,44 +1,43 @@
 // React
-import React from "react";
-import { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 // Material UI
-import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { StyledEngineProvider } from "@mui/styled-engine";
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import Tabs from "@mui/material/Tabs";
+import Typography from "@mui/material/Typography";
+import { StyledEngineProvider } from "@mui/styled-engine";
+import PropTypes from "prop-types";
 // Components
-import WiseStakingTable from "../Tables/WiseStakingTable";
-import InsuranceStakingTable from "../Tables/InsuranceStakingTable";
-import CollateralStakingTable from "../Tables/CollateralStakingTable";
-import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
-import { AppContext } from "../../containers/App/Application";
+import LinearProgress from '@mui/material/LinearProgress';
+import Torus from "@toruslabs/casper-embed";
 import {
   CasperServiceByJsonRPC,
   CLByteArray,
   CLPublicKey,
   CLValueBuilder,
-  RuntimeArgs,
+  RuntimeArgs
 } from "casper-js-sdk";
+import { useSnackbar } from "notistack";
+import { AppContext } from "../../containers/App/Application";
 import {
   ROUTER_PACKAGE_HASH,
-  WISE_CONTRACT_HASH,
+  WISE_CONTRACT_HASH
 } from "../blockchain/AccountHashes/Addresses";
-import { makeDeploy } from "../blockchain/MakeDeploy/MakeDeploy";
-import { signdeploywithcaspersigner } from "../blockchain/SignDeploy/SignDeploy";
-import { putdeploy } from "../blockchain/PutDeploy/PutDeploy";
-import Torus from "@toruslabs/casper-embed";
-import { useSnackbar } from "notistack";
 import { getDeploy } from "../blockchain/GetDeploy/GetDeploy";
-import { CHAINS, SUPPORTED_NETWORKS } from "../Headers/Header";
+import { makeDeploy } from "../blockchain/MakeDeploy/MakeDeploy";
 import { NODE_ADDRESS } from "../blockchain/NodeAddress/NodeAddress";
+import { putdeploy } from "../blockchain/PutDeploy/PutDeploy";
+import { signdeploywithcaspersigner } from "../blockchain/SignDeploy/SignDeploy";
+import WiseStakingTableButtons from "../Buttons/WiseStakingTableButtons";
+import { CHAINS, SUPPORTED_NETWORKS } from "../Headers/Header";
+import CollateralStakingTable from "../Tables/CollateralStakingTable";
+import InsuranceStakingTable from "../Tables/InsuranceStakingTable";
+import WiseStakingTable from "../Tables/WiseStakingTable";
 //Custom CSS
 import "../../assets/css/stakingTabs.css";
 
@@ -75,6 +74,31 @@ function a11yProps(index) {
   };
 }
 
+
+function LinearProgressWithLabel(props) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ width: '100%', mr: 1 }}>
+        <LinearProgress variant="determinate" {...props} />
+      </Box>
+      <Box sx={{ minWidth: 35 }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(
+          props.value,
+        )}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
+
+LinearProgressWithLabel.propTypes = {
+  /**
+   * The value of the progress indicator for the determinate and buffer variants.
+   * Value between 0 and 100.
+   */
+  value: PropTypes.number.isRequired,
+};
+
+
 function WiseStakingTabs() {
   const { activePublicKey } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
@@ -84,13 +108,15 @@ function WiseStakingTabs() {
   const [regularStaking] = useState(0);
   const [insuranceStaking] = useState(0);
   const [collateralStaking] = useState(0);
-  const [stakeData, setStakeData] = useState([]);
+  // const [stakeData, setStakeData] = useState([]);
   const [openSigning, setOpenSigning] = useState(false);
   let [selectedWallet] = useState(localStorage.getItem("selectedWallet"));
 
   let regStake = `Regular Staking  (${regularStaking})`;
   let insureStake = `Insurance Staking  (${insuranceStaking})`;
   let collStake = `Collateral Staking  (${collateralStaking})`;
+  const [progress, setProgress] = React.useState(10);
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -103,21 +129,79 @@ function WiseStakingTabs() {
   const handleCloseSigning = () => {
     setOpenSigning(false);
   };
-
+  let [stakeData, setStakeData] =
+    useState(
+      [{
+        closeDay: "15000000000",
+        cmShares: "100000000000",
+        createdAt: "2022-07-18T13:03:22.836Z",
+        currentShares: "99000000000",
+        daiEquivalent: "123",
+        id: "123",
+        lastScrapeDay: "15000000000",
+        lockDays: "730",
+        lockDaysSeconds: 730 * 24 * 60 * 60,
+        penalty: "10000000000",
+        principal: "10000000000",
+        referrer: "123",
+        referrerSharesPenalized: "1000000000",
+        reward: "10000000000",
+        scrapeCount: "1",
+        scrapedYodas: "10000000000",
+        shares: "100000000000",
+        sharesPenalized: "1000000000",
+        staker: "123",
+        startDay: "2022-07-18T13:03:24.506Z",
+        startDayTimeStamp: Math.floor(new Date("Fri Aug 19 2022 18:10:20").getTime() / 1000),
+        updatedAt: "2022-07-18T13:03:24.506Z",
+      }, {
+        closeDay: "15000000000",
+        cmShares: "100000000000",
+        createdAt: "2022-07-18T13:03:22.836Z",
+        currentShares: "99000000000",
+        daiEquivalent: "123",
+        id: "123",
+        lastScrapeDay: "15000000000",
+        lockDays: "365",
+        lockDaysSeconds: 365 * 24 * 60 * 60,
+        penalty: "10000000000",
+        principal: "10000000000",
+        referrer: "123",
+        referrerSharesPenalized: "1000000000",
+        reward: "10000000000",
+        scrapeCount: "1",
+        scrapedYodas: "10000000000",
+        shares: "100000000000",
+        sharesPenalized: "1000000000",
+        staker: "123",
+        startDay: "2022-07-18T13:03:24.506Z",
+        startDayTimeStamp: Math.floor(new Date("2022-07-18T13:03:24.506Z").getTime() / 1000),
+        updatedAt: "2022-07-18T13:03:24.506Z",
+      }]
+    )
   useEffect(() => {
-    axios
-      .post("/getStakeData", { stakerId: "123" })
-      .then((res) => {
-        console.log("getStakeData", res.data);
-        console.log("getStakeData", res.data.stakesData);
-        res.data.stakesData[1] = res.data.stakesData[0];
-        setStakeData(res.data.stakesData);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-  }, [activePublicKey]);
+    // axios
+    //   .post("/getStakeData", { stakerId: "123" })
+    //   .then((res) => {
+    // console.log("getStakeData", res.data);
+    // console.log("getStakeData", res.data.stakesData);
+    // res.data.stakesData[1] = res.data.stakesData[0];
+    // setStakeData(res.data.stakesData);
+    console.log("stakeData", stakeData);
+    console.log("stakeData.startDayTimeStamp", stakeData[0].startDayTimeStamp);
+    console.log("lockDaysSeconds", stakeData[0].lockDaysSeconds);
+    let lastDay = stakeData[0].startDayTimeStamp + stakeData[0].lockDaysSeconds
+    let currentTImeStamp = Math.floor(Date.now() / 1000);
+    let pct = (100 * lastDay / currentTImeStamp).toFixed(2)
+    console.log("lastDay", lastDay);
+    console.log("currentTImeStamp", currentTImeStamp);
+    console.log("pct", pct);
+    // })
+    // .catch((error) => {
+    //   console.log(error);
+    //   console.log(error.response);
+    // });
+  }, [activePublicKey, stakeData]);
 
   async function unstakeMakeDeploy(stakeData) {
     handleShowSigning();
@@ -215,7 +299,13 @@ function WiseStakingTabs() {
         sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
       >
         <TableCell>{stakeData.createdAt}</TableCell>
-        <TableCell>{stakeData.lockDays}</TableCell>
+        <TableCell>
+          {/* {stakeData.lockDays} */}
+          <Box sx={{ width: '100%' }}>
+            <LinearProgressWithLabel value={progress} />
+          </Box>
+
+        </TableCell>
         <TableCell>{stakeData.lockDays}</TableCell>
         <TableCell>{stakeData.id}</TableCell>
         <TableCell>{stakeData.principal}</TableCell>

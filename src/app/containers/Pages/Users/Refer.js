@@ -36,6 +36,8 @@ import HeaderHome from "../../../components/Headers/Header";
 import { AppContext } from "../../App/Application";
 import { useCookies } from "react-cookie";
 import ReferalModal from "../../../components/Modals/ReferalModal";
+import { Avatar, CardHeader } from "@material-ui/core";
+import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +54,7 @@ function Refer(props) {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
+  const [userWiseBalance, setUserWiseBalance] = useState(0);
   let [torus, setTorus] = useState();
   let [mainPurse, setMainPurse] = useState();
 
@@ -124,6 +127,18 @@ function Refer(props) {
   const handleShowReferalModal = () => {
     setOpenReferalModal(true);
   };
+  const [globalData, setGlobalData] = useState({});
+  useEffect(() => {
+    axios
+      .get("/getGlobalData")
+      .then((res) => {
+        setGlobalData(res.data.globalData[0]);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response);
+      });
+  }, []);
   return (
     <div className="account-page">
       <div className="main-wrapper">
@@ -131,11 +146,21 @@ function Refer(props) {
           <HeaderHome
             setSelectedWallet={setSelectedWallet}
             selectedWallet={selectedWallet}
+            setUserWiseBalance={setUserWiseBalance}
             setTorus={setTorus}
             selectedNav={"Refer"}
           />
           <div
-            className="content"
+            className=""
+            style={{ paddingTop: "100px" }}
+            position="absolute"
+          ></div>
+          <span className="d-flex justify-content-center">
+            <GlobalDataHeader globalData={globalData}
+            />
+          </span>
+          <div
+            className=""
             style={{ paddingTop: "100px" }}
             position="absolute"
           ></div>
@@ -157,6 +182,33 @@ function Refer(props) {
                     <p className="m-0 text-muted wiseStaking-caption">
                       Stakes opened with your referral address
                     </p>
+                  </section>
+                </div>
+                <div className="row no-gutters ml-auto align-items-center">
+                  <section >
+                    <h1 className="text-dark font-weight-bold m-0 wiseStaking-heading">
+                      {localStorage.getItem("Address") ? (
+                        <CardHeader
+                          avatar={<Avatar src="" aria-label="Torus Wallet" />}
+                          title={<a
+                            href={
+                              "https://testnet.cspr.live/account/" +
+                              localStorage.getItem("Address")
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className=" align-items-center justify-content-center text-center"
+                            style={{ color: "#ea3429" }}
+                          >
+                            <span style={{ cursor: "pointer" }}>
+                              {localStorage.getItem("Address").slice(0, 10)}. . .
+                            </span>
+                          </a>}
+                          subheader={`Total: ${userWiseBalance} WISE`}
+                        />
+                      ) : (null)}
+
+                    </h1>
                   </section>
                 </div>
               </div>
@@ -261,85 +313,7 @@ function Refer(props) {
                         >
                           Create Wise Refferal sLink
                         </button>
-                        {/* <Modal
-                          show={modalShow}
-                          onHide={() => setModalShow(false)}
-                          size="lg"
-                          aria-labelledby="contained-modal-title-vcenter"
-                          centered
-                          className="text-white"
-                        >
-                          <Modal.Header
-                            closeButton
-                            style={{ backgroundColor: "white" }}
-                          >
-                            <Modal.Title
-                              id="contained-modal-title-vcenter"
-                              style={{ marginLeft: "40%", color: "#484DA4" }}
-                            >
-                              Your Refferal Link
-                            </Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body className="text-dark">
-                            <p className="text-center">
-                              Stakes opened through this link will generate
-                              rewards for staker and referrer. To participate
-                              you must have CM referrer status by referring
-                              total of $10,000 equivalent in WISE stakes.
-                            </p>
-                            <p className="text-center">
-                              Note: referrer rewards are only generated for
-                              stakes with minimum duration of 365 days.
-                            </p>
-
-                            {activePublicKey === null ? (
-                              <h4 className="text-center">
-                                {" "}
-                                http://localhost:3000/home/YOUR-WALLET-ADDRESS
-                              </h4>
-                            ) : (
-                              <h4 className="text-center">
-                                http://localhost:3000/home/{activePublicKey}
-                              </h4>
-                            )}
-                          </Modal.Body>
-                          <Modal.Footer>
-                            {activePublicKey === null ? (
-                              <div className="mx-auto">
-                                <button
-                                  disabled
-                                  className="btn disabled"
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(
-                                      activePublicKey
-                                    );
-                                  }}
-                                >
-                                  Copy Refferal Link
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="mx-auto">
-                                <button
-                                  className="tableBtn"
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(
-                                      "http://localhost:3000/home/" +
-                                      activePublicKey
-                                    );
-                                    toast.success(
-                                      "Successfully Copied wallet",
-                                      { id: "copyActivePublicKey" }
-                                    );
-                                  }}
-                                >
-                                  Copy Refferal Link
-                                </button>
-                                <Toaster />
-                              </div>
-                            )}
-                          </Modal.Footer>
-                        </Modal> */}
+                     
                       </div>
                     </div>
                   </TableContainer>

@@ -1,12 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import HomeCards from "../../../../components/Cards/HomeCards";
 import { AppContext } from "../../../App/Application";
-import axios from "axios";
 // Material UI Icons
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { CLPublicKey } from "casper-js-sdk";
+import { WISE_CONTRACT_HASH } from "../../../../components/blockchain/AccountHashes/Addresses";
 
 function HomeBanner() {
   const { activePublicKey } = useContext(AppContext);
@@ -25,8 +26,8 @@ function HomeBanner() {
       axios
         .post("/wiseBalanceAgainstUser", {
           contractHash:
-            "2c4275cc575806d7c5108635aa70aa82bee52d02a368bc765d700943ff082a8a",
-          user: CLPublicKey.fromHex(activePublicKey).toAccountHashStr(),
+            WISE_CONTRACT_HASH,
+          user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
         })
         .then((res) => {
           console.log("wiseBalanceAgainstUser", res.data);
@@ -112,7 +113,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h3>{globalData.totalStaked / 10 ** 9} WISE</h3>
+                  <h3>{globalData.totalStaked ? globalData.totalStaked / 10 ** 9 : 0} WISE</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -143,7 +144,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.totalShares / 10 ** 9} SHRS</h2>
+                  <h2>{globalData.totalShares ? globalData.totalShares / 10 ** 9 : 0} SHRS</h2>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -174,7 +175,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.referrerShares / 10 ** 9} rSHRS</h2>
+                  <h2>{globalData.referrerShares ? globalData.referrerShares / 10 ** 9 : 0} rSHRS</h2>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -205,7 +206,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.sharePrice / 10 ** 9} WISE</h2>
+                  <h2>{globalData.sharePrice ? globalData.sharePrice / 10 ** 9 : 0} WISE</h2>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />

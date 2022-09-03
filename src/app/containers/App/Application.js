@@ -21,7 +21,7 @@ function App() {
       return <Route component={Staking} />;
     } else if (path === "/refer") {
       return <Route component={Refer} />;
-    } else if (path === "/home/:user") {
+    } else if (path === "/home/:refree") {
       return <Route component={HomeScreen} />;
     } else {
       return <Route component={HomeScreen} />;
@@ -41,7 +41,7 @@ function App() {
             <Switch>
               <Route exact path="/staking" component={Staking} />
               <Route exact path="/refer" component={Refer} />
-              <Route exact path="/home/:user" component={HomeScreen} />
+              <Route exact path="/home/:refree" component={HomeScreen} />
               <Route exact path="/home" component={HomeScreen} />
               {/* <LoginRegisterRedirectCheck exact path="/:user" /> */}
               <LoginRegisterRedirectCheck exact path="/" />

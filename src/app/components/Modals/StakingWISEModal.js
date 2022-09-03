@@ -19,18 +19,22 @@ import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
-import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { CLPublicKey } from "casper-js-sdk";
-import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../containers/App/Application";
+import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
+import { useCookies } from "react-cookie";
 
 // -------------------- COMPONENT FUNCTION --------------------
 function StakingWISEModal(props) {
+  console.log("propsprops", props);
   const { activePublicKey } = useContext(AppContext);
   const [balance, setBalance] = useState("");
   const [balanceOpen, setBalanceOpen] = useState(false);
-  const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState();
+  const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState(5000000000);
+  const [durationBonus, setDurationBonus] = useState(0);
+  // const [duration, setDuration] = useState(0);
   const [percentagedBalance, setPercentagedBalance] = useState();
   const [year, setYear] = useState("");
   const [days, setDays] = useState("");
@@ -43,7 +47,8 @@ function StakingWISEModal(props) {
   const [daysCheck, setDaysCheck] = useState(false);
   const [amountCheck, setAmountCheck] = useState(false);
   const [renderButtonInactive, setRenderButtonInactive] = useState(true);
-
+  console.log("percentagedBalance", percentagedBalance);
+  const [cookies, setCookie] = useCookies(["refree"]);
   // -------------------- Life Cycle Methods--------------------
   useEffect(() => {
     let cancel = false;
@@ -60,7 +65,7 @@ function StakingWISEModal(props) {
         })
         .then((res) => {
           if (cancel) return;
-          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
+          // setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
         })
         .catch((error) => {
           console.log(error);
@@ -101,20 +106,26 @@ function StakingWISEModal(props) {
   // -------------------- Event Handlers --------------------
 
   const balanceOnChange = (event) => {
-    let value = event.target.value;
-    let percent = (100 * value) / wiseBalanceAgainstUser;
+    if (percentagedBalance > wiseBalanceAgainstUser) {
+      setPercentagedBalance(wiseBalanceAgainstUser);
+      setBalance(100)
+    }
+    else {
+      let value = event.target.value;
+      let percent = (100 * value) / wiseBalanceAgainstUser;
 
-    setPercentagedBalance(value);
-    setAmountCheck(true);
-    if (percent == 25) {
-      setBalance(25);
-    } else if (percent == 50) {
-      setBalance(50);
-    } else if (percent == 75) {
-      setBalance(75);
-    } else {
-      console.log("empty");
-      setBalance("");
+      setPercentagedBalance(value);
+      setAmountCheck(true);
+      if (percent == 25) {
+        setBalance(25);
+      } else if (percent == 50) {
+        setBalance(50);
+      } else if (percent == 75) {
+        setBalance(75);
+      } else {
+        console.log("empty");
+        setBalance("");
+      }
     }
   };
 
@@ -139,6 +150,7 @@ function StakingWISEModal(props) {
   const handleDaysChange = (event) => {
     setYear(event.target.value);
     setDays(event.target.value * 365);
+    setDurationBonus((event.target.value) * 5)
     setDaysCheck(true);
   };
 
@@ -151,8 +163,14 @@ function StakingWISEModal(props) {
   };
 
   const handleAddyChange = (event) => {
+    console.log("event.target.value", event.target.value);
     setAddy(event.target.value);
-    setReferrerAddress(referrer);
+    if (event.target.value === "Cookie Reffral Addy") {
+      setReferrerAddress(cookies.refree);
+    } else {
+      setReferrerAddress(referrer);
+    }
+
     setReferrerCheck(true);
   };
 
@@ -205,6 +223,7 @@ function StakingWISEModal(props) {
                         </InputLabel>
                         <OutlinedInput
                           id="outlined-adornment-amount"
+                          type="number"
                           value={percentagedBalance}
                           onChange={balanceOnChange}
                           placeholder="Staking Amount"
@@ -253,7 +272,18 @@ function StakingWISEModal(props) {
                           id="outlined-adornment-amount"
                           value={days}
                           onChange={(e) => {
-                            setDays(e.target.value);
+                            if (e.target.value < 15330) {
+                              setDays(e.target.value);
+                              if (((e.target.value / 365) * 5).toFixed(2) < 30) {
+                                setDurationBonus(((e.target.value / 365) * 5).toFixed(2))
+                              }
+                              else {
+                                setDurationBonus(30.00)
+                              }
+                            } else {
+                              setDays(15330)
+                              setDurationBonus(30.00)
+                            }
                             setYear("");
                           }}
                           placeholder="Staking Duration"
@@ -302,6 +332,7 @@ function StakingWISEModal(props) {
                         <OutlinedInput
                           id="outlined-adornment-amount"
                           value={referrerAddress}
+                          disabled
                           placeholder="account-hash-000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
@@ -401,7 +432,7 @@ function StakingWISEModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        0.00 SHRS
+                        {percentagedBalance ? (parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) : (0)} SHRS
                       </div>
                     </div>
                   </Typography>
@@ -413,9 +444,10 @@ function StakingWISEModal(props) {
                       </div>
                       <div
                         className="col-md-12 col-lg-4"
-                        style={{ textAlign: "right" }}
+                        style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +0.00%
+                        +{durationBonus.toFixed(2)}%
+
                       </div>
                     </div>
                   </Typography>
@@ -427,9 +459,9 @@ function StakingWISEModal(props) {
                       </div>
                       <div
                         className="col-md-12 col-lg-4"
-                        style={{ textAlign: "right" }}
+                        style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +0.00%
+                        {referrerAddress ? "+10.00%" : "+0.00%"}
                       </div>
                     </div>
                   </Typography>
@@ -443,7 +475,7 @@ function StakingWISEModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        0.00 SHRS
+                        {percentagedBalance ? (parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0) : (0)}  SHRS
                       </div>
                     </div>
                   </Typography>

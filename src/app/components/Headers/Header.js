@@ -1,8 +1,9 @@
 import Torus from "@toruslabs/casper-embed";
-import { Signer } from "casper-js-sdk";
+import axios from "axios";
+import { CLPublicKey, Signer } from "casper-js-sdk";
 import Cookies from "js-cookie";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../../assets/css/bootstrap.min.css";
@@ -10,8 +11,9 @@ import "../../assets/css/style.css";
 import Logo from "../../assets/img/Logo.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
-import WalletModal from "../Modals/WalletModal";
 import { AppContext } from "../../containers/App/Application";
+import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
+import WalletModal from "../Modals/WalletModal";
 
 export const CHAINS = {
   CASPER_MAINNET: "casper",
@@ -133,6 +135,30 @@ function HeaderHome(props) {
     console.log("selected wallet from props: ", props.selectedWallet);
     // eslint-disable-next-line
   }, [props.selectedWallet]);
+  useEffect(() => {
+    // console.log(
+    //   "localStorage.getItem(selectedWallet)",
+    //   localStorage.getItem("selectedWallet")
+    // );
+    if (
+      activePublicKey && activePublicKey != null && activePublicKey != undefined && activePublicKey != 'null'
+    ) {
+      axios
+        .post("/wiseBalanceAgainstUser", {
+          contractHash: WISE_CONTRACT_HASH,
+          user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
+        })
+        .then((res) => {
+          console.log("res", res);
+          props.setUserWiseBalance(res.data.balance)
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+        });
+    }
+    // eslint-disable-next-line
+  }, [activePublicKey])
 
   const login = async () => {
     try {
@@ -263,7 +289,7 @@ function HeaderHome(props) {
         className="navbar navbar-expand-lg header-nav"
         style={{ width: "100%" }}
       >
-        <div className="navbar-header">
+        <span className="navbar-header">
           <a
             id="mobile_btn"
             href="/"
@@ -292,10 +318,10 @@ function HeaderHome(props) {
               width="50"
             />
           </Link>
-        </div>
+        </span>
 
-        <div className="main-menu-wrapper">
-          <div className="menu-header">
+        <span className="main-menu-wrapper">
+          <span className="menu-header">
             <a
               id="menu_close"
               className="menu-close"
@@ -308,7 +334,7 @@ function HeaderHome(props) {
             >
               <i className="fas fa-times"></i> Close
             </a>
-          </div>
+          </span>
           <ul
             className="main-nav "
             style={{
@@ -316,7 +342,7 @@ function HeaderHome(props) {
             }}
           >
             {isLoading ? (
-              <div className="text-center">
+              <span className="text-center">
                 {/* <Spinner
                   animation="border"
                   role="status"
@@ -324,7 +350,7 @@ function HeaderHome(props) {
                 >
                   <span className="sr-only">Loading...</span>
                 </Spinner> */}
-              </div>
+              </span>
             ) : localStorage.getItem("Address") &&
               localStorage.getItem("Address") !== null &&
               localStorage.getItem("Address") !== "null" ? (
@@ -396,8 +422,8 @@ function HeaderHome(props) {
               className="login-link "
             >
               {localStorage.getItem("Address") &&
-              localStorage.getItem("Address") !== null &&
-              localStorage.getItem("Address") !== "null" ? (
+                localStorage.getItem("Address") !== null &&
+                localStorage.getItem("Address") !== "null" ? (
                 <a
                   href="#"
                   className=" align-items-center justify-content-center text-center"
@@ -460,11 +486,11 @@ function HeaderHome(props) {
             </li> */}
             {/* /Men at Work */}
           </ul>
-        </div>
+        </span>
         <ul className="nav header-navbar-rht">
           <li>
             {isLoading ? (
-              <div className="text-center">
+              <span className="text-center">
                 <Spinner
                   animation="border"
                   role="status"
@@ -472,7 +498,7 @@ function HeaderHome(props) {
                 >
                   <span className="sr-only">Loading...</span>
                 </Spinner>
-              </div>
+              </span>
             ) : localStorage.getItem("Address") &&
               localStorage.getItem("Address") !== null &&
               localStorage.getItem("Address") !== "null" ? (
@@ -534,8 +560,8 @@ function HeaderHome(props) {
           </li>
           <li>
             {localStorage.getItem("Address") &&
-            localStorage.getItem("Address") !== null &&
-            localStorage.getItem("Address") !== "null" ? (
+              localStorage.getItem("Address") !== null &&
+              localStorage.getItem("Address") !== "null" ? (
               <span
                 style={{ cursor: "pointer", color: "#ea3429" }}
                 onClick={() => {

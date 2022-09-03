@@ -13,10 +13,12 @@ function HomeScreen() {
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
   );
+  const [userWiseBalance, setUserWiseBalance] = useState(0);
   const { refree } = useParams();
   const [cookies, setCookie] = useCookies(["refree"]);
+  console.log("refree", refree);
   useEffect(() => {
-    console.log("refree", refree);
+    
     if (
       refree && refree !== null && refree != undefined && refree.length === 66
     ) {
@@ -34,6 +36,7 @@ function HomeScreen() {
         <HeaderHome
           setSelectedWallet={setSelectedWallet}
           selectedWallet={selectedWallet}
+          setUserWiseBalance={setUserWiseBalance}
           setTorus={setTorus}
           selectedNav={"Home"}
         />
