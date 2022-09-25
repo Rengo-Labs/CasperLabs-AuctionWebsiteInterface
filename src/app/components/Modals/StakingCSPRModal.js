@@ -24,29 +24,32 @@ import { getStateRootHash } from "../blockchain/GetStateRootHash/GetStateRootHas
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../../containers/App/Application";
+import { useCookies } from "react-cookie";
 
 // -------------------- COMPONENT FUNCTION --------------------
 
 function StakingCSPRModal(props) {
+  console.log("propsprops", props);
   const { activePublicKey } = useContext(AppContext);
-
+  const [balance, setBalance] = useState("");
+  const [balanceOpen, setBalanceOpen] = useState(false);
+  const [csprBalanceAgainstUser, setCsprBalanceAgainstUser] = useState(5000000000);
+  const [durationBonus, setDurationBonus] = useState(0);
+  const [mainPurse, setMainPurse] = useState();
+  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState();
   const [year, setYear] = useState("");
   const [days, setDays] = useState("");
   const [daysOpen, setDaysOpen] = useState(false);
-  const [cspr, setCspr] = useState();
-  const [percentagedCsprBalance, setPercentagedCsprBalance] = useState();
-  const [balance, setBalance] = useState("");
-  const [balanceOpen, setBalanceOpen] = useState(false);
   const [addy, setAddy] = useState("");
   const [addyOpen, setAddyOpen] = useState(false);
-  const [mainPurse, setMainPurse] = useState();
   const [referrer, setReferrer] = useState();
   const [referrerAddress, setReferrerAddress] = useState();
   const [referrerCheck, setReferrerCheck] = useState(false);
   const [daysCheck, setDaysCheck] = useState(false);
   const [amountCheck, setAmountCheck] = useState(false);
   const [renderButtonInactive, setRenderButtonInactive] = useState(true);
-
+  console.log("percentagedCsprBalance", percentagedCsprBalance);
+  const [cookies, setCookie] = useCookies(["refree"]);
   // -------------------- Life Cycle Methods --------------------
 
   useEffect(() => {
@@ -72,15 +75,15 @@ function StakingCSPRModal(props) {
               client
                 .getAccountBalance(stateRootHash, result.Account.mainPurse)
                 .then((result) => {
-                  setCspr(result.toString() / 10 ** 9);
+                  setCsprBalanceAgainstUser(result.toString() / 10 ** 9);
                 });
             } catch (error) {
-              setCspr(0);
+              setCsprBalanceAgainstUser(0);
               console.log("error", error);
             }
           })
           .catch((error) => {
-            setCspr(0);
+            setCsprBalanceAgainstUser(0);
             console.log("error", error);
           });
       });
@@ -89,6 +92,7 @@ function StakingCSPRModal(props) {
 
   useEffect(() => {
     let cancel = false;
+
     axios
       .post("/getStakeData", {
         stakerId: "123",
@@ -101,7 +105,6 @@ function StakingCSPRModal(props) {
         console.log(error);
         console.log(error.response);
       });
-
     return () => {
       cancel = true;
     };
@@ -115,29 +118,52 @@ function StakingCSPRModal(props) {
 
   // -------------------- Event Handlers --------------------
 
-  const balanceOnChange = (event) => {
-    let value = event.target.value;
-    let percent = (100 * value) / cspr;
+  // const balanceOnChange = (event) => {
+  //   let value = event.target.value;
+  //   let percent = (100 * value) / cspr;
 
-    setPercentagedCsprBalance(value);
-    setAmountCheck(true);
-    if (percent == 25) {
-      setBalance(25);
-    } else if (percent == 50) {
-      setBalance(50);
-    } else if (percent == 75) {
-      setBalance(75);
-    } else {
-      console.log("empty");
-      setBalance("");
+  //   setPercentagedCsprBalance(value);
+  //   setAmountCheck(true);
+  //   if (percent == 25) {
+  //     setBalance(25);
+  //   } else if (percent == 50) {
+  //     setBalance(50);
+  //   } else if (percent == 75) {
+  //     setBalance(75);
+  //   } else {
+  //     console.log("empty");
+  //     setBalance("");
+  //   }
+  // };
+
+  const balanceOnChange = (event) => {
+    if (percentagedCsprBalance > csprBalanceAgainstUser) {
+      setPercentagedCsprBalance(csprBalanceAgainstUser);
+      setBalance(100)
+    }
+    else {
+      let value = event.target.value;
+      let percent = (100 * value) / csprBalanceAgainstUser;
+
+      setPercentagedCsprBalance(value);
+      setAmountCheck(true);
+      if (percent == 25) {
+        setBalance(25);
+      } else if (percent == 50) {
+        setBalance(50);
+      } else if (percent == 75) {
+        setBalance(75);
+      } else {
+        console.log("empty");
+        setBalance("");
+      }
     }
   };
-
   const handleBalanceChange = (event) => {
     let value = event.target.value;
     setBalance(value);
-    if (cspr !== null && !isNaN(cspr)) {
-      setPercentagedCsprBalance((cspr * value) / 100);
+    if (csprBalanceAgainstUser !== null && !isNaN(csprBalanceAgainstUser)) {
+      setPercentagedCsprBalance((csprBalanceAgainstUser * value) / 100);
       setAmountCheck(true);
     }
   };
@@ -153,6 +179,7 @@ function StakingCSPRModal(props) {
   const handleDaysChange = (event) => {
     setYear(event.target.value);
     setDays(event.target.value * 365);
+    setDurationBonus((event.target.value) * 5)
     setDaysCheck(true);
   };
 
@@ -165,8 +192,14 @@ function StakingCSPRModal(props) {
   };
 
   const handleAddyChange = (event) => {
+    console.log("event.target.value", event.target.value);
     setAddy(event.target.value);
-    setReferrerAddress(referrer);
+    if (event.target.value === "Cookie Reffral Addy") {
+      setReferrerAddress(cookies.refree);
+    } else {
+      setReferrerAddress(referrer);
+    }
+
     setReferrerCheck(true);
   };
 
@@ -177,7 +210,6 @@ function StakingCSPRModal(props) {
   const handleAddyOpen = () => {
     setAddyOpen(true);
   };
-
   // -------------------- jsx --------------------
 
   return (
@@ -267,7 +299,18 @@ function StakingCSPRModal(props) {
                           id="outlined-adornment-amount"
                           value={days}
                           onChange={(e) => {
-                            setDays(e.target.value);
+                            if (e.target.value < 15330) {
+                              setDays(e.target.value);
+                              if (((e.target.value / 365) * 5).toFixed(2) < 30) {
+                                setDurationBonus(((e.target.value / 365) * 5).toFixed(2))
+                              }
+                              else {
+                                setDurationBonus(30.00)
+                              }
+                            } else {
+                              setDays(15330)
+                              setDurationBonus(30.00)
+                            }
                             setYear("");
                           }}
                           placeholder="Staking Duration"
@@ -316,7 +359,6 @@ function StakingCSPRModal(props) {
                         <OutlinedInput
                           id="outlined-adornment-amount"
                           value={referrerAddress}
-                          // onChange={handleChange('amount')}
                           placeholder="account-hash-000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
@@ -418,7 +460,7 @@ function StakingCSPRModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        0.00 SHRS
+                        {percentagedCsprBalance ? (parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) : (0)} SHRS
                       </div>
                     </div>
                   </Typography>
@@ -430,9 +472,10 @@ function StakingCSPRModal(props) {
                       </div>
                       <div
                         className="col-md-12 col-lg-4"
-                        style={{ textAlign: "right" }}
+                        style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +0.00%
+                        +{durationBonus.toFixed(2)}%
+
                       </div>
                     </div>
                   </Typography>
@@ -444,9 +487,9 @@ function StakingCSPRModal(props) {
                       </div>
                       <div
                         className="col-md-12 col-lg-4"
-                        style={{ textAlign: "right" }}
+                        style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +0.00%
+                        {referrerAddress ? "+10.00%" : "+0.00%"}
                       </div>
                     </div>
                   </Typography>
@@ -460,7 +503,7 @@ function StakingCSPRModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        0.00 SHRS
+                        {percentagedCsprBalance ? (parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0) : (0)}  SHRS
                       </div>
                     </div>
                   </Typography>
