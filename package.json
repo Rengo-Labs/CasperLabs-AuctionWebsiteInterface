@@ -21,6 +21,7 @@
     "casper-js-sdk": "^2.7.5",
     "clsx": "^1.1.1",
     "express": "^4.17.1",
+    "javascript-time-ago": "^2.5.7",
     "js-cookie": "^2.2.1",
     "js-file-download": "^0.4.11",
     "jwt-decode": "^2.2.0",
