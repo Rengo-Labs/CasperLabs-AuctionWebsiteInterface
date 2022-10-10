@@ -47,6 +47,7 @@ import TimeAgo from 'javascript-time-ago'
 // English.
 import en from 'javascript-time-ago/locale/en'
 import Axios from "axios";
+import SigningModal from "../../components/Modals/SigningModal";
 
 TimeAgo.addDefaultLocale(en)
 
@@ -506,6 +507,7 @@ function WiseStakingTabs() {
         ) : null}
         <CollateralStakingTable />
       </TabPanel>
+      <SigningModal show={openSigning} />
     </Box>
   );
 }

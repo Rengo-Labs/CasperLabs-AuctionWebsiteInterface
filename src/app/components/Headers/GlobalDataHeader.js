@@ -42,7 +42,7 @@ function GlobalDataHeader(props) {
           <Card style={{ height: "100%" }} variant="outlined" >
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="Global Stakes Staked">
                   <TrendingUpIcon />
                 </Avatar>
               }
@@ -56,7 +56,7 @@ function GlobalDataHeader(props) {
           <Card style={{ height: "100%" }} variant="outlined" >
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="GLobal Wise Shares">
                   <TrendingUpIcon />
                 </Avatar>
               }
@@ -70,7 +70,7 @@ function GlobalDataHeader(props) {
           <Card style={{ height: "100%" }} variant="outlined" >
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="Global Referral Shares">
                   <TrendingUpIcon />
                 </Avatar>
               }
@@ -84,7 +84,7 @@ function GlobalDataHeader(props) {
           <Card style={{ height: "100%" }} variant="outlined" >
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="Global Share Price">
                   <TrendingUpIcon />
                 </Avatar>
               }

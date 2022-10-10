@@ -31,7 +31,7 @@ function HomeBanner() {
         })
         .then((res) => {
           console.log("wiseBalanceAgainstUser", res.data);
-          setwiseBalanceAgainstUser(res.data.balance);
+          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
           //setTokenBBalance(res.data.balance);
         })
         .catch((error) => {

@@ -9,13 +9,16 @@ import HeaderHome, {
 import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
 import { AppContext } from "../../App/Application";
 // Material UI
-import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 // Bootstrap
 import "../../../assets/css/bootstrap.min.css";
 // Custom Styling
 import "../../../assets/css/stakingStyles.css";
+import { Grid } from '@material-ui/core/';
+import { makeDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
 import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
 import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
+
 // Casper SDK
 import {
   AccessRights,
@@ -26,7 +29,7 @@ import {
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
-import { WISE_CONTRACT_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
+import { LIQUIDITYTRANSFORMER_CONTRACT_HASH, LIQUIDITYTRANSFORMER_PACKAGE_HASH, WISE_CONTRACT_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
 import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
@@ -40,6 +43,8 @@ import { useCookies } from "react-cookie";
 import { Avatar, CardHeader } from "@material-ui/core";
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import Axios from "axios";
+import ReservationCard from "../../../components/Cards/ReservationCard";
+import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
 import SigningModal from "../../../components/Modals/SigningModal";
 
 // Content
@@ -47,7 +52,7 @@ const handleStakingWISEModal = createContext();
 const handleStakingCSPRModal = createContext();
 
 // Component Function
-function Staking() {
+function Reservation() {
   // States
   const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
   const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
@@ -58,22 +63,21 @@ function Staking() {
   const { activePublicKey } = useContext(AppContext);
   const [cookies, setCookie] = useCookies(["refree"]);
   const [userWiseBalance, setUserWiseBalance] = useState(0);
-  const [userCsprBalance, setUserCsprBalance] = useState(0);
-  
-  console.log("cookies", cookies);
-  // Handlers
-  const handleCloseStakingWISEModal = () => {
-    setOpenStakingWISEModal(false);
-  };
-  const handleShowStakingWISEModal = () => {
-    setOpenStakingWISEModal(true);
-  };
+  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDay, setSelectedDay] = useState();
+  const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
 
-  const handleCloseStakingCSPRModal = () => {
-    setOpenStakingCSPRModal(false);
+
+  console.log("cookies", cookies);
+
+  // Handlers
+
+  const [openReservationModal, setOpenReservationModal] = useState(false);
+  const handleCloseReservationModal = () => {
+    setOpenReservationModal(false);
   };
-  const handleShowStakingCSPRModal = () => {
-    setOpenStakingCSPRModal(true);
+  const handleShowReservationModal = () => {
+    setOpenReservationModal(true);
   };
   let [torus, setTorus] = useState();
 
@@ -96,25 +100,41 @@ function Staking() {
       });
   }, []);
 
+  useEffect(() => {
+    Axios
+      .get("/globalReservationDaysData")
+      .then((res) => {
+        console.log("globalReservationDaysData", res);
+        console.log("globalReservationDaysData", res.data.globalReservationDaysData);
+        setGlobalReservationDaysData(res.data.globalReservationDaysData);
+        // globalReservationDaysData
+        // setGlobalData(res.data.globalData[0]);
+      })
+      .catch((error) => {
+        setGlobalReservationDaysData([]);
+        console.log(error);
+        console.log(error.response);
+      });
+  }, []);
+
+  function findIndexOfDay(day) {
+    // console.log("day", day);
+    // console.log("globalReservationDaysData", globalReservationDaysData);
+    const index = globalReservationDaysData?.map(object => Number(object.currentWiseDay)).indexOf(day);
+    // console.log("index", index);
+    return index;
+  }
   const { enqueueSnackbar } = useSnackbar();
 
-  async function createStakeMakeDeploy(
-    stakingAmount,
-    stakingDuration,
-    referrerAddress,
-    isCspr,
-    mainPurse
+  async function reserveWiseMakeDeploy(
+    reservationAmount,
   ) {
     handleShowSigning();
-    console.log("stakingAmount", stakingAmount);
-    console.log("stakingDuration", stakingDuration);
-    console.log("referrerAddress", referrerAddress);
-    console.log("isCspr", isCspr);
-    console.log("mainPurse", mainPurse);
+    console.log("reservationAmount", reservationAmount);
     const publicKeyHex = activePublicKey;
-    if (referrerAddress == publicKeyHex) {
+    if (reservationAmount <= 0.5) {
       let variant = "Error";
-      enqueueSnackbar("You cannot be your Referrer.", { variant });
+      enqueueSnackbar("Minimum Reservation amount should be greater than 0.5 Caspers.", { variant });
       handleCloseSigning();
       return
     }
@@ -126,39 +146,22 @@ function Staking() {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
       const paymentAmount = 5000000000;
       console.log("checking staking active Key: ", activePublicKey);
-      const accountHash = Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex");
-      const referrerAddressByteArray = new CLByteArray(
-        Uint8Array.from(Buffer.from(accountHash, "hex"))
+      const ltPackageHash = new CLByteArray(
+        Uint8Array.from(Buffer.from(LIQUIDITYTRANSFORMER_PACKAGE_HASH, "hex"))
       );
+      const investmentMode = 1;
       try {
-        const runtimeArgs = isCspr
-          ? (RuntimeArgs.fromMap({
-            amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
-            lock_days: CLValueBuilder.u64(stakingDuration),
-            referrer: createRecipientAddress(referrerAddressByteArray),
-            purse: CLValueBuilder.uref(
-              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-              AccessRights.READ_ADD_WRITE
-            ),
-          }))
-          : (RuntimeArgs.fromMap({
-            staked_amount: CLValueBuilder.u256(stakingAmount),
-            lock_days: CLValueBuilder.u64(stakingDuration),
-            referrer: createRecipientAddress(referrerAddressByteArray),
-          }));
+        const runtimeArgs = RuntimeArgs.fromMap({
+          package_hash: CLValueBuilder.key(ltPackageHash),
+          amount: CLValueBuilder.u512(convertToStr(reservationAmount)),
+          investment_mode: CLValueBuilder.u8(investmentMode),
+          entrypoint: CLValueBuilder.string("reserve_wise"),
+        });
         console.log("runtimeArgs", runtimeArgs);
-        let contractHashAsByteArray = Uint8Array.from(
-          Buffer.from(WISE_CONTRACT_HASH, "hex")
-        );
-        let entryPoint = !isCspr
-          ? "create_stake_Jsclient"
-          : "create_stake_with_cspr_Jsclient";
 
         //   // Set contract installation deploy (unsigned).
-        let deploy = await makeDeploy(
+        let deploy = await makeDeployWasm(
           publicKey,
-          contractHashAsByteArray,
-          entryPoint,
           runtimeArgs,
           paymentAmount
         );
@@ -194,16 +197,16 @@ function Staking() {
           }
           handleCloseSigning();
           let variant = "success";
-          enqueueSnackbar("Stake Created Successfully!", { variant });
+          enqueueSnackbar("Wise Reserved Successfully!", { variant });
         } catch {
           handleCloseSigning();
           let variant = "Error";
-          enqueueSnackbar("Unable to Create Stake!", { variant });
+          enqueueSnackbar("Unable to Reserve Wise!", { variant });
         }
       } catch {
         handleCloseSigning();
         let variant = "Error";
-        enqueueSnackbar("Unable to Create Stake", { variant });
+        enqueueSnackbar("Unable to Reserve Wise", { variant });
       }
     } else {
       handleCloseSigning();
@@ -222,7 +225,7 @@ function Staking() {
             setUserWiseBalance={setUserWiseBalance}
             selectedWallet={selectedWallet}
             setTorus={setTorus}
-            selectedNav={"Staking"}
+            selectedNav={"Reservation"}
           />
 
           <div
@@ -247,16 +250,16 @@ function Staking() {
         <div className="row no-gutters" >
           <div className="card shadow m-0 rounded-lg">
             <div className="card-body accessAlarm">
-              <AccessAlarmTwoToneIcon fontSize="large" />
+              <CurrencyExchangeIcon fontSize="large" />
             </div>
           </div>
           <div className="row no-gutters ml-3 align-items-center">
             <section>
               <h1 className="text-dark font-weight-bold m-0 wiseStaking-heading">
-                Wise Staking
+                Wise Reservation
               </h1>
               <p className="m-0 text-muted wiseStaking-caption">
-                Time-lock your funds to earn interest
+                All Reservation Days
               </p>
             </section>
           </div>
@@ -289,31 +292,49 @@ function Staking() {
             </section>
           </div>
         </div>
-        <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
+
+        {/* <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
           <handleStakingCSPRModal.Provider value={handleShowStakingCSPRModal}>
             <WiseStakingTabs />
           </handleStakingCSPRModal.Provider>
-        </handleStakingWISEModal.Provider>
+        </handleStakingWISEModal.Provider> */}
       </div>
-      <footer style={{ height: "3rem", width: "100%" }}></footer>
-      <StakingWISEModal
-        show={openStakingWISEModal}
-        userWiseBalance={userWiseBalance}
-        globalData={globalData}
-        handleClose={handleCloseStakingWISEModal}
-        createStakeMakeDeploy={createStakeMakeDeploy}
-      />
-      <StakingCSPRModal
-        show={openStakingCSPRModal}
-        userCsprBalance={userCsprBalance}
-        globalData={globalData}
-        handleClose={handleCloseStakingCSPRModal}
-        createStakeMakeDeploy={createStakeMakeDeploy}
+      <div className="row">
+        <div className="col-md-12 col-lg-12">
+          {globalReservationDaysData !== null && globalReservationDaysData !== undefined ? (
+            <Grid
+              container
+              spacing={3}
+              direction="row"
+              justifyContent="flex-start"
+            // alignItems="flex-start"
+            >
+              {
+                [...Array(50)].map((e, i) => {
+                  return <ReservationCard key={i} day={i + 1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} />
+                })
+              }
+
+            </Grid>
+          ) : (null)}
+        </div>
+      </div>
+
+      < footer style={{ height: "3rem", width: "100%" }
+      }></footer >
+      <ReserveWiseModal
+        show={openReservationModal}
+        handleClose={handleCloseReservationModal}
+        selectedDate={selectedDate}
+        selectedDay={selectedDay}
+        reserveWiseMakeDeploy={reserveWiseMakeDeploy}
+        findIndexOfDay={findIndexOfDay}
+        globalReservationDaysData={globalReservationDaysData}
       />
       <SigningModal show={openSigning} />
-    </div>
+    </div >
   );
 }
 
-export default Staking;
+export default Reservation;
 export { handleStakingWISEModal, handleStakingCSPRModal };
