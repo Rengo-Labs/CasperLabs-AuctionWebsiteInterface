@@ -69,16 +69,16 @@ function ReserveWiseModal(props) {
               </Avatar>}
               title={new Date(props?.selectedDate).toLocaleDateString("en-US")}
             />
-            {props.globalReservationDaysData ? (
+            {props.globalReservationDaysData   ? (
               <><CardHeader className="text-center"
                 avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
                   <PersonOutlineOutlinedIcon />
                 </Avatar>}
-                title={props.findIndexOfDay(props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.selectedDay)]?.userCount) : (0)}
+                title={props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay)]?.userCount) : (0)}
               />
                 <CardHeader className="text-center" style={{ color: 'gray' }}
                   avatar={<Avatar src={CSPR} aria-label="Capsers" />}
-                  title={props.findIndexOfDay(props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.selectedDay)]?.actualWei / 10 ** 9) : (0)}
+                  title={props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay)]?.actualWei / 10 ** 9) : (0)}
                 />
               </>
             ) : (null)}

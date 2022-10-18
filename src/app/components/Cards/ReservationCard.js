@@ -123,7 +123,7 @@ function ReservationCard(props) {
                                 </Avatar>
                             }
 
-                            title={props.findIndexOfDay(props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.day)]?.userCount) : (0)}
+                            title={props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.userCount) : (0)}
                             subheader={`Total Users`}
                         />
                     </Col>
@@ -134,7 +134,7 @@ function ReservationCard(props) {
                                 </Avatar>
                             }
 
-                            title={props.findIndexOfDay(props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.day)]?.actualWei / 10 ** 9) : 0}
+                            title={props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0}
                             subheader={`Total Casper`}
                         />
                     </Col>
@@ -144,7 +144,7 @@ function ReservationCard(props) {
                 {/* </Row> */}
                 <CardContent>
 
-                    {(1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 ? (
+                    {((1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 && props.findIndexOfDay(props.userReservationDaysData, props.day) == -1) || !props.userReservationDaysData ? (
                         <Button
                             className="text-center"
                             block
@@ -154,17 +154,36 @@ function ReservationCard(props) {
                         </Button>
 
                     ) : (
-                        <Button
-                            className="text-center"
-                            block
-                            onClick={() => {
-                                props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
-                                props.setSelectedDay(props.day);
-                                props.handleShowReservationModal()
-                            }}
-                        >
-                            Reserve Wise
-                        </Button>
+
+
+                        props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (
+                            < Button
+                                className="text-center"
+                                block
+                                onClick={() => {
+                                    props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
+                                    props.setSelectedDay(props.day);
+                                    props.claimWiseMakeDeploy()
+                                }}
+                            >
+                                Claim Wise
+                            </Button>
+                        ) : (
+                            <Button
+                                className="text-center"
+                                block
+                                onClick={() => {
+                                    props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
+                                    props.setSelectedDay(props.day);
+                                    props.handleShowReservationModal()
+                                }}
+                            >
+                                Reserve Wise
+                            </Button>
+
+                        )
+
+
 
                     )}
 
@@ -203,7 +222,7 @@ function ReservationCard(props) {
                             <Typography variant="body1" color="textPrimary" component="p">
                                 0% WISE
                                 {/* {actualWei} */}
-                                {props.findIndexOfDay(props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
+                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
                             </Typography>
                         </Col>
                         <Col>
@@ -211,7 +230,7 @@ function ReservationCard(props) {
                                 Your Contribution
                             </Typography>
                             <Typography variant="body1" color="textPrimary" component="p">
-                                {props.findIndexOfDay(props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.day)]?.actualWei / 10 ** 9) : 0} CSPR
+                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0} CSPR
                             </Typography>
                         </Col>
 
@@ -219,7 +238,7 @@ function ReservationCard(props) {
                 </Container>
 
             </Card>
-        </Grid>
+        </Grid >
     );
 }
 

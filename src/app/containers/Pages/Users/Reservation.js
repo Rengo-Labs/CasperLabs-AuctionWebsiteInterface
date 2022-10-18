@@ -19,6 +19,7 @@ import { makeDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDe
 import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
 import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 
+// getMyTokens
 // Casper SDK
 import {
   AccessRights,
@@ -66,6 +67,8 @@ function Reservation() {
   const [selectedDate, setSelectedDate] = useState();
   const [selectedDay, setSelectedDay] = useState();
   const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
+  const [userReservationDaysData, setUserReservationDaysData] = useState();
+
 
 
   console.log("cookies", cookies);
@@ -107,27 +110,45 @@ function Reservation() {
         console.log("globalReservationDaysData", res);
         console.log("globalReservationDaysData", res.data.globalReservationDaysData);
         setGlobalReservationDaysData(res.data.globalReservationDaysData);
-        // globalReservationDaysData
-        // setGlobalData(res.data.globalData[0]);
       })
       .catch((error) => {
         setGlobalReservationDaysData([]);
         console.log(error);
         console.log(error.response);
       });
-  }, []);
 
-  function findIndexOfDay(day) {
-    // console.log("day", day);
-    // console.log("globalReservationDaysData", globalReservationDaysData);
-    const index = globalReservationDaysData?.map(object => Number(object.currentWiseDay)).indexOf(day);
-    // console.log("index", index);
+
+
+    if (
+      activePublicKey &&
+      activePublicKey !== null &&
+      activePublicKey !== "null" &&
+      activePublicKey !== undefined
+    ) {
+      Axios
+        .get(`/userReservationDaysData/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
+        .then((res) => {
+          console.log("userReservationDaysData", res);
+          console.log("userReservationDaysData", res.data.userReservationDaysData);
+          setUserReservationDaysData(res.data.userReservationDaysData);
+        })
+        .catch((error) => {
+          setUserReservationDaysData([]);
+          console.log(error);
+          console.log(error.response);
+        });
+    }
+  }, [activePublicKey]);
+
+  function findIndexOfDay(array, day) {
+    const index = array?.map(object => Number(object.currentWiseDay)).indexOf(day);
     return index;
   }
   const { enqueueSnackbar } = useSnackbar();
 
   async function reserveWiseMakeDeploy(
     reservationAmount,
+
   ) {
     handleShowSigning();
     console.log("reservationAmount", reservationAmount);
@@ -207,6 +228,99 @@ function Reservation() {
         handleCloseSigning();
         let variant = "Error";
         enqueueSnackbar("Unable to Reserve Wise", { variant });
+      }
+    } else {
+      handleCloseSigning();
+      let variant = "error";
+      enqueueSnackbar("Connect to Casper Signer Please", { variant });
+    }
+  }
+
+
+  async function claimWiseMakeDeploy(
+    entryPoint
+  ) {
+    handleShowSigning();
+    // console.log("reservationAmount", reservationAmount);
+    const publicKeyHex = activePublicKey;
+    if (
+      publicKeyHex !== null &&
+      publicKeyHex !== "null" &&
+      publicKeyHex !== undefined
+    ) {
+      const publicKey = CLPublicKey.fromHex(publicKeyHex);
+      const paymentAmount = 5000000000;
+      console.log("checking staking active Key: ", activePublicKey);
+      const ltPackageHash = new CLByteArray(
+        Uint8Array.from(Buffer.from(LIQUIDITYTRANSFORMER_PACKAGE_HASH, "hex"))
+      );
+      const investmentMode = 1;
+      try {
+        // console.log(stakeData);
+        const runtimeArgs = RuntimeArgs.fromMap({
+          // stake_id: CLValueBuilder.string(stakeData.id),
+        });
+
+        let contractHashAsByteArray = Uint8Array.from(
+          Buffer.from(WISE_CONTRACT_HASH, "hex")
+        );
+        let entryPoint = "end_stake_Jsclient";
+        let deploy = await makeDeploy(
+          publicKey,
+          contractHashAsByteArray,
+          entryPoint,
+          runtimeArgs,
+          paymentAmount
+        );
+        console.log("make deploy: ", deploy);
+        console.log(selectedWallet);
+        try {
+          if (selectedWallet === "Casper") {
+            let signedDeploy = await signdeploywithcaspersigner(
+              deploy,
+              publicKeyHex
+            );
+            let result = await putdeploy(signedDeploy, enqueueSnackbar);
+            console.log("result", result);
+          } else {
+            torus = new Torus();
+            console.log("torus", torus);
+            await torus.init({
+              buildEnv: "testing",
+              showTorusButton: true,
+              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+            });
+            console.log("Torus123", torus);
+            console.log("torus", torus.provider);
+            const casperService = new CasperServiceByJsonRPC(torus?.provider);
+            const deployRes = await casperService.deploy(deploy);
+            console.log("deployRes", deployRes.deploy_hash);
+            console.log(
+              `... Contract installation deployHash: ${deployRes.deploy_hash}`
+            );
+            let result = await getDeploy(
+              NODE_ADDRESS,
+              deployRes.deploy_hash,
+              enqueueSnackbar
+            );
+            console.log(
+              `... Contract installed successfully.`,
+              JSON.parse(JSON.stringify(result))
+            );
+            console.log("result", result);
+          }
+          handleCloseSigning();
+          let variant = "success";
+          enqueueSnackbar("Wise Claimed Succesfully", { variant });
+        } catch {
+          handleCloseSigning();
+          let variant = "Error";
+          enqueueSnackbar("Unable to Claim Wise", { variant });
+        }
+      } catch {
+        handleCloseSigning();
+        let variant = "Error";
+        enqueueSnackbar("Unable to Claim Wise", { variant });
       }
     } else {
       handleCloseSigning();
@@ -311,7 +425,7 @@ function Reservation() {
             >
               {
                 [...Array(50)].map((e, i) => {
-                  return <ReservationCard key={i} day={i + 1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} />
+                  return <ReservationCard key={i} day={i + 1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 })
               }
 

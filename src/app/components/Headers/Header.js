@@ -144,13 +144,8 @@ function HeaderHome(props) {
       activePublicKey && activePublicKey != null && activePublicKey != undefined && activePublicKey != 'null'
     ) {
       console.log("HELLO", activePublicKey);
-      let data = {
-        contractHash: WISE_CONTRACT_HASH,
-        user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-      }
-      console.log("data", data);
       axios
-        .post("/wiseBalanceAgainstUser", data)
+        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
         .then((res) => {
           console.log("res", res);
           props.setUserWiseBalance(Number(res.data.balance / 10 ** 9))

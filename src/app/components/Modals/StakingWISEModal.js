@@ -59,10 +59,7 @@ function StakingWISEModal(props) {
       activePublicKey !== undefined
     ) {
       axios
-        .post("/wiseBalanceAgainstUser", {
-          contractHash: WISE_CONTRACT_HASH,
-          user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-        })
+      .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
         .then((res) => {
           if (cancel) return;
           console.log("resresres", res);
