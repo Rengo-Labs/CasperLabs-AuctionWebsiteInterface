@@ -30,7 +30,7 @@ function ReserveWiseModal(props) {
       <Modal.Body style={{ textAlign: "center" }}>
         <Typography variant="h5" style={{ color: "#000027" }} gutterBottom>
           <strong>
-            {new Date(props?.selectedDate).toLocaleDateString("en-US")} # Day {props.selectedDay}
+            {'Reserve Wise Modal'}
             <span
               onClick={props.handleClose}
               style={{
@@ -56,9 +56,9 @@ function ReserveWiseModal(props) {
             <Stack className="align-items-center" direction="row" spacing={1}>
               <Chip label="Selected" color='success' />
               <Chip label="Fixed" style={{ backgroundColor: '#08209e', color: 'white' }} />
-              <CardHeader className="text-center" style={{ color: 'green' }}
-                title={"5,000,000 Wise "}
-              />
+              {/* <CardHeader className="text-center" style={{ color: 'green' }}
+                title={"5,000,000 Wise"}
+              /> */}
 
             </Stack>
           </strong>
@@ -69,16 +69,17 @@ function ReserveWiseModal(props) {
               </Avatar>}
               title={new Date(props?.selectedDate).toLocaleDateString("en-US")}
             />
-            {props.globalReservationDaysData   ? (
-              <><CardHeader className="text-center"
-                avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
-                  <PersonOutlineOutlinedIcon />
-                </Avatar>}
-                title={props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay)]?.userCount) : (0)}
-              />
+            {props.globalReservationDaysData ? (
+              <>
+                <CardHeader className="text-center"
+                  avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
+                    <PersonOutlineOutlinedIcon />
+                  </Avatar>}
+                  title={props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay)]?.userCount) : (0)}
+                />
                 <CardHeader className="text-center" style={{ color: 'gray' }}
                   avatar={<Avatar src={CSPR} aria-label="Capsers" />}
-                  title={props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData,props.selectedDay)]?.actualWei / 10 ** 9) : (0)}
+                  title={props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay)]?.actualWei / 10 ** 9) : (0)}
                 />
               </>
             ) : (null)}

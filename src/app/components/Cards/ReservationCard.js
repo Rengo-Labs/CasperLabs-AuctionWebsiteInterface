@@ -106,7 +106,7 @@ function ReservationCard(props) {
     // console.log("props.globalReservationDaysData[props.findIndex(props.day)]?.userCount", props.globalReservationDaysData);
     const classes = useStyles();
     return (
-        <Grid item xs={12} sm={6} md={3} >
+        <Grid item xs={12} sm={6} md={4} >
             <Card className={classes.root} style={{ height: "100%" }} variant="outlined">
                 <CardHeader className="text-center"
                     title={"Day #" + props.day}

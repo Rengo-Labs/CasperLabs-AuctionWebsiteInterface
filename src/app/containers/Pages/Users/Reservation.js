@@ -47,10 +47,33 @@ import Axios from "axios";
 import ReservationCard from "../../../components/Cards/ReservationCard";
 import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
 import SigningModal from "../../../components/Modals/SigningModal";
+import Mode1Cashback from "../../../components/Cards/ReservationCards/Mode1Cashback";
+import Mode2DailyRandom from "../../../components/Cards/ReservationCards/Mode2DailyRandom";
+import Mode3Rookie from "../../../components/Cards/ReservationCards/Mode3Rookie";
+import Mode4Leader from "../../../components/Cards/ReservationCards/Mode4Leader";
+import Mode5Master from "../../../components/Cards/ReservationCards/Mode5Master";
+import Mode6Grand from "../../../components/Cards/ReservationCards/Mode6Grand";
+import { Container } from "react-bootstrap";
+import moment from "moment";
 
 // Content
 const handleStakingWISEModal = createContext();
 const handleStakingCSPRModal = createContext();
+
+const initialCountdownTimer = {
+  days: '',
+  hours: '',
+  minutes: '',
+  seconds: ''
+};
+const initialCountdownSettings = {
+  eventNameValue: '',
+  dateValue: '',
+  timeValue: '',
+  ampmValue: 'am',
+  unixEndDate: ''
+};
+
 
 // Component Function
 function Reservation() {
@@ -69,6 +92,8 @@ function Reservation() {
   const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
   const [userReservationDaysData, setUserReservationDaysData] = useState();
 
+  const [countdownTimer, setCountdownTimer] = useState({ ...initialCountdownTimer });
+  const [countdownSettings, setCountdownSettings] = useState({ ...initialCountdownSettings });
 
 
   console.log("cookies", cookies);
@@ -103,7 +128,43 @@ function Reservation() {
       });
   }, []);
 
+
   useEffect(() => {
+    getData()
+    playTimer((1666950812) + (6 * 86400))
+  }, [activePublicKey]);
+  function playTimer(currentUnixEndDate) {
+    const distance = currentUnixEndDate - moment().format('X');
+
+
+    setCountdownTimer(prevCountdownTimer => {
+      return {
+        ...prevCountdownTimer,
+        unixEndDate: currentUnixEndDate
+      };
+    });
+
+    if (distance > 0) {
+      setCountdownTimer(prevCountdownTimer => {
+        return {
+          ...prevCountdownTimer,
+          days: parseInt(distance / (60 * 60 * 24), 10),
+          hours: parseInt(distance % (60 * 60 * 24) / (60 * 60), 10),
+          mins: parseInt(distance % (60 * 60) / (60), 10),
+          secs: parseInt(distance % 60, 10)
+        };
+      });
+      //   setCountdownInfoMessage('');
+    }
+    else {
+      //   setCountdownInfoMessage('Countdown ended. Click the Settings button to start a new countdown.');
+      setCountdownSettings({ ...initialCountdownSettings });
+      setCountdownTimer({ ...initialCountdownTimer });
+    }
+  }
+
+
+  function getData() {
     Axios
       .get("/globalReservationDaysData")
       .then((res) => {
@@ -138,10 +199,9 @@ function Reservation() {
           console.log(error.response);
         });
     }
-  }, [activePublicKey]);
-
-  function findIndexOfDay(array, day) {
-    const index = array?.map(object => Number(object.currentWiseDay)).indexOf(day);
+  }
+  function findIndexOfDay(array, user) {
+    const index = array?.map(object => Number(object.user)).indexOf(user);
     return index;
   }
   const { enqueueSnackbar } = useSnackbar();
@@ -218,6 +278,7 @@ function Reservation() {
           }
           handleCloseSigning();
           let variant = "success";
+          getData()
           enqueueSnackbar("Wise Reserved Successfully!", { variant });
         } catch {
           handleCloseSigning();
@@ -238,7 +299,6 @@ function Reservation() {
 
 
   async function claimWiseMakeDeploy(
-    entryPoint
   ) {
     handleShowSigning();
     // console.log("reservationAmount", reservationAmount);
@@ -256,15 +316,13 @@ function Reservation() {
       );
       const investmentMode = 1;
       try {
-        // console.log(stakeData);
         const runtimeArgs = RuntimeArgs.fromMap({
-          // stake_id: CLValueBuilder.string(stakeData.id),
         });
 
         let contractHashAsByteArray = Uint8Array.from(
-          Buffer.from(WISE_CONTRACT_HASH, "hex")
+          Buffer.from(LIQUIDITYTRANSFORMER_CONTRACT_HASH, "hex")
         );
-        let entryPoint = "end_stake_Jsclient";
+        let entryPoint = "get_my_tokens";
         let deploy = await makeDeploy(
           publicKey,
           contractHashAsByteArray,
@@ -413,26 +471,28 @@ function Reservation() {
           </handleStakingCSPRModal.Provider>
         </handleStakingWISEModal.Provider> */}
       </div>
-      <div className="row">
-        <div className="col-md-12 col-lg-12">
-          {globalReservationDaysData !== null && globalReservationDaysData !== undefined ? (
-            <Grid
-              container
-              spacing={3}
-              direction="row"
-              justifyContent="flex-start"
-            // alignItems="flex-start"
-            >
-              {
-                [...Array(50)].map((e, i) => {
-                  return <ReservationCard key={i} day={i + 1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
-                })
-              }
-
-            </Grid>
-          ) : (null)}
+      <Container style={{ paddingTop: '10px' }}>
+        <div className="row">
+          <div className="col-md-12 col-lg-12">
+            {globalReservationDaysData !== null && globalReservationDaysData !== undefined ? (
+              <Grid
+                container
+                spacing={6}
+                direction="row"
+                justifyContent="flex-start"
+              // alignItems="flex-start"
+              >
+                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} countdownTimer={countdownTimer} countdownSettings={countdownSettings} />
+                <Mode2DailyRandom day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
+                <Mode3Rookie day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
+                <Mode4Leader day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
+                <Mode5Master day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
+                <Mode6Grand day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
+              </Grid>
+            ) : (null)}
+          </div>
         </div>
-      </div>
+      </Container>
 
       < footer style={{ height: "3rem", width: "100%" }
       }></footer >
