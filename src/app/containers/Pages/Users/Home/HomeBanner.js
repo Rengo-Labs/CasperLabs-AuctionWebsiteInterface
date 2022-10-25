@@ -24,14 +24,10 @@ function HomeBanner() {
       activePublicKey !== undefined
     ) {
       axios
-        .post("/wiseBalanceAgainstUser", {
-          contractHash:
-            WISE_CONTRACT_HASH,
-          user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-        })
+        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
         .then((res) => {
           console.log("wiseBalanceAgainstUser", res.data);
-          setwiseBalanceAgainstUser(res.data.balance);
+          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
           //setTokenBBalance(res.data.balance);
         })
         .catch((error) => {

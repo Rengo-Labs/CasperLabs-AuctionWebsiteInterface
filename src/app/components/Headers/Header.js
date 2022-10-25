@@ -143,14 +143,12 @@ function HeaderHome(props) {
     if (
       activePublicKey && activePublicKey != null && activePublicKey != undefined && activePublicKey != 'null'
     ) {
+      console.log("HELLO", activePublicKey);
       axios
-        .post("/wiseBalanceAgainstUser", {
-          contractHash: WISE_CONTRACT_HASH,
-          user: Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")
-        })
+        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
         .then((res) => {
           console.log("res", res);
-          props.setUserWiseBalance(res.data.balance)
+          props.setUserWiseBalance(Number(res.data.balance / 10 ** 9))
         })
         .catch((error) => {
           console.log(error);
@@ -262,8 +260,7 @@ function HeaderHome(props) {
     Home: props.selectedNav === "Home" ? selectedStyling : defaultStyling,
     Staking: props.selectedNav === "Staking" ? selectedStyling : defaultStyling,
     Refer: props.selectedNav === "Refer" ? selectedStyling : defaultStyling,
-    Tokens: props.selectedNav === "Tokens" ? selectedStyling : defaultStyling,
-    Pairs: props.selectedNav === "pairs" ? selectedStyling : defaultStyling,
+    Reservation: props.selectedNav === "Reservation" ? selectedStyling : defaultStyling,
   };
 
   let Disconnect = (e) => {
@@ -475,16 +472,15 @@ function HeaderHome(props) {
                 <span style={selectedNavStyle.Refer}>Referral System</span>
               </Link>
             </li>
-            {/* <li>
+            <li>
               <Link
                 className=" align-items-center justify-content-center text-center"
-                to="/pairs"
+                to="/reservation"
                 style={{ color: "#ea3429" }}
               >
-                <span style={selectedNavStyle.Pairs}>Your Portfolio</span>
+                <span style={selectedNavStyle.Reservation}>Wise Reservation</span>
               </Link>
-            </li> */}
-            {/* /Men at Work */}
+            </li>
           </ul>
         </span>
         <ul className="nav header-navbar-rht">
@@ -529,9 +525,6 @@ function HeaderHome(props) {
                     () => {
                       handleShowWalletModal();
                     }
-                    //   async () => {
-                    //   await connectToSigner();
-                    // }
                   }
                 >
                   Connect to Wallet
@@ -549,8 +542,6 @@ function HeaderHome(props) {
                   className="fade-in-text"
                   onClick={() => {
                     handleShowWalletModal();
-                    // async () => {
-                    // await connectToSigner()
                   }}
                 >
                   Connect to Wallet

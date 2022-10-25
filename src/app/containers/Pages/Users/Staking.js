@@ -40,6 +40,8 @@ import { useCookies } from "react-cookie";
 import { Avatar, CardHeader } from "@material-ui/core";
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import Axios from "axios";
+import SigningModal from "../../../components/Modals/SigningModal";
+import StakeHistoricalSummaryModal from "../../../components/Modals/StakeHistoricalSummaryModal";
 
 // Content
 const handleStakingWISEModal = createContext();
@@ -48,6 +50,7 @@ const handleStakingCSPRModal = createContext();
 // Component Function
 function Staking() {
   // States
+  const [openHistoricalSummaryModal, setOpenHistoricalSummaryModal] = useState(false);
   const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
   const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
   const [openSigning, setOpenSigning] = useState(false);
@@ -58,7 +61,7 @@ function Staking() {
   const [cookies, setCookie] = useCookies(["refree"]);
   const [userWiseBalance, setUserWiseBalance] = useState(0);
   const [userCsprBalance, setUserCsprBalance] = useState(0);
-  
+
   console.log("cookies", cookies);
   // Handlers
   const handleCloseStakingWISEModal = () => {
@@ -66,6 +69,13 @@ function Staking() {
   };
   const handleShowStakingWISEModal = () => {
     setOpenStakingWISEModal(true);
+  };
+
+  const handleCloseHistoricalSummaryModal = () => {
+    setOpenHistoricalSummaryModal(false);
+  };
+  const handleShowHistoricalSummaryModal = () => {
+    setOpenHistoricalSummaryModal(true);
   };
 
   const handleCloseStakingCSPRModal = () => {
@@ -94,6 +104,112 @@ function Staking() {
         console.log(error.response);
       });
   }, []);
+  let [stakeData, setStakeData] =
+    useState(
+      [{
+        closeDay: "15000000000",
+        cmShares: "100000000000",
+        createdAt: "2022-07-18T13:03:22.836Z",
+        currentShares: "99000000000",
+        daiEquivalent: "123",
+        id: "123",
+        lastScrapeDay: "15000000000",
+        lockDays: "730",
+        lockDaysSeconds: 730 * 24 * 60 * 60,
+        penalty: "10000000000",
+        principal: "10000000000",
+        referrer: "123",
+        referrerSharesPenalized: "1000000000",
+        reward: "10000000000",
+        scrapeCount: "1",
+        scrapedYodas: "10000000000",
+        shares: "100000000000",
+        sharesPenalized: "1000000000",
+        staker: "123",
+        startDay: 1666715649,
+        startDayTimeStamp: Math.floor(new Date("Fri Aug 19 2022 18:10:20").getTime() / 1000),
+        endDay: 1666715649 + 730 * 24 * 60 * 60,
+        updatedAt: "1666715649",
+      }, {
+        closeDay: "15000000000",
+        cmShares: "100000000000",
+        createdAt: "2022-07-18T13:03:22.836Z",
+        currentShares: "99000000000",
+        daiEquivalent: "123",
+        id: "123",
+        lastScrapeDay: "15000000000",
+        lockDays: "365",
+        lockDaysSeconds: 365 * 24 * 60 * 60,
+        penalty: "10000000000",
+        principal: "10000000000",// wise
+        referrer: "123",
+        referrerSharesPenalized: "1000000000",
+        reward: "10000000000",
+        scrapeCount: "1",
+        scrapedYodas: "10000000000",
+        shares: "100000000000",
+        sharesPenalized: "1000000000",
+        staker: "123",
+        startDay: 1666715649,
+        endDay: 1666715649 + 730 * 24 * 60 * 60,
+        startDayTimeStamp: Math.floor(new Date("2022-07-18T13:03:24.506Z").getTime() / 1000),
+        updatedAt: "1666715649",
+      }]
+    )
+
+  useEffect(() => {
+    Axios
+      .get("/getStakeData/123")
+      .then((res) => {
+        // console.log("getStakeData", res.data);
+        console.log("getStakeData", res.data.stakesData);
+        res.data.stakesData[1] = res.data.stakesData[0];
+        for (let index = 0; index < res.data.stakesData.length; index++) {
+          console.log("res.data.stakeData", res.data.stakesData);
+          console.log("new Date().getTime()", new Date().getTime());
+          res.data.stakesData[index].lockDays = "5"
+          res.data.stakesData[index].staker = "account-hash-4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
+          res.data.stakesData[index].startDay = 1666715649
+          res.data.stakesData[index].closeDay = 1669376049
+          res.data.stakesData[index].lockDaysSeconds = Number(res.data.stakesData[index].lockDays) * 24 * 60 * 60
+          res.data.stakesData[index].endDay = res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds
+
+          let start = 1
+          let current = 11.5
+          let end = 100
+          console.log("testtt", ((current - start) / end) * 100);
+          console.log("(new Date().getTime() / 1000)", (((res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds / 2) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
+          // console.log("res.data.stakesData[index].startDay", res.data.stakesData[index].startDay);
+          // console.log("res.data.stakesData[index].endDay", res.data.stakesData[index].endDay);
+          // console.log("(new Date().getTime() / 1000)", (new Date().getTime() / 1000) - res.data.stakesData[index].startDay);
+
+          console.log("1000", (((new Date().getTime() / 1000) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
+          // console.log("stakeData.endDay - new Date().getTime() / 1000) / stakeData.endDay", ((new Date().getTime() / 1000) / res.data.stakesData[index].endDay) * 100);
+        }
+        setStakeData(res.data.stakesData);
+        // console.log("stakeData", stakeData);
+        // console.log("stakeData.startDayTimeStamp", stakeData[0].startDayTimeStamp);
+        // console.log("lockDaysSeconds", stakeData[0].lockDaysSeconds);
+        // let lastDay = stakeData[0].startDayTimeStamp + stakeData[0].lockDaysSeconds
+        // let currentTImeStamp = Math.floor(Date.now() / 1000);
+        // let pct = (100 * lastDay / currentTImeStamp).toFixed(2)
+        // console.log("lastDay", lastDay);
+        // console.log("currentTImeStamp", currentTImeStamp);
+        // console.log("pct", pct);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response);
+      });
+    // let count = 0;
+    // const interval = setInterval(() => {
+    //   setProgress(count);
+    //   count++;
+    // }, 100);
+    // return () => clearInterval(interval);
+
+
+  }, [activePublicKey]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -262,7 +378,7 @@ function Staking() {
           <div className="row no-gutters ml-auto align-items-center">
             <section >
               <h1 className="text-dark font-weight-bold m-0 wiseStaking-heading">
-                {localStorage.getItem("Address") ? (
+                {localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== undefined && localStorage.getItem("Address") !== 'null' ? (
                   <CardHeader
                     avatar={<Avatar src="" aria-label="User" />}
                     title={<a
@@ -290,7 +406,7 @@ function Staking() {
         </div>
         <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
           <handleStakingCSPRModal.Provider value={handleShowStakingCSPRModal}>
-            <WiseStakingTabs />
+            <WiseStakingTabs stakeData={stakeData} handleShowHistoricalSummaryModal={handleShowHistoricalSummaryModal} />
           </handleStakingCSPRModal.Provider>
         </handleStakingWISEModal.Provider>
       </div>
@@ -309,6 +425,16 @@ function Staking() {
         handleClose={handleCloseStakingCSPRModal}
         createStakeMakeDeploy={createStakeMakeDeploy}
       />
+      <StakeHistoricalSummaryModal
+        show={openHistoricalSummaryModal}
+        userWiseBalance={userWiseBalance}
+        globalData={globalData}
+        handleClose={handleCloseHistoricalSummaryModal}
+        createStakeMakeDeploy={createStakeMakeDeploy}
+        stakeData={stakeData[0]}
+      />
+      <SigningModal show={openSigning} />
+
     </div>
   );
 }

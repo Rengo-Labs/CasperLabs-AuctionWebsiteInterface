@@ -5,6 +5,7 @@ import HomeScreen from "../Pages/Users/HomeScreen";
 import Refer from "../Pages/Users/Refer";
 import Staking from "../Pages/Users/Staking";
 import { CookiesProvider } from "react-cookie";
+import Reservation from "../Pages/Users/Reservation";
 
 export const AppContext = createContext({
   activePublicKey: null,
@@ -21,6 +22,8 @@ function App() {
       return <Route component={Staking} />;
     } else if (path === "/refer") {
       return <Route component={Refer} />;
+    } else if (path === "/reservation") {
+      return <Route component={Reservation} />;
     } else if (path === "/home/:refree") {
       return <Route component={HomeScreen} />;
     } else {
@@ -41,6 +44,7 @@ function App() {
             <Switch>
               <Route exact path="/staking" component={Staking} />
               <Route exact path="/refer" component={Refer} />
+              <Route exact path="/reservation" component={Reservation} />
               <Route exact path="/home/:refree" component={HomeScreen} />
               <Route exact path="/home" component={HomeScreen} />
               {/* <LoginRegisterRedirectCheck exact path="/:user" /> */}

@@ -1,3 +1,4 @@
+import { Avatar, CardHeader } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
@@ -13,31 +14,23 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { StyledEngineProvider } from "@mui/styled-engine";
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
   CasperServiceByJsonRPC, CLPublicKey
 } from "casper-js-sdk";
 import { useSnackbar } from "notistack";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import toast, { Toaster } from "react-hot-toast";
+import React, { useContext, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
-import Logo from "../../../assets/img/cspr.png";
 import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
-import {
-  ROUTER_PACKAGE_HASH
-} from "../../../components/blockchain/AccountHashes/Addresses";
 import { getStateRootHash } from "../../../components/blockchain/GetStateRootHash/GetStateRootHash";
 import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
-import HeaderHome from "../../../components/Headers/Header";
-import { AppContext } from "../../App/Application";
-import { useCookies } from "react-cookie";
-import ReferalModal from "../../../components/Modals/ReferalModal";
-import { Avatar, CardHeader } from "@material-ui/core";
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
+import HeaderHome from "../../../components/Headers/Header";
+import ReferalModal from "../../../components/Modals/ReferalModal";
+import { AppContext } from "../../App/Application";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -187,7 +180,7 @@ function Refer(props) {
                 <div className="row no-gutters ml-auto align-items-center">
                   <section >
                     <h1 className="text-dark font-weight-bold m-0 wiseStaking-heading">
-                      {localStorage.getItem("Address") ? (
+                      {localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== undefined && localStorage.getItem("Address") !== 'null'? (
                         <CardHeader
                           avatar={<Avatar src="" aria-label="Torus Wallet" />}
                           title={<a
