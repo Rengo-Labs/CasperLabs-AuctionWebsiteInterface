@@ -123,7 +123,7 @@ function ReservationCard(props) {
                                 </Avatar>
                             }
 
-                            title={props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.userCount) : (0)}
+                            title={props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.userCount) : (0)}
                             subheader={`Total Users`}
                         />
                     </Col>
@@ -134,7 +134,7 @@ function ReservationCard(props) {
                                 </Avatar>
                             }
 
-                            title={props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0}
+                            title={props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0}
                             subheader={`Total Casper`}
                         />
                     </Col>
@@ -222,7 +222,7 @@ function ReservationCard(props) {
                             <Typography variant="body1" color="textPrimary" component="p">
                                 0% WISE
                                 {/* {actualWei} */}
-                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
+                                {props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
                             </Typography>
                         </Col>
                         <Col>
@@ -230,7 +230,7 @@ function ReservationCard(props) {
                                 Your Contribution
                             </Typography>
                             <Typography variant="body1" color="textPrimary" component="p">
-                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0} CSPR
+                                {props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0} CSPR
                             </Typography>
                         </Col>
 

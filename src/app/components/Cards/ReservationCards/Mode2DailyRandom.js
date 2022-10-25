@@ -1,20 +1,14 @@
 
 import { CardActions, CardMedia, Container, Grid, LinearProgress, Paper } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import Box from "@mui/material/Box";
 import PropTypes from "prop-types";
 import React from "react";
 import { Button, Col, Row } from 'react-bootstrap';
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
-import CSPR from '../../../assets/img/cspr.png';
 import Mode2 from '../../../assets/img/Mode2.svg';
 import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
@@ -81,26 +75,6 @@ LinearProgressWithLabel.propTypes = {
      */
     value: PropTypes.number.isRequired,
 };
-function toDaysMinutesSeconds(totalSeconds) {
-    const seconds = Math.floor(totalSeconds % 60);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-
-    const secondsStr = makeHumanReadable(seconds, 'second');
-    const minutesStr = makeHumanReadable(minutes, 'minute');
-    const hoursStr = makeHumanReadable(hours, 'hour');
-    const daysStr = makeHumanReadable(days, 'day');
-
-    return `${daysStr}${hoursStr}${minutesStr}${secondsStr}`.replace(/,\s*$/, '');
-}
-function makeHumanReadable(num, singular) {
-    return num > 0
-        ? num + (num === 1 ? ` ${singular}, ` : ` ${singular}s, `)
-        : '';
-}
-
-
 
 function Mode2DailyRandom(props) {
     // console.log("props", props)
@@ -138,7 +112,7 @@ function Mode2DailyRandom(props) {
                 <CardActions style={{ paddingBottom: '30px', paddingTop: '20px' }}>
                     <Container>
                         <Grid container spacing={2}>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 <Typography variant="subtitle2" gutterBottom>
                                     Day 15  🎟 153 Users
                                 </Typography>
@@ -147,7 +121,7 @@ function Mode2DailyRandom(props) {
                                 </Typography>
 
                             </Grid>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 {((1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 && props.findIndexOfDay(props.userReservationDaysData, props.day) == -1) || !props.userReservationDaysData ? (
                                     <Button
                                         className="text-center"

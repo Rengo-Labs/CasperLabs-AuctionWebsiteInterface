@@ -1,4 +1,4 @@
-import { Avatar, Card, CardHeader, FormControl, Input, InputAdornment, InputLabel, Typography } from "@material-ui/core";
+import { Avatar, Box, Card, CardHeader, FormControl, Input, InputAdornment, InputLabel, TextField, Typography } from "@material-ui/core";
 import React, { useState } from 'react';
 import { Button, Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
@@ -10,7 +10,7 @@ import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import { CalendarViewWeekTwoTone } from "@mui/icons-material";
+import { AccountCircle, CalendarViewWeekTwoTone } from "@mui/icons-material";
 import { CalendarToday } from "@material-ui/icons";
 import CalendarTodayTwoToneIcon from '@mui/icons-material/CalendarTodayTwoTone';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
@@ -18,10 +18,10 @@ import CSPR from '../../assets/img/cspr.png';
 import { red } from "@material-ui/core/colors";
 
 function ReserveWiseModal(props) {
-  const [reservationAmount, setreservationAmount] = useState();
+  const [reservationAmount, setReservationAmount] = useState();
 
   const handleReservationAmount = (event) => {
-    setreservationAmount(event.target.value);
+    setReservationAmount(event.target.value);
   };
 
 
@@ -67,7 +67,7 @@ function ReserveWiseModal(props) {
               avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Date" >
                 <CalendarTodayTwoToneIcon />
               </Avatar>}
-              title={new Date(props?.selectedDate).toLocaleDateString("en-US")}
+              title={new Date().toLocaleDateString("en-US")}
             />
             {props.globalReservationDaysData ? (
               <>
@@ -75,11 +75,11 @@ function ReserveWiseModal(props) {
                   avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
                     <PersonOutlineOutlinedIcon />
                   </Avatar>}
-                  title={props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay)]?.userCount) : (0)}
+                  title={props.globalData ? (props.globalData?.userCount) : (0)}
                 />
                 <CardHeader className="text-center" style={{ color: 'gray' }}
-                  avatar={<Avatar src={CSPR} aria-label="Capsers" />}
-                  title={props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.selectedDay)]?.actualWei / 10 ** 9) : (0)}
+                  avatar={<Avatar src={CSPR} aria-label="Caspers" />}
+                  title={props.globalData ? (props.globalData?.totalScsprContributed / 10 ** 9) : (0.0)}
                 />
               </>
             ) : (null)}
@@ -87,41 +87,20 @@ function ReserveWiseModal(props) {
 
           </Stack>
 
-          {/* <CardHeader
-            avatar={<Avatar src={Torus} aria-label="Torus Wallet" />}
-            title="Torus Wallet"
-            subheader="Connect to Torus Waller"
-          /> */}
         </Card>
       </Modal.Body>
       <Modal.Body>
         <hr></hr>
-        {/*
-        <Card
-          onClick={() => {
-            props.casperLogin();
-            localStorage.setItem("selectedWallet", "Casper");
-            props.setSelectedWallet("Casper");
-          }}
-          className="custom-card"
-          style={{ borderRadius: "8px" }}
-        >
-          <CardHeader
-            avatar={<Avatar src={Casper} aria-label="Casper Signer" />}
-            title="Casper Signer"
-            subheader="Connect to Casper Signer"
-          />
-        </Card> */}
-        <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-          <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
-          <Input
-            id="standard-adornment-amount"
-            type='number'
+
+
+        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+          <Avatar src={CSPR} aria-label="Caspers" />
+          <TextField fullWidth type='number'
+            InputProps={{ inputProps: { min: 0.001, step: 0.001 } }}
             value={reservationAmount}
             onChange={handleReservationAmount}
-            startAdornment={<InputAdornment position="start" ><Avatar src={CSPR} aria-label="Capsers" /></InputAdornment>}
-          />
-        </FormControl>
+            id="input-with-amount" label="Amount" variant="standard" />
+        </Box>
 
       </Modal.Body>
 

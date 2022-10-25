@@ -108,11 +108,12 @@ function makeHumanReadable(num, singular) {
 
 
 function Mode1Cashback(props) {
-    // console.log("props", props)
+    console.log("props", props)
     // console.log("props.", props.findIndexOfDay(props.day));
     // console.log("props.globalReservationDaysData[props.findIndex(props.day)]?.userCount", props.globalReservationDaysData);
     const { activePublicKey } = useContext(AppContext);
     const classes = useStyles();
+    const accountHash = activePublicKey ? Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex") : null;
     return (
         <Grid item xs={12} sm={6} md={6} >
             <Paper elevation={3} style={{ height: "100%" }}>
@@ -136,90 +137,60 @@ function Mode1Cashback(props) {
                 <Container>
                     <Row>
                         <Col>
-                            {props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")) != -1 ? (
+                            {!props.userReservationDaysData || (props.userReservationDaysData && props.userReservationDaysData.length === 0) ? (
                                 <Paper elevation={3} disabled className="text-center" style={{ padding: '10px', borderRadius: '35px', backgroundColor: '#08209e0f' }}>
                                     you have no contributions to this mode
                                 </Paper>
                             ) : (
-                                <Stack className="align-items-center" direction="row" spacing={1}>
-                                    <CardHeader className="text-center"
-                                        avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Date" >
-                                            <CalendarTodayTwoToneIcon />
-                                        </Avatar>}
-                                        title={new Date(props?.selectedDate).toLocaleDateString("en-US")}
-                                    />
-                                    {props.globalReservationDaysData ? (
-                                        <>
-                                            <CardHeader className="text-center"
-                                                avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
-                                                    <PersonOutlineOutlinedIcon />
-                                                </Avatar>}
-                                                title={props.findIndexOfDay(props.globalReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"))]?.userCount) : (0)}
-                                            />
-                                            <CardHeader className="text-center" style={{ color: 'gray' }}
-                                                avatar={<Avatar src={CSPR} aria-label="Capsers" />}
-                                                title={props.findIndexOfDay(props.globalReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"))]?.actualWei / 10 ** 9) : (0)}
-                                            />
-                                        </>
-                                    ) : (null)}
-
-
-                                </Stack>
+                                <>
+                                    <Paper elevation={3} className="text-center" style={{ padding: '10px', borderRadius: '35px', backgroundColor: '#08209e0f' }}>
+                                        You have Contributed {props.totalUsersReservations / 10 ** 9} CSPR to Mode 01 — “Cashback”.
+                                    </Paper>
+                                    <Stack className="align-items-center" direction="row" spacing={1}>
+                                        <CardHeader className="text-center"
+                                            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Date" >
+                                                <CalendarTodayTwoToneIcon />
+                                            </Avatar>}
+                                            title={new Date().toLocaleDateString("en-US")}
+                                        />
+                                        <CardHeader className="text-center"
+                                            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
+                                                <PersonOutlineOutlinedIcon />
+                                            </Avatar>}
+                                            title={props.globalData ? (props.globalData?.userCount) : (0)}
+                                        />
+                                        <CardHeader className="text-center" style={{ color: 'gray' }}
+                                            avatar={<Avatar src={CSPR} aria-label="Caspers" />}
+                                            title={props.globalData ? (props.globalData?.totalScsprContributed / 10 ** 9) : (0.0)}
+                                        />
+                                    </Stack>
+                                </>
                             )}
                         </Col>
                     </Row>
                 </Container>
-                {/* <Row> */}
 
-                {/* </Row> */}
-                {/* <CardContent>
-
-
-
-                    <Typography style={{ margin: '10px' }} variant="body1" color="textSecondary" component="p">
-
-                        <CardHeader
-                            avatar={
-                                <AccessTimeIcon />
-                            }
-
-                            title={<strong>
-                                {(1666093832105 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 ? (
-                                    'Closed'
-                                ) : (
-                                    'Closing in ' + toDaysMinutesSeconds((1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400))
-                                )}
-
-                            </strong>}
-                        // subheader={new Date(stakeData?.endDay * 1000).toDateString().split(' ').slice(1).join(' ')}
-                        />
-                    </Typography>
-
-                </CardContent> */}
-                {/* <hr /> */}
                 <CardActions style={{ paddingBottom: '30px', paddingTop: '20px' }}>
                     <Container>
                         <Grid container spacing={2}>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 <Typography variant="subtitle2" gutterBottom>
-                                    Total  💰 5,654.220 CSPR
+                                    Total  💰 {props.globalData ? (props.globalData?.totalScsprContributed / 10 ** 9) : (0.0)} CSPR
                                 </Typography>
                                 <Typography variant="subtitle2" gutterBottom>
-                                    Cash Back  💸 56.542 CSPR
+                                    Cash Back  💸 {props.globalData ? (((props.globalData?.totalScsprContributed / 10 ** 9) / 100) * 1).toFixed(2) : (0.0)} CSPR
                                 </Typography>
 
                             </Grid>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
 
 
                                 {((1666950812 - new Date().getTime() / 1000) + (6 * 86400) < 0) ? (
-                                    props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")) != -1 ? (
+                                    props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, accountHash) != -1 ? (
                                         < Button
                                             className="text-center"
                                             block
                                             onClick={() => {
-                                                props.setSelectedDate((new Date().getTime()));
-                                                props.setSelectedDay(props.day);
                                                 props.claimWiseMakeDeploy()
                                             }}
                                         >
@@ -239,8 +210,6 @@ function Mode1Cashback(props) {
                                         className="text-center"
                                         block
                                         onClick={() => {
-                                            props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
-                                            props.setSelectedDay(props.day);
                                             props.handleShowReservationModal()
                                         }}
                                     >
@@ -273,7 +242,7 @@ function Mode1Cashback(props) {
                             </Typography>
                             <Typography variant="body1" color="textPrimary" component="p">
                                 0% WISE
-                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
+                                {props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (((props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.actualWei / props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.maxSupply) * 100).toFixed(9) + '%') : (0 + '%')}
                             </Typography>
                         </Col>
                         <Col>
@@ -281,7 +250,7 @@ function Mode1Cashback(props) {
                                 Your Contribution
                             </Typography>
                             <Typography variant="body1" color="textPrimary" component="p">
-                                {props.findIndexOfDay(props.globalReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.globalReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0} CSPR
+                                {props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (props.globalReservationDaysData[props.findIndexOfDay(props.userReservationDaysData, props.day)]?.actualWei / 10 ** 9) : 0} CSPR
                             </Typography>
                         </Col>
 

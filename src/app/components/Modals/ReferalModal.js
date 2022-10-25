@@ -1,8 +1,6 @@
 import { CardContent, Typography } from "@material-ui/core";
 import { Alert } from "@mui/material";
-import axios from "axios";
-import { CLPublicKey } from "casper-js-sdk";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Modal } from "react-bootstrap";
 import toast, { Toaster } from "react-hot-toast";
 import "../../assets/css/bootstrap.min.css";
@@ -11,28 +9,12 @@ import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import { AppContext } from "../../containers/App/Application";
-import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
 
 
 
 // -------------------- COMPONENT FUNCTION --------------------
 function ReferalModal(props) {
   const { activePublicKey } = useContext(AppContext);
-  const [balance, setBalance] = useState("");
-  const [balanceOpen, setBalanceOpen] = useState(false);
-  const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState();
-  const [percentagedBalance, setPercentagedBalance] = useState();
-  const [year, setYear] = useState("");
-  const [days, setDays] = useState("");
-  const [daysOpen, setDaysOpen] = useState(false);
-  const [addy, setAddy] = useState("");
-  const [addyOpen, setAddyOpen] = useState(false);
-  const [referrer, setReferrer] = useState();
-  const [referrerAddress, setReferrerAddress] = useState();
-  const [referrerCheck, setReferrerCheck] = useState(false);
-  const [daysCheck, setDaysCheck] = useState(false);
-  const [amountCheck, setAmountCheck] = useState(false);
-  const [renderButtonInactive, setRenderButtonInactive] = useState(true);
 
   // -------------------- Life Cycle Methods--------------------
 

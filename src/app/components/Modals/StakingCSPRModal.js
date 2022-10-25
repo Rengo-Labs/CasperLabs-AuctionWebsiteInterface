@@ -94,9 +94,7 @@ function StakingCSPRModal(props) {
     let cancel = false;
 
     axios
-      .post("/getStakeData", {
-        stakerId: "123",
-      })
+      .get("/getStakeData/123")
       .then((res) => {
         if (cancel) return;
         setReferrer(res.data.stakesData[0].referrer);
@@ -147,11 +145,11 @@ function StakingCSPRModal(props) {
 
       setPercentagedCsprBalance(value);
       setAmountCheck(true);
-      if (percent == 25) {
+      if (percent === 25) {
         setBalance(25);
-      } else if (percent == 50) {
+      } else if (percent === 50) {
         setBalance(50);
-      } else if (percent == 75) {
+      } else if (percent === 75) {
         setBalance(75);
       } else {
         console.log("empty");

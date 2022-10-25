@@ -59,7 +59,7 @@ function StakingWISEModal(props) {
       activePublicKey !== undefined
     ) {
       axios
-      .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
+        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
         .then((res) => {
           if (cancel) return;
           console.log("resresres", res);
@@ -79,9 +79,7 @@ function StakingWISEModal(props) {
     let cancel = false;
 
     axios
-      .post("/getStakeData", {
-        stakerId: "123",
-      })
+      .get("/getStakeData/123")
       .then((res) => {
         if (cancel) return;
         setReferrer(res.data.stakesData[0].referrer);
@@ -116,11 +114,11 @@ function StakingWISEModal(props) {
 
       setPercentagedBalance(value);
       setAmountCheck(true);
-      if (percent == 25) {
+      if (percent === 25) {
         setBalance(25);
-      } else if (percent == 50) {
+      } else if (percent === 50) {
         setBalance(50);
-      } else if (percent == 75) {
+      } else if (percent === 75) {
         setBalance(75);
       } else {
         console.log("empty");
@@ -133,7 +131,7 @@ function StakingWISEModal(props) {
     console.log("event.target.value", event.target.value);
     let value = event.target.value;
     setBalance(value);
-    if (wiseBalanceAgainstUser !== null ) {
+    if (wiseBalanceAgainstUser !== null) {
       console.log("inside the change: ", isNaN(wiseBalanceAgainstUser));
       setPercentagedBalance((wiseBalanceAgainstUser * value) / 100);
       setAmountCheck(true);
@@ -447,7 +445,7 @@ function StakingWISEModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +{durationBonus.toFixed(2)}%
+                        +{Number(durationBonus).toFixed(2)}%
 
                       </div>
                     </div>

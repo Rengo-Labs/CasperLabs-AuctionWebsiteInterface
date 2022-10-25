@@ -48,6 +48,8 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 import Axios from "axios";
 import SigningModal from "../../components/Modals/SigningModal";
+import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
 
 TimeAgo.addDefaultLocale(en)
 
@@ -110,7 +112,7 @@ LinearProgressWithLabel.propTypes = {
 };
 
 
-function WiseStakingTabs() {
+function WiseStakingTabs(props) {
   const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const { activePublicKey } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
@@ -142,56 +144,7 @@ function WiseStakingTabs() {
     setOpenSigning(false);
   };
 
-  let [stakeData, setStakeData] =
-    useState([]
-      // [{
-      //   closeDay: "15000000000",
-      //   cmShares: "100000000000",
-      //   createdAt: "2022-07-18T13:03:22.836Z",
-      //   currentShares: "99000000000",
-      //   daiEquivalent: "123",
-      //   id: "123",
-      //   lastScrapeDay: "15000000000",
-      //   lockDays: "730",
-      //   lockDaysSeconds: 730 * 24 * 60 * 60,
-      //   penalty: "10000000000",
-      //   principal: "10000000000",
-      //   referrer: "123",
-      //   referrerSharesPenalized: "1000000000",
-      //   reward: "10000000000",
-      //   scrapeCount: "1",
-      //   scrapedYodas: "10000000000",
-      //   shares: "100000000000",
-      //   sharesPenalized: "1000000000",
-      //   staker: "123",
-      //   startDay: "2022-07-18T13:03:24.506Z",
-      //   startDayTimeStamp: Math.floor(new Date("Fri Aug 19 2022 18:10:20").getTime() / 1000),
-      //   updatedAt: "2022-07-18T13:03:24.506Z",
-      // }, {
-      //   closeDay: "15000000000",
-      //   cmShares: "100000000000",
-      //   createdAt: "2022-07-18T13:03:22.836Z",
-      //   currentShares: "99000000000",
-      //   daiEquivalent: "123",
-      //   id: "123",
-      //   lastScrapeDay: "15000000000",
-      //   lockDays: "365",
-      //   lockDaysSeconds: 365 * 24 * 60 * 60,
-      //   penalty: "10000000000",
-      //   principal: "10000000000",
-      //   referrer: "123",
-      //   referrerSharesPenalized: "1000000000",
-      //   reward: "10000000000",
-      //   scrapeCount: "1",
-      //   scrapedYodas: "10000000000",
-      //   shares: "100000000000",
-      //   sharesPenalized: "1000000000",
-      //   staker: "123",
-      //   startDay: "2022-07-18T13:03:24.506Z",
-      //   startDayTimeStamp: Math.floor(new Date("2022-07-18T13:03:24.506Z").getTime() / 1000),
-      //   updatedAt: "2022-07-18T13:03:24.506Z",
-      // }]
-    )
+
   function toDaysMinutesSeconds(totalSeconds) {
     const seconds = Math.floor(totalSeconds % 60);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -211,60 +164,6 @@ function WiseStakingTabs() {
       ? num + (num === 1 ? ` ${singular}, ` : ` ${singular}s, `)
       : '';
   }
-
-  useEffect(() => {
-    Axios
-      .post("/getStakeData", { stakerId: "123" })
-      .then((res) => {
-        // console.log("getStakeData", res.data);
-        console.log("getStakeData", res.data.stakesData);
-        res.data.stakesData[1] = res.data.stakesData[0];
-        for (let index = 0; index < res.data.stakesData.length; index++) {
-          console.log("res.data.stakeData", res.data.stakesData);
-          console.log("new Date().getTime()", new Date().getTime());
-          res.data.stakesData[index].lockDays = "5"
-          res.data.stakesData[index].staker = "account-hash-4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
-          res.data.stakesData[index].startDay = 1663154999
-          res.data.stakesData[index].closeDay = 1664160300
-          res.data.stakesData[index].lockDaysSeconds = Number(res.data.stakesData[index].lockDays) * 24 * 60 * 60
-          res.data.stakesData[index].endDay = res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds
-
-          let start = 1
-          let current = 11.5
-          let end = 100
-          console.log("testtt", ((current - start) / end) * 100);
-          console.log("(new Date().getTime() / 1000)", (((res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds / 2) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
-          // console.log("res.data.stakesData[index].startDay", res.data.stakesData[index].startDay);
-          // console.log("res.data.stakesData[index].endDay", res.data.stakesData[index].endDay);
-          // console.log("(new Date().getTime() / 1000)", (new Date().getTime() / 1000) - res.data.stakesData[index].startDay);
-
-          console.log("1000", (((new Date().getTime() / 1000) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
-          // console.log("stakeData.endDay - new Date().getTime() / 1000) / stakeData.endDay", ((new Date().getTime() / 1000) / res.data.stakesData[index].endDay) * 100);
-        }
-        setStakeData(res.data.stakesData);
-        // console.log("stakeData", stakeData);
-        // console.log("stakeData.startDayTimeStamp", stakeData[0].startDayTimeStamp);
-        // console.log("lockDaysSeconds", stakeData[0].lockDaysSeconds);
-        // let lastDay = stakeData[0].startDayTimeStamp + stakeData[0].lockDaysSeconds
-        // let currentTImeStamp = Math.floor(Date.now() / 1000);
-        // let pct = (100 * lastDay / currentTImeStamp).toFixed(2)
-        // console.log("lastDay", lastDay);
-        // console.log("currentTImeStamp", currentTImeStamp);
-        // console.log("pct", pct);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-    // let count = 0;
-    // const interval = setInterval(() => {
-    //   setProgress(count);
-    //   count++;
-    // }, 100);
-    // return () => clearInterval(interval);
-
-
-  }, [activePublicKey]);
 
   async function unstakeMakeDeploy(stakeData) {
     handleShowSigning();
@@ -355,7 +254,7 @@ function WiseStakingTabs() {
     }
   }
 
-  const stake = stakeData.map((stakeData, index) => {
+  const stake = props.stakeData.map((stakeData, index) => {
     return (
       <TableRow
         key={index}
@@ -414,9 +313,11 @@ function WiseStakingTabs() {
         </TableCell>
         <TableCell>{stakeData.reward}</TableCell>
         <TableCell>
+          <button onClick={() => props.handleShowHistoricalSummaryModal()} className="btn">
+            <SearchIcon />
+          </button>
           <button onClick={() => unstakeMakeDeploy(stakeData)} className="btn">
-            Unstake
-            { }
+            <CloseIcon />
           </button>
         </TableCell>
       </TableRow>

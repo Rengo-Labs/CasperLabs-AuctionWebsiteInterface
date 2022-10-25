@@ -1,85 +1,60 @@
 // React
-import React, { useEffect } from "react";
-import { useState, createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 // Components
 import HeaderHome, {
   CHAINS,
-  SUPPORTED_NETWORKS,
+  SUPPORTED_NETWORKS
 } from "../../../components/Headers/Header";
-import WiseStakingTabs from "../../../components/Tabs/WiseStakingTabs";
 import { AppContext } from "../../App/Application";
 // Material UI
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 // Bootstrap
 import "../../../assets/css/bootstrap.min.css";
 // Custom Styling
-import "../../../assets/css/stakingStyles.css";
 import { Grid } from '@material-ui/core/';
+import "../../../assets/css/stakingStyles.css";
 import { makeDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
-import StakingWISEModal from "../../../components/Modals/StakingWISEModal";
-import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 
 // getMyTokens
 // Casper SDK
-import {
-  AccessRights,
-  CasperServiceByJsonRPC,
-  CLByteArray,
-  CLKey,
-  CLPublicKey,
-  CLValueBuilder,
-  RuntimeArgs,
-} from "casper-js-sdk";
-import { LIQUIDITYTRANSFORMER_CONTRACT_HASH, LIQUIDITYTRANSFORMER_PACKAGE_HASH, WISE_CONTRACT_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
-import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
-import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
-import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
-import { putdeploy } from "../../../components/blockchain/PutDeploy/PutDeploy";
-import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
-import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
-import { createRecipientAddress } from '../../../components/blockchain/RecipientAddress/RecipientAddress';
-import { useSnackbar } from "notistack";
-import Torus from "@toruslabs/casper-embed";
-import { useCookies } from "react-cookie";
 import { Avatar, CardHeader } from "@material-ui/core";
-import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
+import Torus from "@toruslabs/casper-embed";
 import Axios from "axios";
-import ReservationCard from "../../../components/Cards/ReservationCard";
-import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
-import SigningModal from "../../../components/Modals/SigningModal";
+import {
+  CasperServiceByJsonRPC,
+  CLByteArray, CLPublicKey,
+  CLValueBuilder,
+  RuntimeArgs
+} from "casper-js-sdk";
+import { useSnackbar } from "notistack";
+import { Container } from "react-bootstrap";
+import { useCookies } from "react-cookie";
+import { LIQUIDITYTRANSFORMER_CONTRACT_HASH, LIQUIDITYTRANSFORMER_PACKAGE_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
+import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
+import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
+import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
+import { putdeploy } from "../../../components/blockchain/PutDeploy/PutDeploy";
+import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
 import Mode1Cashback from "../../../components/Cards/ReservationCards/Mode1Cashback";
 import Mode2DailyRandom from "../../../components/Cards/ReservationCards/Mode2DailyRandom";
 import Mode3Rookie from "../../../components/Cards/ReservationCards/Mode3Rookie";
 import Mode4Leader from "../../../components/Cards/ReservationCards/Mode4Leader";
 import Mode5Master from "../../../components/Cards/ReservationCards/Mode5Master";
 import Mode6Grand from "../../../components/Cards/ReservationCards/Mode6Grand";
-import { Container } from "react-bootstrap";
-import moment from "moment";
+import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
+import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
+import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
+import SigningModal from "../../../components/Modals/SigningModal";
 
 // Content
 const handleStakingWISEModal = createContext();
 const handleStakingCSPRModal = createContext();
 
-const initialCountdownTimer = {
-  days: '',
-  hours: '',
-  minutes: '',
-  seconds: ''
-};
-const initialCountdownSettings = {
-  eventNameValue: '',
-  dateValue: '',
-  timeValue: '',
-  ampmValue: 'am',
-  unixEndDate: ''
-};
 
 
 // Component Function
 function Reservation() {
   // States
-  const [openStakingWISEModal, setOpenStakingWISEModal] = useState(false);
-  const [openStakingCSPRModal, setOpenStakingCSPRModal] = useState(false);
   const [openSigning, setOpenSigning] = useState(false);
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
@@ -92,8 +67,7 @@ function Reservation() {
   const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
   const [userReservationDaysData, setUserReservationDaysData] = useState();
 
-  const [countdownTimer, setCountdownTimer] = useState({ ...initialCountdownTimer });
-  const [countdownSettings, setCountdownSettings] = useState({ ...initialCountdownSettings });
+  const [totalUsersReservations, setTotalUsersReservations] = useState(0);
 
 
   console.log("cookies", cookies);
@@ -117,51 +91,25 @@ function Reservation() {
   };
   const [globalData, setGlobalData] = useState({});
   useEffect(() => {
+    getGlobalData();
+  }, []);
+
+  function getGlobalData() {
     Axios
       .get("/getGlobalData")
       .then((res) => {
+        console.log("getGlobalData", res);
         setGlobalData(res.data.globalData[0]);
       })
       .catch((error) => {
         console.log(error);
         console.log(error.response);
       });
-  }, []);
-
-
+  }
   useEffect(() => {
     getData()
-    playTimer((1666950812) + (6 * 86400))
   }, [activePublicKey]);
-  function playTimer(currentUnixEndDate) {
-    const distance = currentUnixEndDate - moment().format('X');
 
-
-    setCountdownTimer(prevCountdownTimer => {
-      return {
-        ...prevCountdownTimer,
-        unixEndDate: currentUnixEndDate
-      };
-    });
-
-    if (distance > 0) {
-      setCountdownTimer(prevCountdownTimer => {
-        return {
-          ...prevCountdownTimer,
-          days: parseInt(distance / (60 * 60 * 24), 10),
-          hours: parseInt(distance % (60 * 60 * 24) / (60 * 60), 10),
-          mins: parseInt(distance % (60 * 60) / (60), 10),
-          secs: parseInt(distance % 60, 10)
-        };
-      });
-      //   setCountdownInfoMessage('');
-    }
-    else {
-      //   setCountdownInfoMessage('Countdown ended. Click the Settings button to start a new countdown.');
-      setCountdownSettings({ ...initialCountdownSettings });
-      setCountdownTimer({ ...initialCountdownTimer });
-    }
-  }
 
 
   function getData() {
@@ -191,6 +139,11 @@ function Reservation() {
         .then((res) => {
           console.log("userReservationDaysData", res);
           console.log("userReservationDaysData", res.data.userReservationDaysData);
+          let totalUsersReservations = 0
+          for (let i = 0; i < res.data.userReservationDaysData.length; i++) {
+            totalUsersReservations = totalUsersReservations / 1 + res.data.userReservationDaysData[i].effectiveWei / 1;
+          }
+          setTotalUsersReservations(totalUsersReservations)
           setUserReservationDaysData(res.data.userReservationDaysData);
         })
         .catch((error) => {
@@ -201,8 +154,9 @@ function Reservation() {
     }
   }
   function findIndexOfDay(array, user) {
-    const index = array?.map(object => Number(object.user)).indexOf(user);
-    return index;
+    console.log("array, user", array, user);
+    if (user) return array?.map(object => Number(object.user)).indexOf(user);
+    else return -1;
   }
   const { enqueueSnackbar } = useSnackbar();
 
@@ -213,9 +167,9 @@ function Reservation() {
     handleShowSigning();
     console.log("reservationAmount", reservationAmount);
     const publicKeyHex = activePublicKey;
-    if (reservationAmount <= 0.5) {
+    if (reservationAmount <= 0.001) {
       let variant = "Error";
-      enqueueSnackbar("Minimum Reservation amount should be greater than 0.5 Caspers.", { variant });
+      enqueueSnackbar("Minimum Reservation amount should be greater than 0.001 Caspers.", { variant });
       handleCloseSigning();
       return
     }
@@ -279,6 +233,7 @@ function Reservation() {
           handleCloseSigning();
           let variant = "success";
           getData()
+          getGlobalData()
           enqueueSnackbar("Wise Reserved Successfully!", { variant });
         } catch {
           handleCloseSigning();
@@ -465,11 +420,6 @@ function Reservation() {
           </div>
         </div>
 
-        {/* <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
-          <handleStakingCSPRModal.Provider value={handleShowStakingCSPRModal}>
-            <WiseStakingTabs />
-          </handleStakingCSPRModal.Provider>
-        </handleStakingWISEModal.Provider> */}
       </div>
       <Container style={{ paddingTop: '10px' }}>
         <div className="row">
@@ -482,7 +432,7 @@ function Reservation() {
                 justifyContent="flex-start"
               // alignItems="flex-start"
               >
-                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} countdownTimer={countdownTimer} countdownSettings={countdownSettings} />
+                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} globalData={globalData} findIndexOfDay={findIndexOfDay} totalUsersReservations={totalUsersReservations} />
                 <Mode2DailyRandom day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode3Rookie day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode4Leader day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
@@ -504,6 +454,7 @@ function Reservation() {
         reserveWiseMakeDeploy={reserveWiseMakeDeploy}
         findIndexOfDay={findIndexOfDay}
         globalReservationDaysData={globalReservationDaysData}
+        globalData={globalData}
       />
       <SigningModal show={openSigning} />
     </div >
