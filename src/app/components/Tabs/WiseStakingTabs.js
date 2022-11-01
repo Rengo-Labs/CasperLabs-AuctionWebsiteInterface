@@ -291,7 +291,7 @@ function WiseStakingTabs(props) {
             {/* <LinearProgressWithLabel value={(((new Date().getTime() / 1000) - addDays(stakeData?.createdAt, 1).getTime() / 1000)) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() / 1000 - addDays(stakeData?.createdAt, 1).getTime() / 1000) * 100} /> */}
             <ProgressBar bgcolor="#99ccff" progress={
               // 10
-              ((((new Date().getTime()) - addDays(stakeData?.createdAt, 1).getTime())) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() - addDays(stakeData?.createdAt, 1).getTime()) * 100).toFixed(2)
+              ((((new Date().getTime()) - addDays(stakeData?.createdAt, 0).getTime())) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() - addDays(stakeData?.createdAt, 1).getTime()) * 100).toFixed(2)
             } height={20} />
           </Box>
 
