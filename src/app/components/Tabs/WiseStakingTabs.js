@@ -50,6 +50,7 @@ import Axios from "axios";
 import SigningModal from "../../components/Modals/SigningModal";
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
+import ProgressBar from "../ProgressBar/ProgressBar";
 
 TimeAgo.addDefaultLocale(en)
 
@@ -113,6 +114,7 @@ LinearProgressWithLabel.propTypes = {
 
 
 function WiseStakingTabs(props) {
+  console.log("props", props);
   const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const { activePublicKey } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
@@ -164,6 +166,15 @@ function WiseStakingTabs(props) {
       ? num + (num === 1 ? ` ${singular}, ` : ` ${singular}s, `)
       : '';
   }
+
+  function addDays(date, days) {
+    var result = new Date(date).getTime();
+    let newTImeStamp = result + days * 24 * 60 * 60 * 1000
+    // result.setDate(result.getDate() + days);
+    console.log("result.getDate()", newTImeStamp);
+    return new Date(newTImeStamp);;
+  }
+
 
   async function unstakeMakeDeploy(stakeData) {
     handleShowSigning();
@@ -255,6 +266,7 @@ function WiseStakingTabs(props) {
   }
 
   const stake = props.stakeData.map((stakeData, index) => {
+    console.log("new Date(stakeData?.createdAt)", new Date(stakeData?.createdAt));
     return (
       <TableRow
         key={index}
@@ -276,7 +288,11 @@ function WiseStakingTabs(props) {
         <TableCell>
           {/* {stakeData.lockDays} */}
           <Box sx={{ width: '100%' }}>
-            <LinearProgressWithLabel value={(((new Date().getTime() / 1000) - stakeData.startDay)) / (stakeData.endDay - stakeData.startDay) * 100} />
+            {/* <LinearProgressWithLabel value={(((new Date().getTime() / 1000) - addDays(stakeData?.createdAt, 1).getTime() / 1000)) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() / 1000 - addDays(stakeData?.createdAt, 1).getTime() / 1000) * 100} /> */}
+            <ProgressBar bgcolor="#99ccff" progress={
+              // 10
+              ((((new Date().getTime()) - addDays(stakeData?.createdAt, 1).getTime())) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() - addDays(stakeData?.createdAt, 1).getTime()) * 100).toFixed(2)
+            } height={20} />
           </Box>
 
         </TableCell>
@@ -286,11 +302,14 @@ function WiseStakingTabs(props) {
               <span></span>
             }
 
-            title={<strong>{toDaysMinutesSeconds(stakeData.endDay - new Date().getTime() / 1000) + ' left'}</strong>}
-            subheader={new Date(stakeData?.endDay * 1000).toDateString().split(' ').slice(1).join(' ')}
+            title={<strong>{toDaysMinutesSeconds(addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() / 1000 - new Date().getTime() / 1000) + ' left'}</strong>}
+            subheader={
+              addDays(stakeData?.createdAt, stakeData?.lockDays).toDateString().split(' ').slice(1).join(' ')
+              //new Date(stakeData?.endDay * 1000).toDateString().split(' ').slice(1).join(' ')
+            }
           />
         </TableCell>
-        <TableCell>
+        {/* <TableCell>
 
           <CardHeader
             avatar={
@@ -300,7 +319,7 @@ function WiseStakingTabs(props) {
             title={<strong>{stakeData.staker}</strong>}
             subheader={"OnGoing"}
           />
-        </TableCell>
+        </TableCell> */}
         <TableCell>
           <CardHeader
             avatar={
@@ -313,7 +332,10 @@ function WiseStakingTabs(props) {
         </TableCell>
         <TableCell>{stakeData.reward}</TableCell>
         <TableCell>
-          <button onClick={() => props.handleShowHistoricalSummaryModal()} className="btn">
+          <button onClick={() => {
+            props.setStakeDetail(stakeData);
+            props.handleShowHistoricalSummaryModal()
+          }} className="btn">
             <SearchIcon />
           </button>
           <button onClick={() => unstakeMakeDeploy(stakeData)} className="btn">

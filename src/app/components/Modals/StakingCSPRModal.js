@@ -90,23 +90,30 @@ function StakingCSPRModal(props) {
     }
   }, [activePublicKey]);
 
-  useEffect(() => {
-    let cancel = false;
+  // useEffect(() => {
+  //   let cancel = false;
+  //   // let publicKeyHex = activePublicKey
+  //   // if (
+  //   //   publicKeyHex !== null &&
+  //   //   publicKeyHex !== "null" &&
+  //   //   publicKeyHex !== undefined
+  //   // ) {
+  //     axios
+  //       .get(`/getStakeData/${Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex")}`)
+  //       .then((res) => {
+  //         if (cancel) return;
+  //         setReferrer(res.data.stakesData[0].referrer);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         console.log(error.response);
+  //       });
+  //   // }
+  //   return () => {
+  //     cancel = true;
+  //   };
 
-    axios
-      .get("/getStakeData/123")
-      .then((res) => {
-        if (cancel) return;
-        setReferrer(res.data.stakesData[0].referrer);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-    return () => {
-      cancel = true;
-    };
-  }, []);
+  // }, [activePublicKey]);
 
   useEffect(() => {
     if (amountCheck && daysCheck && referrerCheck) {

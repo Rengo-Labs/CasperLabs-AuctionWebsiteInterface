@@ -13,7 +13,7 @@ import "../../../assets/css/bootstrap.min.css";
 // Custom Styling
 import { Grid } from '@material-ui/core/';
 import "../../../assets/css/stakingStyles.css";
-import { makeDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
+import { makeLiquidityTransformerDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
 
 // getMyTokens
 // Casper SDK
@@ -66,6 +66,8 @@ function Reservation() {
   const [selectedDay, setSelectedDay] = useState();
   const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
   const [userReservationDaysData, setUserReservationDaysData] = useState();
+  const [claimWiseStatus, setClaimWiseStatus] = useState(false);
+
 
   const [totalUsersReservations, setTotalUsersReservations] = useState(0);
 
@@ -151,6 +153,19 @@ function Reservation() {
           console.log(error);
           console.log(error.response);
         });
+      Axios
+        .get(`/getClaimWiseStatus/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
+        .then((res) => {
+          console.log("claimWiseStatus", res);
+          console.log("claimWiseStatus", res.data.claimWiseStatus);
+
+          setClaimWiseStatus(res.data.claimWiseStatus);
+        })
+        .catch((error) => {
+          setClaimWiseStatus(false);
+          console.log(error);
+          console.log(error.response);
+        });
     }
   }
   function findIndexOfDay(array, user) {
@@ -195,7 +210,7 @@ function Reservation() {
         console.log("runtimeArgs", runtimeArgs);
 
         //   // Set contract installation deploy (unsigned).
-        let deploy = await makeDeployWasm(
+        let deploy = await makeLiquidityTransformerDeployWasm(
           publicKey,
           runtimeArgs,
           paymentAmount
@@ -324,6 +339,18 @@ function Reservation() {
           }
           handleCloseSigning();
           let variant = "success";
+          Axios
+            .post("/claimWise", {
+              user: Buffer.from(CLPublicKey.fromHex(publicKeyHex).toAccountHash()).toString("hex")
+            })
+            .then((res) => {
+              console.log("claimWise", res);
+              getData()
+            })
+            .catch((error) => {
+              console.log(error);
+              console.log(error.response);
+            })
           enqueueSnackbar("Wise Claimed Succesfully", { variant });
         } catch {
           handleCloseSigning();
@@ -432,7 +459,7 @@ function Reservation() {
                 justifyContent="flex-start"
               // alignItems="flex-start"
               >
-                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} globalData={globalData} findIndexOfDay={findIndexOfDay} totalUsersReservations={totalUsersReservations} />
+                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} globalData={globalData} findIndexOfDay={findIndexOfDay} totalUsersReservations={totalUsersReservations} claimWiseStatus={claimWiseStatus} />
                 <Mode2DailyRandom day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode3Rookie day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode4Leader day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />

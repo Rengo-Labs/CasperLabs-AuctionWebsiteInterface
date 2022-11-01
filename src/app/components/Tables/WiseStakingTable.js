@@ -26,7 +26,7 @@ const cells = [
   "STAKE CREATED",
   "STAKE PROGRESS",
   "LOCK UP",
-  "STAKE ID",
+  // "STAKE ID",
   "AMOUNT STAKED",
   "INTEREST/APY",
   "ACTIONS",
@@ -60,7 +60,7 @@ function WiseStakingTable(props) {
               <TableHead>
                 <TableRow>
                   {cells.map((cell) => (
-                    <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                    <TableCell style={{ marginLeft: 'auto', marginTop: 'auto' }} sx={{ border: 0, fontWeight: "bold" }}>
                       {cell}
                     </TableCell>
                   ))}

@@ -75,23 +75,30 @@ function StakingWISEModal(props) {
     };
   }, [activePublicKey]);
 
-  useEffect(() => {
-    let cancel = false;
+  // useEffect(() => {
+  //   let cancel = false;
+  //   let publicKeyHex = activePublicKey
+  //   // if (
+  //   //   publicKeyHex !== null &&
+  //   //   publicKeyHex !== "null" &&
+  //   //   publicKeyHex !== undefined
+  //   // ) {
+  //     axios
+  //       .get(`/getStakeData/${Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex")}`)
 
-    axios
-      .get("/getStakeData/123")
-      .then((res) => {
-        if (cancel) return;
-        setReferrer(res.data.stakesData[0].referrer);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-    return () => {
-      cancel = true;
-    };
-  }, []);
+  //       .then((res) => {
+  //         if (cancel) return;
+  //         setReferrer(res.data.stakesData[0].referrer);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         console.log(error.response);
+  //       });
+  //   // }
+  //   return () => {
+  //     cancel = true;
+  //   };
+  // }, [activePublicKey]);
 
   useEffect(() => {
     if (amountCheck && daysCheck && referrerCheck) {
@@ -167,7 +174,7 @@ function StakingWISEModal(props) {
     if (event.target.value === "Cookie Reffral Addy") {
       setReferrerAddress(cookies.refree);
     } else {
-      setReferrerAddress(referrer);
+      setReferrerAddress("010650ac3716ff39a0b66bec203fa3403911237c27cfb38fa43b3da39e909fc3b6");
     }
 
     setReferrerCheck(true);
@@ -332,7 +339,7 @@ function StakingWISEModal(props) {
                           id="outlined-adornment-amount"
                           value={referrerAddress}
                           disabled
-                          placeholder="account-hash-000000...000000"
+                          placeholder="000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
                               <RecordVoiceOverOutlinedIcon />

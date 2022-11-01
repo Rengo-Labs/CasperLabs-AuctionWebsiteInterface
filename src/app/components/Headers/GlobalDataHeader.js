@@ -24,7 +24,7 @@ import { Grid } from '@material-ui/core';
 function GlobalDataHeader(props) {
 
   const [expanded, setExpanded] = React.useState(false);
-  console.log("props", props);
+  // console.log("props", props);
   const handleExpandClick = () => {
     setExpanded(!expanded);
 
@@ -90,7 +90,7 @@ function GlobalDataHeader(props) {
               }
 
               title="GLOBAL SHARE PRICE"
-            subheader={`${props?.globalData?.sharePrice ? props.globalData.sharePrice / 10 ** 9 : 0} WISE`}
+              subheader={`${props?.globalData?.sharePrice ? props.globalData.sharePrice / 10 ** 9 : 0} WISE`}
             />
           </Card>
         </Grid>

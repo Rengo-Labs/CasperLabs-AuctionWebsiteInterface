@@ -128,7 +128,7 @@ function Mode1Cashback(props) {
                     <Grid item xs={8}>
                         <CardHeader
                             title={`Mode 01 — “Cashback”`}
-                            subheader={`Reserving tokens with this mode grants 1% cashback instantly, however it is active only for the first 40,000 BNB invested through this mode.`}
+                            subheader={`Reserving tokens with this mode grants 1% cashback instantly, however it is active only for the first 40,000 CSPR invested through this mode.`}
                         />
                     </Grid>
 
@@ -185,8 +185,8 @@ function Mode1Cashback(props) {
                             <Grid item xs={6}>
 
 
-                                {((1666950812 - new Date().getTime() / 1000) + (6 * 86400) < 0) ? (
-                                    props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, accountHash) != -1 ? (
+                                {((1665434731762 / 1000 - new Date().getTime() / 1000) + (15 * 86400) < 0) ? (
+                                    props.totalUsersReservations != 0 && !props.claimWiseStatus ? (
                                         < Button
                                             className="text-center"
                                             block
@@ -228,7 +228,7 @@ function Mode1Cashback(props) {
                                 style={{ backgroundColor: '#08209e0f' }}
                                 className="text-center"
                                 avatar={<AccessTimeIcon />}
-                                label={((1666950812 - new Date().getTime() / 1000) + ((15) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1666950812 - new Date().getTime() / 1000) + ((6) * 86400)))}
+                                label={((1665434731762 / 1000 - new Date().getTime() / 1000) + ((15) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1665434731762 / 1000 - new Date().getTime() / 1000) + ((6) * 86400)))}
                                 variant="outlined"
                             />
                         </div>
