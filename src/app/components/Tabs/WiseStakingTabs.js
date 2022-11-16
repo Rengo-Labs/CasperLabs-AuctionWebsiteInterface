@@ -1,5 +1,6 @@
 // React
 import React, { useContext, useEffect, useState } from "react";
+import { useMedia } from 'react-use'
 // Material UI
 import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
@@ -14,10 +15,11 @@ import { StyledEngineProvider } from "@mui/styled-engine";
 import PropTypes from "prop-types";
 // Components
 import LinearProgress from '@mui/material/LinearProgress';
-import Torus from "@toruslabs/casper-embed";
+// import Torus from "@toruslabs/casper-embed";
 import {
   CasperServiceByJsonRPC,
   CLByteArray,
+  CLList,
   CLPublicKey,
   CLValueBuilder,
   RuntimeArgs
@@ -26,7 +28,8 @@ import { useSnackbar } from "notistack";
 import { AppContext } from "../../containers/App/Application";
 import {
   ROUTER_PACKAGE_HASH,
-  WISE_CONTRACT_HASH
+  WISE_CONTRACT_HASH,
+  WISE_PACKAGE_HASH
 } from "../blockchain/AccountHashes/Addresses";
 import { getDeploy } from "../blockchain/GetDeploy/GetDeploy";
 import { makeDeploy } from "../blockchain/MakeDeploy/MakeDeploy";
@@ -40,8 +43,6 @@ import InsuranceStakingTable from "../Tables/InsuranceStakingTable";
 import WiseStakingTable from "../Tables/WiseStakingTable";
 //Custom CSS
 import "../../assets/css/stakingTabs.css";
-import { Avatar, CardHeader } from "@material-ui/core";
-import { red } from "@material-ui/core/colors";
 import TimeAgo from 'javascript-time-ago'
 
 // English.
@@ -51,6 +52,8 @@ import SigningModal from "../../components/Modals/SigningModal";
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import ProgressBar from "../ProgressBar/ProgressBar";
+import { makeWiseTokenDeployWasm } from "../blockchain/MakeDeploy/MakeDeployWasm";
+import { convertToIntArray } from "../Helpers/Helper";
 
 TimeAgo.addDefaultLocale(en)
 
@@ -114,11 +117,12 @@ LinearProgressWithLabel.propTypes = {
 
 
 function WiseStakingTabs(props) {
+
   console.log("props", props);
-  const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
   const { activePublicKey } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
-  let [torus] = useState();
+  // let [torus] = useState();
   const [value, setValue] = useState(0);
   const [stakes] = useState([]);
   const [regularStaking] = useState(0);
@@ -147,33 +151,6 @@ function WiseStakingTabs(props) {
   };
 
 
-  function toDaysMinutesSeconds(totalSeconds) {
-    const seconds = Math.floor(totalSeconds % 60);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-
-    const secondsStr = makeHumanReadable(seconds, 'second');
-    const minutesStr = makeHumanReadable(minutes, 'minute');
-    const hoursStr = makeHumanReadable(hours, 'hour');
-    const daysStr = makeHumanReadable(days, 'day');
-
-    return `${daysStr}${hoursStr}${minutesStr}${secondsStr}`.replace(/,\s*$/, '');
-  }
-
-  function makeHumanReadable(num, singular) {
-    return num > 0
-      ? num + (num === 1 ? ` ${singular}, ` : ` ${singular}s, `)
-      : '';
-  }
-
-  function addDays(date, days) {
-    var result = new Date(date).getTime();
-    let newTImeStamp = result + days * 24 * 60 * 60 * 1000
-    // result.setDate(result.getDate() + days);
-    console.log("result.getDate()", newTImeStamp);
-    return new Date(newTImeStamp);;
-  }
 
 
   async function unstakeMakeDeploy(stakeData) {
@@ -190,61 +167,67 @@ function WiseStakingTabs(props) {
       const spenderByteArray = new CLByteArray(
         Uint8Array.from(Buffer.from(spender, "hex"))
       );
-      const paymentAmount = 5000000000;
+      const paymentAmount = 10000000000;
       try {
         console.log(stakeData);
-        const runtimeArgs = RuntimeArgs.fromMap({
-          stake_id: CLValueBuilder.string(stakeData.id),
-        });
-
-        let contractHashAsByteArray = Uint8Array.from(
-          Buffer.from(WISE_CONTRACT_HASH, "hex")
+        let stakeId = convertToIntArray(stakeData.id)
+        console.log("stakeId", stakeId);
+        let vec32Array = [];
+        for (let i = 0; i < stakeId.length; i++) {
+          const p = CLValueBuilder.u32(stakeId[i]);
+          vec32Array.push(p);
+        }
+        console.log("stakeIdstakeId", vec32Array);
+        const wiseTokenPackageHash = new CLByteArray(
+          Uint8Array.from(Buffer.from(WISE_PACKAGE_HASH, "hex"))
         );
-        let entryPoint = "end_stake_Jsclient";
-        let deploy = await makeDeploy(
+        const runtimeArgs = RuntimeArgs.fromMap({
+          package_hash: CLValueBuilder.key(wiseTokenPackageHash),
+          stake_id: new CLList(vec32Array),
+          entrypoint: CLValueBuilder.string("end_stake"),
+        });
+        let deploy = await makeWiseTokenDeployWasm(
           publicKey,
-          contractHashAsByteArray,
-          entryPoint,
           runtimeArgs,
           paymentAmount
         );
         console.log("make deploy: ", deploy);
         console.log(selectedWallet);
         try {
-          if (selectedWallet === "Casper") {
+          // if (selectedWallet === "Casper") {
             let signedDeploy = await signdeploywithcaspersigner(
               deploy,
               publicKeyHex
             );
             let result = await putdeploy(signedDeploy, enqueueSnackbar);
             console.log("result", result);
-          } else {
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            console.log("Torus123", torus);
-            console.log("torus", torus.provider);
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-            console.log(
-              `... Contract installed successfully.`,
-              JSON.parse(JSON.stringify(result))
-            );
-            console.log("result", result);
-          }
+          // } else {
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   console.log("Torus123", torus);
+          //   console.log("torus", torus.provider);
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          //   console.log(
+          //     `... Contract installed successfully.`,
+          //     JSON.parse(JSON.stringify(result))
+          //   );
+          //   console.log("result", result);
+          // }
           handleCloseSigning();
           let variant = "success";
           enqueueSnackbar("unstaked Succesfully", { variant });
@@ -256,7 +239,7 @@ function WiseStakingTabs(props) {
       } catch {
         handleCloseSigning();
         let variant = "Error";
-        enqueueSnackbar("Input values are too large", { variant });
+        enqueueSnackbar("Something went Wrong", { variant });
       }
     } else {
       handleCloseSigning();
@@ -265,86 +248,13 @@ function WiseStakingTabs(props) {
     }
   }
 
-  const stake = props.stakeData.map((stakeData, index) => {
-    console.log("new Date(stakeData?.createdAt)", new Date(stakeData?.createdAt));
-    return (
-      <TableRow
-        key={index}
-        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-      >
-        <TableCell>
-          <CardHeader
-            avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                <AccessAlarmIcon />
-              </Avatar>
-            }
 
-            title={<strong>{weekday[new Date(stakeData?.createdAt).getDay()]}</strong>}
-            subheader={new Date(stakeData?.createdAt).toDateString().split(' ').slice(1).join(' ')}
-          />
+  // const stake = props.stakeData.map((stakeData, index) => {
+  //   console.log("new Date(stakeData?.createdAt)", new Date(stakeData?.createdAt));
+  //   return (
 
-        </TableCell>
-        <TableCell>
-          {/* {stakeData.lockDays} */}
-          <Box sx={{ width: '100%' }}>
-            {/* <LinearProgressWithLabel value={(((new Date().getTime() / 1000) - addDays(stakeData?.createdAt, 1).getTime() / 1000)) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() / 1000 - addDays(stakeData?.createdAt, 1).getTime() / 1000) * 100} /> */}
-            <ProgressBar bgcolor="#99ccff" progress={
-              // 10
-              ((((new Date().getTime()) - addDays(stakeData?.createdAt, 0).getTime())) / (addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() - addDays(stakeData?.createdAt, 1).getTime()) * 100).toFixed(2)
-            } height={20} />
-          </Box>
-
-        </TableCell>
-        <TableCell>
-          <CardHeader
-            avatar={
-              <span></span>
-            }
-
-            title={<strong>{toDaysMinutesSeconds(addDays(stakeData?.createdAt, stakeData?.lockDays).getTime() / 1000 - new Date().getTime() / 1000) + ' left'}</strong>}
-            subheader={
-              addDays(stakeData?.createdAt, stakeData?.lockDays).toDateString().split(' ').slice(1).join(' ')
-              //new Date(stakeData?.endDay * 1000).toDateString().split(' ').slice(1).join(' ')
-            }
-          />
-        </TableCell>
-        {/* <TableCell>
-
-          <CardHeader
-            avatar={
-              <span></span>
-            }
-
-            title={<strong>{stakeData.staker}</strong>}
-            subheader={"OnGoing"}
-          />
-        </TableCell> */}
-        <TableCell>
-          <CardHeader
-            avatar={
-              <span></span>
-            }
-
-            title={<strong>{stakeData.principal / 10 ** 9} WISE</strong>}
-            subheader={stakeData.shares / 10 ** 9 + " SHRS"}
-          />
-        </TableCell>
-        <TableCell>{stakeData.reward}</TableCell>
-        <TableCell>
-          <button onClick={() => {
-            props.setStakeDetail(stakeData);
-            props.handleShowHistoricalSummaryModal()
-          }} className="btn">
-            <SearchIcon />
-          </button>
-          <button onClick={() => unstakeMakeDeploy(stakeData)} className="btn">
-            <CloseIcon />
-          </button>
-        </TableCell>
-      </TableRow>
-    );
-  });
+  //   );
+  // });
 
   return (
     <Box sx={{ width: "100%", marginTop: 7 }}>
@@ -388,7 +298,7 @@ function WiseStakingTabs(props) {
         </StyledEngineProvider>
       </Box>
       <TabPanel value={value} index={0}>
-        {stake.length !== 0 && activePublicKey !== null ? (
+        {props.stakeData.length !== 0 && activePublicKey !== null ? (
           <div className="row no-gutters buttonsWrapper">
             <WiseStakingTableButtons
               btnContent={"Create Regular Stake (WISE)"}
@@ -400,7 +310,7 @@ function WiseStakingTabs(props) {
           </div>
         ) : null}
 
-        <WiseStakingTable stake={stake} />
+        <WiseStakingTable stakeData={props.stakeData} unstakeMakeDeploy={unstakeMakeDeploy} setStakeDetail={props.setStakeDetail} handleShowHistoricalSummaryModal={props.handleShowHistoricalSummaryModal} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         {stakes.length !== 0 && activePublicKey !== null ? (

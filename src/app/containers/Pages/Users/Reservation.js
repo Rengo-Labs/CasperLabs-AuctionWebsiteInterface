@@ -11,14 +11,12 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 // Bootstrap
 import "../../../assets/css/bootstrap.min.css";
 // Custom Styling
-import { Grid } from '@material-ui/core/';
 import "../../../assets/css/stakingStyles.css";
 import { makeLiquidityTransformerDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
 
 // getMyTokens
 // Casper SDK
-import { Avatar, CardHeader } from "@material-ui/core";
-import Torus from "@toruslabs/casper-embed";
+// import Torus from "@toruslabs/casper-embed";
 import Axios from "axios";
 import {
   CasperServiceByJsonRPC,
@@ -45,6 +43,7 @@ import { convertToStr } from "../../../components/ConvertToString/ConvertToStrin
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
 import SigningModal from "../../../components/Modals/SigningModal";
+import { Avatar, CardHeader, Grid } from "@mui/material";
 
 // Content
 const handleStakingWISEModal = createContext();
@@ -83,7 +82,7 @@ function Reservation() {
   const handleShowReservationModal = () => {
     setOpenReservationModal(true);
   };
-  let [torus, setTorus] = useState();
+  // let [torus, setTorus] = useState();
 
   const handleCloseSigning = () => {
     setOpenSigning(false);
@@ -93,7 +92,11 @@ function Reservation() {
   };
   const [globalData, setGlobalData] = useState({});
   useEffect(() => {
+    const controller=new AbortController()
     getGlobalData();
+    return () => {
+      controller.abort()
+    }
   }, []);
 
   function getGlobalData() {
@@ -109,7 +112,11 @@ function Reservation() {
       });
   }
   useEffect(() => {
+    const controller=new AbortController()
     getData()
+    return () => {
+      controller.abort()
+    }
   }, [activePublicKey]);
 
 
@@ -217,34 +224,34 @@ function Reservation() {
         );
         console.log("make deploy: ", deploy);
         try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            // let Torus = new Torus();
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-          }
+          // if (selectedWallet === "Casper") {
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          // } else {
+          //   // let Torus = new Torus();
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          // }
           handleCloseSigning();
           let variant = "success";
           getData()
@@ -303,40 +310,40 @@ function Reservation() {
         console.log("make deploy: ", deploy);
         console.log(selectedWallet);
         try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            console.log("Torus123", torus);
-            console.log("torus", torus.provider);
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-            console.log(
-              `... Contract installed successfully.`,
-              JSON.parse(JSON.stringify(result))
-            );
-            console.log("result", result);
-          }
+          // if (selectedWallet === "Casper") {
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          // } else {
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   console.log("Torus123", torus);
+          //   console.log("torus", torus.provider);
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          //   console.log(
+          //     `... Contract installed successfully.`,
+          //     JSON.parse(JSON.stringify(result))
+          //   );
+          //   console.log("result", result);
+          // }
           handleCloseSigning();
           let variant = "success";
           Axios
@@ -378,7 +385,7 @@ function Reservation() {
             setSelectedWallet={setSelectedWallet}
             setUserWiseBalance={setUserWiseBalance}
             selectedWallet={selectedWallet}
-            setTorus={setTorus}
+            // setTorus={setTorus}
             selectedNav={"Reservation"}
           />
 

@@ -1,66 +1,26 @@
-
-import { CardActions, CardMedia, Chip, Container, Grid, LinearProgress } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import CardHeader from '@material-ui/core/CardHeader';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Avatar, Button, CardActions, CardHeader, CardMedia, Chip, Container, Grid, LinearProgress } from '@mui/material';
+import { Typography } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CalendarTodayTwoToneIcon from '@mui/icons-material/CalendarTodayTwoTone';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import Box from "@mui/material/Box";
 import PropTypes from "prop-types";
 import React, { useContext } from "react";
-import { Button, Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
 import CSPR from '../../../assets/img/cspr.png';
 import Mode1 from '../../../assets/img/Mode1.svg';
 import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
-
-import { red } from '@material-ui/core/colors';
 import { Stack } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { CLPublicKey } from 'casper-js-sdk';
 import { AppContext } from '../../../containers/App/Application';
+import { toDaysMinutesSeconds } from '../../Helpers/Helper';
 
 
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: '100%',
-        backgroundColor: theme.palette.background.paper,
-    },
-    badge: {
-        '& > *': {
-            margin: theme.spacing(1),
-        },
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-
-    card: {
-        minWidth: 250,
-    },
-    media: {
-        height: 0,
-        paddingTop: '100%', // 16:9
-    },
-    bullet: {
-        display: 'inline-block',
-        margin: '0 2px',
-        transform: 'scale(0.8)',
-    },
-    title: {
-        fontSize: 14,
-    },
-    pos: {
-        marginBottom: 12,
-    },
-}));
 
 
 function LinearProgressWithLabel(props) {
@@ -86,33 +46,12 @@ LinearProgressWithLabel.propTypes = {
      */
     value: PropTypes.number.isRequired,
 };
-function toDaysMinutesSeconds(totalSeconds) {
-    const seconds = Math.floor(totalSeconds % 60);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-    const days = Math.floor(totalSeconds / (3600 * 24));
-
-    const secondsStr = makeHumanReadable(seconds, 'second');
-    const minutesStr = makeHumanReadable(minutes, 'minute');
-    const hoursStr = makeHumanReadable(hours, 'hour');
-    const daysStr = makeHumanReadable(days, 'day');
-
-    return `${daysStr}${hoursStr}${minutesStr}${secondsStr}`.replace(/,\s*$/, '');
-}
-function makeHumanReadable(num, singular) {
-    return num > 0
-        ? num + (num === 1 ? ` ${singular}, ` : ` ${singular}s, `)
-        : '';
-}
-
-
 
 function Mode1Cashback(props) {
     console.log("props", props)
     // console.log("props.", props.findIndexOfDay(props.day));
     // console.log("props.globalReservationDaysData[props.findIndex(props.day)]?.userCount", props.globalReservationDaysData);
     const { activePublicKey } = useContext(AppContext);
-    const classes = useStyles();
     const accountHash = activePublicKey ? Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex") : null;
     return (
         <Grid item xs={12} sm={6} md={6} >
@@ -148,13 +87,13 @@ function Mode1Cashback(props) {
                                     </Paper>
                                     <Stack className="align-items-center" direction="row" spacing={1}>
                                         <CardHeader className="text-center"
-                                            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Date" >
+                                            avatar={<Avatar sx={{ bgcolor: 'white', color: 'red' }} aria-label="Date" >
                                                 <CalendarTodayTwoToneIcon />
                                             </Avatar>}
                                             title={new Date().toLocaleDateString("en-US")}
                                         />
                                         <CardHeader className="text-center"
-                                            avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
+                                            avatar={<Avatar sx={{ bgcolor: 'white', color: 'red' }} aria-label="Totals" >
                                                 <PersonOutlineOutlinedIcon />
                                             </Avatar>}
                                             title={props.globalData ? (props.globalData?.userCount) : (0)}
@@ -185,11 +124,12 @@ function Mode1Cashback(props) {
                             <Grid item xs={6}>
 
 
-                                {((1665434731762 / 1000 - new Date().getTime() / 1000) + (15 * 86400) < 0) ? (
-                                    props.totalUsersReservations != 0 && !props.claimWiseStatus ? (
-                                        < Button
+                                {((1666675257679 / 1000 - new Date().getTime() / 1000) + (15 * 86400) < 0) ? (
+                                    props.totalUsersReservations !== 0 && props.claimWiseStatus === false ? (
+                                        <Button
                                             className="text-center"
-                                            block
+                                            style={{ color: 'white', backgroundColor: '#08209e' }}
+                                            fullWidth
                                             onClick={() => {
                                                 props.claimWiseMakeDeploy()
                                             }}
@@ -199,7 +139,8 @@ function Mode1Cashback(props) {
                                     ) : (
                                         <Button
                                             className="text-center"
-                                            block
+                                            style={{ color: 'white', backgroundColor: '#08209e5F' }}
+                                            fullWidth
                                             disabled
                                         >
                                             Closed
@@ -208,7 +149,9 @@ function Mode1Cashback(props) {
                                 ) : (
                                     <Button
                                         className="text-center"
-                                        block
+                                        style={{ color: 'white', backgroundColor: '#08209e' }}
+                                        fullWidth
+
                                         onClick={() => {
                                             props.handleShowReservationModal()
                                         }}
@@ -228,7 +171,7 @@ function Mode1Cashback(props) {
                                 style={{ backgroundColor: '#08209e0f' }}
                                 className="text-center"
                                 avatar={<AccessTimeIcon />}
-                                label={((1665434731762 / 1000 - new Date().getTime() / 1000) + ((15) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1665434731762 / 1000 - new Date().getTime() / 1000) + ((6) * 86400)))}
+                                label={((1666675257679 / 1000 - new Date().getTime() / 1000) + ((15) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1666675257679 / 1000 - new Date().getTime() / 1000) + ((6) * 86400)))}
                                 variant="outlined"
                             />
                         </div>

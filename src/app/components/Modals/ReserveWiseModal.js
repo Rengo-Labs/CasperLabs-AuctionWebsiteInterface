@@ -1,4 +1,3 @@
-import { Avatar, Box, Card, CardHeader, FormControl, Input, InputAdornment, InputLabel, TextField, Typography } from "@material-ui/core";
 import React, { useState } from 'react';
 import { Button, Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
@@ -11,11 +10,10 @@ import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { AccountCircle, CalendarViewWeekTwoTone } from "@mui/icons-material";
-import { CalendarToday } from "@material-ui/icons";
 import CalendarTodayTwoToneIcon from '@mui/icons-material/CalendarTodayTwoTone';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import CSPR from '../../assets/img/cspr.png';
-import { red } from "@material-ui/core/colors";
+import { Avatar, Box, Card, CardHeader, TextField, Typography } from '@mui/material';
 
 function ReserveWiseModal(props) {
   const [reservationAmount, setReservationAmount] = useState();
@@ -64,7 +62,7 @@ function ReserveWiseModal(props) {
           </strong>
           <Stack className="align-items-center" direction="row" spacing={1}>
             <CardHeader className="text-center"
-              avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Date" >
+              avatar={<Avatar sx={{ bgcolor: 'white', color: 'red' }} aria-label="Date" >
                 <CalendarTodayTwoToneIcon />
               </Avatar>}
               title={new Date().toLocaleDateString("en-US")}
@@ -72,7 +70,7 @@ function ReserveWiseModal(props) {
             {props.globalReservationDaysData ? (
               <>
                 <CardHeader className="text-center"
-                  avatar={<Avatar sx={{ bgcolor: red[500] }} aria-label="Totals" >
+                  avatar={<Avatar sx={{ bgcolor: 'white', color: 'red' }} aria-label="Totals" >
                     <PersonOutlineOutlinedIcon />
                   </Avatar>}
                   title={props.globalData ? (props.globalData?.userCount) : (0)}

@@ -1,4 +1,3 @@
-import { Card, CardContent, Typography } from "@material-ui/core";
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
@@ -12,19 +11,20 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
 import "../../assets/css/style.css";
 import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
-
 import axios from "axios";
 import { CLPublicKey } from "casper-js-sdk";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../containers/App/Application";
 import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
 import { useCookies } from "react-cookie";
+import { Button, Card, CardContent, Typography } from "@mui/material";
+import { balanceOf } from "../JsClients/WISETOKEN/wiseTokenFunctionsForBackend/functions";
 
 // -------------------- COMPONENT FUNCTION --------------------
 function StakingWISEModal(props) {
@@ -51,31 +51,26 @@ function StakingWISEModal(props) {
   const [cookies, setCookie] = useCookies(["refree"]);
   // -------------------- Life Cycle Methods--------------------
   useEffect(() => {
-    let cancel = false;
+    const controller = new AbortController()
     if (
       activePublicKey &&
       activePublicKey !== null &&
       activePublicKey !== "null" &&
       activePublicKey !== undefined
     ) {
-      axios
-        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
-        .then((res) => {
-          if (cancel) return;
-          console.log("resresres", res);
-          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-        });
+      async function fetchData() {
+        let balance = await balanceOf(WISE_CONTRACT_HASH, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"));
+        setwiseBalanceAgainstUser(balance / 10 ** 9);
+      }
+      fetchData();
     }
     return () => {
-      cancel = true;
-    };
+      controller.abort()
+    }
   }, [activePublicKey]);
 
   // useEffect(() => {
+  // const controller=new AbortController()
   //   let cancel = false;
   //   let publicKeyHex = activePublicKey
   //   // if (
@@ -98,11 +93,18 @@ function StakingWISEModal(props) {
   //   return () => {
   //     cancel = true;
   //   };
+  // return () => {
+  //   controller.abort()
+  // }
   // }, [activePublicKey]);
 
   useEffect(() => {
+    const controller = new AbortController()
     if (amountCheck && daysCheck && referrerCheck) {
       setRenderButtonInactive(false);
+    }
+    return () => {
+      controller.abort()
     }
   }, [amountCheck, daysCheck, referrerCheck]);
 
@@ -279,6 +281,7 @@ function StakingWISEModal(props) {
                           value={days}
                           onChange={(e) => {
                             if (e.target.value < 15330) {
+                              setDaysCheck(true);
                               setDays(e.target.value);
                               if (((e.target.value / 365) * 5).toFixed(2) < 30) {
                                 setDurationBonus(((e.target.value / 365) * 5).toFixed(2))
@@ -388,20 +391,21 @@ function StakingWISEModal(props) {
                   <div className="row">
                     {renderButtonInactive ? (
                       <Button
-                        style={{ marginBottom: "20px" }}
-                        variant="primary"
+                        style={{ marginBottom: "20px", backgroundColor: '#08209e0F', color: 'white' }}
                         disabled
-                        block
-                        size="lg"
+                        fullWidth
+                        size="large"
+                        variant="contained"
+
                       >
                         Create Stake
                       </Button>
                     ) : (
                       <Button
-                        style={{ marginBottom: "20px" }}
-                        variant="primary"
-                        block
-                        size="lg"
+                        style={{ marginBottom: "20px", backgroundColor: '#08209e' }}
+                        variant="contained"
+                        fullWidth
+                        size="large"
                         onClick={() => {
                           props.createStakeMakeDeploy(
                             percentagedBalance,
@@ -481,7 +485,7 @@ function StakingWISEModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        {percentagedBalance ? (parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0) : (0)}  SHRS
+                        {percentagedBalance ? ((parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat(percentagedBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0)).toFixed(2) : (0)}  SHRS
                       </div>
                     </div>
                   </Typography>

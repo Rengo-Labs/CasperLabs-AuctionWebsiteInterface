@@ -16,7 +16,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import * as React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 
 
 // console.log("torus", torus);

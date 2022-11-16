@@ -1,5 +1,3 @@
-import { Box, CardHeader, Grid, Typography } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import DoneIcon from '@mui/icons-material/Done';
 import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
@@ -11,6 +9,7 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import { Alert, Box, CardHeader, Grid, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
@@ -20,6 +19,7 @@ import "../../assets/css/style.css";
 import Exit from "../../assets/img/exit.svg";
 import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
+import { addDays, toHex } from "../Helpers/Helper";
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -57,13 +57,8 @@ function StakeHistoricalSummaryModal(props) {
     color: theme.palette.text.secondary,
   }));
 
-  function addDays(date, days) {
-    var result = new Date(date).getTime();
-    let newTImeStamp = result + days * 24 * 60 * 60 * 1000
-    // result.setDate(result.getDate() + days);
-    console.log("result.getDate()", newTImeStamp);
-    return new Date(newTImeStamp);;
-  }
+
+  
   return (
     <Modal size="xl" centered show={props.show} onHide={props.handleClose}>
       <Modal.Body style={{ textAlign: "center" }}>
@@ -85,7 +80,11 @@ function StakeHistoricalSummaryModal(props) {
       </Modal.Body>
       <Modal.Body >
         <Alert variant="outlined" severity="warning">
-          Your Stake With Id <strong>{props.stakeDetail?.id}</strong> was started on <strong>{addDays(props.stakeDetail?.createdAt, 1).toLocaleDateString("en-US")}</strong> and will mature <strong>in {toDays(addDays(props.stakeDetail?.createdAt, props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days</strong> reaching remaining Possible reward.
+          Your Stake With Id <strong>{
+            toHex(props.stakeDetail?.id)
+
+            // parseInt(props.stakeDetail?.id.slice(1, 6)).toString(16)
+          }</strong> was started on <strong>{addDays(props.stakeDetail?.createdAt, 1).toLocaleDateString("en-US")}</strong> and will mature <strong>in {toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days</strong> reaching remaining Possible reward.
           Scraping reward Prematurely will always result in penalties applied to stake shares and referral shares reducing the remaining possible reward for both.
         </Alert>
       </Modal.Body>
@@ -136,7 +135,7 @@ function StakeHistoricalSummaryModal(props) {
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
                   <CardHeader
-                    title={`${addDays(props.stakeDetail?.createdAt, 1).toLocaleDateString("en-US")} # Starting Day`}
+                    title={`${addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)).toLocaleDateString("en-US")} # Starting Day`}
                     subheader={
                       <>
                         <Typography>
@@ -167,6 +166,7 @@ function StakeHistoricalSummaryModal(props) {
                           className="text-center"
                           block
                           onClick={() => {
+                            props.scrapeRewardsMakeDeploy(props.stakeDetail, parseInt(toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)) + parseInt(props.stakeDetail?.startDay))
                           }}
                         >
                           Scrape Reward
@@ -186,11 +186,12 @@ function StakeHistoricalSummaryModal(props) {
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
                   <CardHeader
-                    title={`${addDays(props.stakeDetail?.createdAt, props.stakeDetail?.lockDays).toLocaleDateString("en-US")} # Final Day`}
+                    title={`${addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).toLocaleDateString("en-US")} # Final Day`}
+
                     subheader={
                       <>
                         <Typography>
-                          Stake Unlock: {toDays(addDays(props.stakeDetail?.createdAt, props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days Left
+                          Stake Unlock: {toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days Left
                         </Typography>
                       </>
                     }
@@ -302,7 +303,7 @@ function StakeHistoricalSummaryModal(props) {
                         subheader={'Remaining amount'}
                       />
                     </Grid>
-                    <Grid item xs={windowDimensions.width < 1200 ? 12 : 6} style={{ marginTop: 'auto', marginBottom: 'auto', color: '#00FF00' }}>
+                    <Grid item xs={windowDimensions.width < 1200 ? 12 : 6} style={{ marginTop: 'auto', marginBottom: 'auto', color: '#59981A' }}>
                       <CardHeader
                         title={`${(props.stakeDetail?.shares / 10 ** 9 - props.stakeDetail?.sharesPenalized / 10 ** 9).toFixed(2)} SHRS`}
                       />
@@ -317,7 +318,7 @@ function StakeHistoricalSummaryModal(props) {
                         subheader={'Remaining amount'}
                       />
                     </Grid>
-                    <Grid item xs={windowDimensions.width < 1200 ? 12 : 6} style={{ marginTop: 'auto', marginBottom: 'auto', color: '#00FF00' }}>
+                    <Grid item xs={windowDimensions.width < 1200 ? 12 : 6} style={{ marginTop: 'auto', marginBottom: 'auto', color: '#59981A' }}>
                       <CardHeader
                         title={`${(props.stakeDetail?.principal / 10 ** 9 - props.stakeDetail?.penalty / 10 ** 9).toFixed(2)} WISE`}
                       />

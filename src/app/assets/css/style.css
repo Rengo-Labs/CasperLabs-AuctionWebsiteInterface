@@ -8285,3 +8285,9 @@ object:hover {
 .MuiTablePagination .MuiTablePagination-toolbar {
   justify-content: center;
 }
+.circle {
+  display: flex;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

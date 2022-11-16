@@ -18,6 +18,7 @@ function HomeScreen() {
   const [cookies, setCookie] = useCookies(["refree"]);
   console.log("refree", refree);
   useEffect(() => {
+    const controller=new AbortController()
     
     if (
       refree && refree !== null && refree != undefined && refree.length === 66
@@ -25,6 +26,9 @@ function HomeScreen() {
       setCookie("refree", refree, {
         path: "/"
       });
+    }
+    return () => {
+      controller.abort()
     }
   }, [refree]);
   console.log("from home");

@@ -1,10 +1,12 @@
-import { Avatar, CardHeader } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import AccessAlarmIcon from "@mui/icons-material/AccessAlarm";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import CloseIcon from '@mui/icons-material/Close';
 import FilterListIcon from "@mui/icons-material/FilterList";
 import LanIcon from "@mui/icons-material/Lan";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
+import SearchIcon from '@mui/icons-material/Search';
+import { Avatar, Box, Button, CardHeader } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -21,6 +23,7 @@ import {
 import { useSnackbar } from "notistack";
 import React, { useContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+import { useMedia } from "react-use";
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
 import "../../../assets/plugins/fontawesome/css/all.min.css";
@@ -29,20 +32,16 @@ import { getStateRootHash } from "../../../components/blockchain/GetStateRootHas
 import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import HeaderHome from "../../../components/Headers/Header";
+import { addDays, currentStakeableDay, toDaysMinutesSeconds, toHex } from "../../../components/Helpers/Helper";
 import ReferalModal from "../../../components/Modals/ReferalModal";
+import ProgressBar from "../../../components/ProgressBar/ProgressBar";
 import { AppContext } from "../../App/Application";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    width: "100%",
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
 
 function Refer(props) {
   const { enqueueSnackbar } = useSnackbar();
   const [cookies, setCookie] = useCookies(["referee"]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   console.log("cookies", cookies);
   let [selectedWallet, setSelectedWallet] = useState(
     localStorage.getItem("selectedWallet")
@@ -52,10 +51,25 @@ function Refer(props) {
   let [mainPurse, setMainPurse] = useState();
 
   const { activePublicKey } = useContext(AppContext);
+  const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const below1200 = useMedia('(max-width: 1200px)')
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.stakeData.length) : 0;
+
+
 
 
   console.log("selectedWallet", selectedWallet);
   useEffect(() => {
+    const controller = new AbortController()
     if (
       activePublicKey !== "null" &&
       activePublicKey !== null &&
@@ -84,6 +98,9 @@ function Refer(props) {
           });
       });
     }
+    return () => {
+      controller.abort()
+    }
   }, [activePublicKey]);
 
   const [table, setTable] = useState(0);
@@ -91,25 +108,8 @@ function Refer(props) {
     return { name, calories, fat, carbs, protein };
   }
 
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
   const [open, setOpen] = React.useState(false);
+  let [referrerData, setReferrerData] = useState([])
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [modalShow, setModalShow] = React.useState(false);
@@ -122,6 +122,7 @@ function Refer(props) {
   };
   const [globalData, setGlobalData] = useState({});
   useEffect(() => {
+    const controller = new AbortController()
     axios
       .get("/getGlobalData")
       .then((res) => {
@@ -131,7 +132,53 @@ function Refer(props) {
         console.log(error);
         console.log(error.response);
       });
+    return () => {
+      controller.abort()
+    }
   }, []);
+  useEffect(() => {
+    const controller = new AbortController()
+    let publicKeyHex = activePublicKey;
+    if (
+      publicKeyHex !== null &&
+      publicKeyHex !== "null" &&
+      publicKeyHex !== undefined
+    ) {
+      getReferrerData()
+    }
+    // let count = 0;
+    // const interval = setInterval(() => {
+    //   setProgress(count);
+    //   count++;
+    // }, 100);
+    // return () => clearInterval(interval);
+    return () => {
+      controller.abort()
+    }
+
+  }, [activePublicKey]);
+  async function getReferrerData() {
+    axios
+      .get(`/getReferrerData/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
+      .then((res) => {
+        // console.log("getReferrerData", res.data);
+        console.log("getReferrerData", res.data.referrerData);
+        setReferrerData(res.data.referrerData);
+        // console.log("referrerData", referrerData);
+        // console.log("referrerData.startDayTimeStamp", referrerData[0].startDayTimeStamp);
+        // console.log("lockDaysSeconds", referrerData[0].lockDaysSeconds);
+        // let lastDay = referrerData[0].startDayTimeStamp + referrerData[0].lockDaysSeconds
+        // let currentTImeStamp = Math.floor(Date.now() / 1000);
+        // let pct = (100 * lastDay / currentTImeStamp).toFixed(2)
+        // console.log("lastDay", lastDay);
+        // console.log("currentTImeStamp", currentTImeStamp);
+        // console.log("pct", pct);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log(error.response);
+      });
+  }
   return (
     <div className="account-page">
       <div className="main-wrapper">
@@ -180,7 +227,7 @@ function Refer(props) {
                 <div className="row no-gutters ml-auto align-items-center">
                   <section >
                     <h1 className="text-dark font-weight-bold m-0 wiseStaking-heading">
-                      {localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== undefined && localStorage.getItem("Address") !== 'null'? (
+                      {localStorage.getItem("Address") !== null && localStorage.getItem("Address") !== undefined && localStorage.getItem("Address") !== 'null' ? (
                         <CardHeader
                           avatar={<Avatar src="" aria-label="Torus Wallet" />}
                           title={<a
@@ -243,7 +290,7 @@ function Refer(props) {
                             REFFERED STAKE START
                           </TableCell>
                           <TableCell sx={{ border: 0, fontWeight: "bold" }}>
-                            REFFERAL SPIN
+                            REFFERAL SPAN
                           </TableCell>
                           <TableCell sx={{ border: 0, fontWeight: "bold" }}>
                             {" "}
@@ -267,54 +314,288 @@ function Refer(props) {
                           </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody></TableBody>
+                      {/* <TableBody> */}
+                      <TableBody>
+
+                        {
+                          referrerData.length === 0 || activePublicKey === null ? null :
+                            (rowsPerPage > 0
+                              ? referrerData?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                              : referrerData
+                            ).map((item, index) => (
+                              <TableRow
+                                key={index}
+                                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                              >
+                                <TableCell>
+                                  <CardHeader
+                                    avatar={
+
+                                      <Avatar sx={{
+                                        bgcolor:
+                                          parseInt(currentStakeableDay()) <= parseInt(item.startDay) ? ('#A020F0') : (currentStakeableDay() < parseInt(item.startDay) + parseInt(item.lockDays)) ? ("#FFA500") : ("#59981A")
+                                      }} aria-label="Access">
+                                        <AccessAlarmIcon />
+                                      </Avatar>
+                                    }
+
+                                    title={<strong>{weekday[new Date(item?.createdAt).getDay()]}</strong>}
+                                    subheader={new Date(item?.createdAt).toDateString().split(' ').slice(1).join(' ')}
+                                  />
+
+                                </TableCell>
+                                <TableCell>
+                                  {/* {item.lockDays} */}
+                                  <Box sx={{ width: '100%' }}>
+                                    {/* {console.log("currentStakeableDay()", currentStakeableDay())}
+            {console.log("parseInt(item.startDay) + parseInt(item.lockDays))", parseInt(item.startDay))} */}
+                                    {parseInt(currentStakeableDay()) <= parseInt(item.startDay) ?
+                                      (
+                                        <ProgressBar bgcolor="#A020F0" progress={0} height={20} backgroundColor="#A020F01F" />
+                                      ) : (currentStakeableDay() < parseInt(item.startDay) + parseInt(item.lockDays)) ?
+                                        (
+                                          // <ProgressBar bgcolor="#FFA500" progress={
+                                          100 - ((((new Date().getTime()) - addDays(
+                                            addDays(item?.createdAt, (parseInt(item.startDay)) - parseInt(item.currentStakeableDay)), 0).getTime())) / (
+                                              addDays(
+                                                addDays(item?.createdAt, (parseInt(item.startDay)) - parseInt(item.currentStakeableDay)), item?.lockDays).getTime() -
+                                              addDays(addDays(item?.createdAt, (parseInt(item.startDay)) - parseInt(item.currentStakeableDay)), 0).getTime()) * 100).toFixed(2) + "% Remaining"
+
+                                        ) : (
+                                          <ProgressBar bgcolor="#59981A" progress={100} height={20} backgroundColor="#59981A1F" />
+                                        )
+                                    }
+                                    {/* <LinearProgressWithLabel value={(((new Date().getTime() / 1000) - addDays(item?.createdAt, 1).getTime() / 1000)) / (addDays(item?.createdAt, item?.lockDays).getTime() / 1000 - addDays(item?.createdAt, 1).getTime() / 1000) * 100} /> */}
+
+                                  </Box>
+
+                                </TableCell>
+                                <TableCell>
+
+                                  <CardHeader
+                                    avatar={
+                                      <span></span>
+                                    }
+
+                                    title={<strong>{below1200 ? item.staker?.slice(0, 4) + '...' + item.staker?.slice(60, 64) : item.staker?.slice(0, 12) + '...' + item.staker?.slice(52, 64)}</strong>}
+                                    subheader={
+                                      parseInt(currentStakeableDay()) <= parseInt(item.startDay) ?
+                                        (
+                                          <div style={{ display: 'flex' }}>
+                                            <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#A020F0' }}>
+
+                                            </span>
+                                            <span style={{ color: '#A020F0' }}>
+                                              Pending
+                                            </span>
+
+
+                                          </div>
+                                        ) : (currentStakeableDay() < parseInt(item.startDay) + parseInt(item.lockDays)) ?
+                                          (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#FFA500' }}>
+
+                                              </span>
+                                              <span style={{ color: '#FFA500' }}>
+                                                OnGoing
+                                              </span>
+
+
+                                            </div>
+                                          ) : (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#59981A' }}>
+
+                                              </span>
+                                              <span style={{ color: '#59981A' }}>
+                                                Matured
+                                              </span>
+
+
+                                            </div>
+                                          )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell>
+
+                                  <CardHeader
+                                    avatar={
+                                      <span></span>
+                                    }
+
+                                    title={<strong>{below1200 ? item.referrer?.slice(0, 4) + '...' + item.referrer?.slice(60, 64) : item.referrer?.slice(0, 12) + '...' + item.referrer?.slice(52, 64)}</strong>}
+                                    subheader={
+                                      parseInt(currentStakeableDay()) <= parseInt(item.startDay) ?
+                                        (
+                                          <div style={{ display: 'flex' }}>
+                                            <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#A020F0' }}>
+
+                                            </span>
+                                            <span style={{ color: '#A020F0' }}>
+                                              Pending
+                                            </span>
+
+
+                                          </div>
+                                        ) : (currentStakeableDay() < parseInt(item.startDay) + parseInt(item.lockDays)) ?
+                                          (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#FFA500' }}>
+
+                                              </span>
+                                              <span style={{ color: '#FFA500' }}>
+                                                OnGoing
+                                              </span>
+
+
+                                            </div>
+                                          ) : (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#59981A' }}>
+
+                                              </span>
+                                              <span style={{ color: '#59981A' }}>
+                                                Matured
+                                              </span>
+
+
+                                            </div>
+                                          )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell>
+
+                                  <CardHeader
+                                    avatar={
+                                      <span></span>
+                                    }
+
+                                    title={<strong>{below1200 ? toHex(item.id)?.slice(0, 4) + '...' + toHex(item.id)?.slice(60, 64) : toHex(item.id)?.slice(0, 12) + '...' + toHex(item.id)?.slice(52, 64)}</strong>}
+                                    subheader={
+                                      parseInt(currentStakeableDay()) <= parseInt(item.startDay) ?
+                                        (
+                                          <div style={{ display: 'flex' }}>
+                                            <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#A020F0' }}>
+
+                                            </span>
+                                            <span style={{ color: '#A020F0' }}>
+                                              Pending
+                                            </span>
+
+
+                                          </div>
+                                        ) : (currentStakeableDay() < parseInt(item.startDay) + parseInt(item.lockDays)) ?
+                                          (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#FFA500' }}>
+
+                                              </span>
+                                              <span style={{ color: '#FFA500' }}>
+                                                OnGoing
+                                              </span>
+
+
+                                            </div>
+                                          ) : (
+                                            <div style={{ display: 'flex' }}>
+                                              <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#59981A' }}>
+
+                                              </span>
+                                              <span style={{ color: '#59981A' }}>
+                                                Matured
+                                              </span>
+
+
+                                            </div>
+                                          )
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <CardHeader
+                                    avatar={
+                                      <span></span>
+                                    }
+
+                                    title={<strong>{item.principal / 10 ** 9} WISE</strong>}
+                                    subheader={item.shares / 10 ** 9 + " SHRS"}
+                                  />
+                                </TableCell>
+                                <TableCell>{item.reward}</TableCell>
+                                <TableCell>
+                                  <Button variant="contained" size="small" style={{ margin: '5px', backgroundColor: '#08209e' }} onClick={() => {
+                                    props.setStakeDetail(item);
+                                    props.handleShowHistoricalSummaryModal()
+                                  }}>
+                                    <SearchIcon />
+                                  </Button>
+                                  <Button variant="contained" size="small" style={{ margin: '5px', backgroundColor: '#08209e' }} onClick={() => props.unstakeMakeDeploy(item)}>
+                                    <CloseIcon />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 53 * emptyRows }}>
+                            <TableCell colSpan={6} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+
+
+                      {/* </TableBody> */}
                     </Table>
-                    <div className="pt-5 text-center">
-                      <div className="mx-auto w-100">
-                        <div className="row no-gutters justify-content-center align-items-center">
-                          <div
-                            className="d-flex justify-content-center align-items-center"
-                            style={{
-                              height: 80,
-                              width: 80,
-                              backgroundColor: "#eceef7",
-                              borderRadius: "50%",
-                            }}
-                          >
-                            <LanIcon
-                              sx={{
-                                color: "rgb(234, 52, 41)",
-                                fontSize: "44px",
+                    {referrerData.length === 0 ? (
+                      <div className="pt-5 text-center">
+                        <div className="mx-auto w-100">
+                          <div className="row no-gutters justify-content-center align-items-center">
+                            <div
+                              className="d-flex justify-content-center align-items-center"
+                              style={{
+                                height: 80,
+                                width: 80,
+                                backgroundColor: "#eceef7",
+                                borderRadius: "50%",
                               }}
-                            />
+                            >
+                              <LanIcon
+                                sx={{
+                                  color: "rgb(234, 52, 41)",
+                                  fontSize: "44px",
+                                }}
+                              />
+                            </div>
                           </div>
+                          <h3 className="pt-5" style={{ color: "#EA3429" }}>
+                            You don't have critical mass referrer status yet
+                          </h3>
+                          <h5 className="text-dark">
+                            Start{" "}
+                            <span className="font-weight-bold">promoting</span>{" "}
+                            Wise by creating your{" "}
+                            <span className="font-weight-bold">
+                              referral link
+                            </span>
+                          </h5>
+                          <button
+                            onClick={handleShowReferalModal}
+                            className="my-3 tableBtn"
+                          >
+                            Create Wise Refferal Link
+                          </button>
+
                         </div>
-                        <h3 className="pt-5" style={{ color: "#EA3429" }}>
-                          You don't have critical mass referrer status yet
-                        </h3>
-                        <h5 className="text-dark">
-                          Start{" "}
-                          <span className="font-weight-bold">promoting</span>{" "}
-                          Wise by creating your{" "}
-                          <span className="font-weight-bold">
-                            referral link
-                          </span>
-                        </h5>
-                        <button
-                          onClick={handleShowReferalModal}
-                          className="my-3 tableBtn"
-                        >
-                          Create Wise Refferal sLink
-                        </button>
-                     
                       </div>
-                    </div>
+                    ) : (null)}
                   </TableContainer>
                   <StyledEngineProvider injectFirst>
                     <TablePagination
                       rowsPerPageOptions={[5, 10, 25]}
                       component="div"
-                      count={rows.length}
+                      count={referrerData.length}
                       rowsPerPage={rowsPerPage}
                       page={page}
                       onPageChange={handleChangePage}

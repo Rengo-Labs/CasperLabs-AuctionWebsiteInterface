@@ -1,11 +1,11 @@
 import React from 'react'
 
-const ProgressBar = ({ bgcolor, progress, height }) => {
+const ProgressBar = ({ bgcolor, progress, height, backgroundColor }) => {
 
     const Parentdiv = {
         height: height,
         width: '100%',
-        backgroundColor: 'whitesmoke',
+        backgroundColor: backgroundColor,
         borderRadius: 40,
         // margin: 50
     }

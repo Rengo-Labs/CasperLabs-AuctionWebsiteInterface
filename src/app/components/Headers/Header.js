@@ -1,4 +1,4 @@
-import Torus from "@toruslabs/casper-embed";
+// import Torus from "@toruslabs/casper-embed";
 import axios from "axios";
 import { CLPublicKey, Signer } from "casper-js-sdk";
 import Cookies from "js-cookie";
@@ -13,6 +13,7 @@ import "../../assets/plugins/fontawesome/css/all.min.css";
 import "../../assets/plugins/fontawesome/css/fontawesome.min.css";
 import { AppContext } from "../../containers/App/Application";
 import { WISE_CONTRACT_HASH } from "../blockchain/AccountHashes/Addresses";
+import { balanceOf } from "../JsClients/WISETOKEN/wiseTokenFunctionsForBackend/functions";
 import WalletModal from "../Modals/WalletModal";
 
 export const CHAINS = {
@@ -43,7 +44,7 @@ export const SUPPORTED_NETWORKS = {
   },
 };
 
-let torus = null;
+// let torus = null;
 // console.log("torus", torus);
 
 function HeaderHome(props) {
@@ -62,6 +63,7 @@ function HeaderHome(props) {
     setOpenWalletModal(true);
   };
   useEffect(() => {
+    const controller = new AbortController()
     // console.log(
     //   "localStorage.getItem(selectedWallet)",
     //   localStorage.getItem("selectedWallet")
@@ -133,9 +135,13 @@ function HeaderHome(props) {
       });
     }
     console.log("selected wallet from props: ", props.selectedWallet);
+    return () => {
+      controller.abort()
+    }
     // eslint-disable-next-line
   }, [props.selectedWallet]);
   useEffect(() => {
+    const controller = new AbortController()
     // console.log(
     //   "localStorage.getItem(selectedWallet)",
     //   localStorage.getItem("selectedWallet")
@@ -144,46 +150,44 @@ function HeaderHome(props) {
       activePublicKey && activePublicKey != null && activePublicKey != undefined && activePublicKey != 'null'
     ) {
       console.log("HELLO", activePublicKey);
-      axios
-        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
-        .then((res) => {
-          console.log("res", res);
-          props.setUserWiseBalance(Number(res.data.balance / 10 ** 9))
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-        });
+      async function fetchData() {
+        let balance = await balanceOf(WISE_CONTRACT_HASH, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"));
+        props.setUserWiseBalance(Number(balance / 10 ** 9));
+      }
+      fetchData();
+    }
+    return () => {
+      controller.abort()
     }
     // eslint-disable-next-line
   }, [activePublicKey])
 
-  const login = async () => {
-    try {
-      setIsLoading(true);
-      torus = new Torus();
-      // console.log("torus", torus);
-      await torus.init({
-        buildEnv: "testing",
-        showTorusButton: true,
-        network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-      });
-      const loginaccs = await torus?.login();
-      props.setTorus(torus);
-      localStorage.setItem("torus", JSON.stringify(torus));
-      localStorage.setItem("Address", (loginaccs || [])[0]);
-      setActivePublicKey((loginaccs || [])[0]);
-      setAccount((loginaccs || [])[0] || "");
-      handleCloseWalletModal();
-    } catch (error) {
-      console.error(error);
-      await torus?.clearInit();
-      let variant = "Error";
-      enqueueSnackbar("Unable to Login", { variant });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const login = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     torus = new Torus();
+  //     // console.log("torus", torus);
+  //     await torus.init({
+  //       buildEnv: "testing",
+  //       showTorusButton: true,
+  //       network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+  //     });
+  //     const loginaccs = await torus?.login();
+  //     props.setTorus(torus);
+  //     localStorage.setItem("torus", JSON.stringify(torus));
+  //     localStorage.setItem("Address", (loginaccs || [])[0]);
+  //     setActivePublicKey((loginaccs || [])[0]);
+  //     setAccount((loginaccs || [])[0] || "");
+  //     handleCloseWalletModal();
+  //   } catch (error) {
+  //     console.error(error);
+  //     await torus?.clearInit();
+  //     let variant = "Error";
+  //     enqueueSnackbar("Unable to Login", { variant });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   // const changeProvider = async () => {
   //   const providerRes = await torus?.setProvider(SUPPORTED_NETWORKS[CHAINS.CASPER_MAINNET]);
   //   console.log("provider res", providerRes);
@@ -200,22 +204,22 @@ function HeaderHome(props) {
   //   console.log("userInfo", userInfo);
   // };
 
-  const logout = async () => {
-    try {
-      // console.log("logout", torus);
-      await torus?.logout();
-      setAccount("");
-      props.setTorus("");
-      props.setSelectedWallet();
-      localStorage.removeItem("Address");
-      localStorage.removeItem("selectedWallet");
-      window.location.reload();
-    } catch (error) {
-      // console.log("logout error", error);
-      let variant = "Error";
-      enqueueSnackbar("Unable to Logout", { variant });
-    }
-  };
+  // const logout = async () => {
+  //   try {
+  //     // console.log("logout", torus);
+  //     await torus?.logout();
+  //     setAccount("");
+  //     props.setTorus("");
+  //     props.setSelectedWallet();
+  //     localStorage.removeItem("Address");
+  //     localStorage.removeItem("selectedWallet");
+  //     window.location.reload();
+  //   } catch (error) {
+  //     // console.log("logout error", error);
+  //     let variant = "Error";
+  //     enqueueSnackbar("Unable to Logout", { variant });
+  //   }
+  // };
   async function checkConnection() {
     try {
       return await Signer.isConnected();
@@ -405,16 +409,18 @@ function HeaderHome(props) {
 
             <li
               onClick={() => {
-                if (
-                  localStorage.getItem("selectedWallet") &&
-                  localStorage.getItem("selectedWallet") !== null &&
-                  localStorage.getItem("selectedWallet") !== "null" &&
-                  localStorage.getItem("selectedWallet") === "Torus"
-                ) {
-                  logout();
-                } else {
-                  Disconnect();
-                }
+                // if (
+                //   localStorage.getItem("selectedWallet") &&
+                //   localStorage.getItem("selectedWallet") !== null &&
+                //   localStorage.getItem("selectedWallet") !== "null" 
+                //   &&
+                //   localStorage.getItem("selectedWallet") === "Torus"
+                // ) 
+                // {
+                //   logout();
+                // } else {
+                Disconnect();
+                // }
               }}
               className="login-link "
             >
@@ -556,16 +562,16 @@ function HeaderHome(props) {
               <span
                 style={{ cursor: "pointer", color: "#ea3429" }}
                 onClick={() => {
-                  if (
-                    localStorage.getItem("selectedWallet") &&
-                    localStorage.getItem("selectedWallet") !== null &&
-                    localStorage.getItem("selectedWallet") !== "null" &&
-                    localStorage.getItem("selectedWallet") === "Torus"
-                  ) {
-                    logout();
-                  } else {
-                    Disconnect();
-                  }
+                  // if (
+                  //   localStorage.getItem("selectedWallet") &&
+                  //   localStorage.getItem("selectedWallet") !== null &&
+                  //   localStorage.getItem("selectedWallet") !== "null" &&
+                  //   localStorage.getItem("selectedWallet") === "Torus"
+                  // ) {
+                  //   logout();
+                  // } else {
+                  Disconnect();
+                  // }
                 }}
               >
                 Disconnect
@@ -577,7 +583,7 @@ function HeaderHome(props) {
       <WalletModal
         show={openWalletModal}
         handleClose={handleCloseWalletModal}
-        torusLogin={login}
+        // torusLogin={login}
         casperLogin={connectToSigner}
         setSelectedWallet={props.setSelectedWallet}
       />
