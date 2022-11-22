@@ -20,13 +20,15 @@ import StakingCSPRModal from "../../../components/Modals/StakingCSPRModal";
 import {
   AccessRights,
   CasperServiceByJsonRPC,
+  CLAccountHash,
   CLByteArray,
   CLKey,
+  CLList,
   CLPublicKey,
   CLValueBuilder,
   RuntimeArgs,
 } from "casper-js-sdk";
-import { WISE_CONTRACT_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
+import { WISE_CONTRACT_HASH, WISE_PACKAGE_HASH } from "../../../components/blockchain/AccountHashes/Addresses";
 import { convertToStr } from "../../../components/ConvertToString/ConvertToString";
 import { makeDeploy } from "../../../components/blockchain/MakeDeploy/MakeDeploy";
 import { signdeploywithcaspersigner } from "../../../components/blockchain/SignDeploy/SignDeploy";
@@ -35,13 +37,16 @@ import { getDeploy } from "../../../components/blockchain/GetDeploy/GetDeploy";
 import { NODE_ADDRESS } from "../../../components/blockchain/NodeAddress/NodeAddress";
 import { createRecipientAddress } from '../../../components/blockchain/RecipientAddress/RecipientAddress';
 import { useSnackbar } from "notistack";
-import Torus from "@toruslabs/casper-embed";
+// import Torus from "@toruslabs/casper-embed";
 import { useCookies } from "react-cookie";
-import { Avatar, CardHeader } from "@material-ui/core";
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import Axios from "axios";
 import SigningModal from "../../../components/Modals/SigningModal";
 import StakeHistoricalSummaryModal from "../../../components/Modals/StakeHistoricalSummaryModal";
+import { makeWiseTokenDeployWasm } from "../../../components/blockchain/MakeDeploy/MakeDeployWasm";
+import { getStateRootHash } from "../../../components/blockchain/GetStateRootHash/GetStateRootHash";
+import { balanceOf } from "../../../components/JsClients/WISETOKEN/wiseTokenFunctionsForBackend/functions";
+import { Avatar, CardHeader } from "@mui/material";
 
 // Content
 const handleStakingWISEModal = createContext();
@@ -84,7 +89,7 @@ function Staking() {
   const handleShowStakingCSPRModal = () => {
     setOpenStakingCSPRModal(true);
   };
-  let [torus, setTorus] = useState();
+  // let [torus, setTorus] = useState();
 
   const handleCloseSigning = () => {
     setOpenSigning(false);
@@ -93,7 +98,14 @@ function Staking() {
     setOpenSigning(true);
   };
   const [globalData, setGlobalData] = useState({});
+
+
+
   useEffect(() => {
+    getGlobalData()
+
+  }, []);
+  async function getGlobalData() {
     Axios
       .get("/getGlobalData")
       .then((res) => {
@@ -103,90 +115,40 @@ function Staking() {
         console.log(error);
         console.log(error.response);
       });
-  }, []);
-  let [stakeData, setStakeData] =
-    useState(
-      [{
-        closeDay: "15000000000",
-        cmShares: "100000000000",
-        createdAt: "2022-07-18T13:03:22.836Z",
-        currentShares: "99000000000",
-        daiEquivalent: "123",
-        id: "123",
-        lastScrapeDay: "15000000000",
-        lockDays: "730",
-        lockDaysSeconds: 730 * 24 * 60 * 60,
-        penalty: "10000000000",
-        principal: "10000000000",
-        referrer: "123",
-        referrerSharesPenalized: "1000000000",
-        reward: "10000000000",
-        scrapeCount: "1",
-        scrapedYodas: "10000000000",
-        shares: "100000000000",
-        sharesPenalized: "1000000000",
-        staker: "123",
-        startDay: 1666715649,
-        startDayTimeStamp: Math.floor(new Date("Fri Aug 19 2022 18:10:20").getTime() / 1000),
-        endDay: 1666715649 + 730 * 24 * 60 * 60,
-        updatedAt: "1666715649",
-      }, {
-        closeDay: "15000000000",
-        cmShares: "100000000000",
-        createdAt: "2022-07-18T13:03:22.836Z",
-        currentShares: "99000000000",
-        daiEquivalent: "123",
-        id: "123",
-        lastScrapeDay: "15000000000",
-        lockDays: "365",
-        lockDaysSeconds: 365 * 24 * 60 * 60,
-        penalty: "10000000000",
-        principal: "10000000000",// wise
-        referrer: "123",
-        referrerSharesPenalized: "1000000000",
-        reward: "10000000000",
-        scrapeCount: "1",
-        scrapedYodas: "10000000000",
-        shares: "100000000000",
-        sharesPenalized: "1000000000",
-        staker: "123",
-        startDay: 1666715649,
-        endDay: 1666715649 + 730 * 24 * 60 * 60,
-        startDayTimeStamp: Math.floor(new Date("2022-07-18T13:03:24.506Z").getTime() / 1000),
-        updatedAt: "1666715649",
-      }]
-    )
+  }
+
+  let [stakeData, setStakeData] = useState([])
+  let [stakeDetail, setStakeDetail] = useState()
 
   useEffect(() => {
+    const controller = new AbortController()
+    let publicKeyHex = activePublicKey;
+    if (
+      publicKeyHex !== null &&
+      publicKeyHex !== "null" &&
+      publicKeyHex !== undefined
+    ) {
+      getStakeData()
+    }
+    // let count = 0;
+    // const interval = setInterval(() => {
+    //   setProgress(count);
+    //   count++;
+    // }, 100);
+    // return () => clearInterval(interval);
+
+    return () => {
+      controller.abort()
+    }
+  }, [activePublicKey]);
+
+  async function getStakeData() {
     Axios
-      .get("/getStakeData/123")
+      .get(`/getStakeData/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
       .then((res) => {
         // console.log("getStakeData", res.data);
         console.log("getStakeData", res.data.stakesData);
-        res.data.stakesData[1] = res.data.stakesData[0];
-        for (let index = 0; index < res.data.stakesData.length; index++) {
-          console.log("res.data.stakeData", res.data.stakesData);
-          console.log("new Date().getTime()", new Date().getTime());
-          res.data.stakesData[index].lockDays = "5"
-          res.data.stakesData[index].staker = "account-hash-4a2d7b35723a70c69e0f4c01df65df9bf8dced1d1542f11426aed570bcf2cbab"
-          res.data.stakesData[index].startDay = 1666715649
-          res.data.stakesData[index].closeDay = 1669376049
-          res.data.stakesData[index].lockDaysSeconds = Number(res.data.stakesData[index].lockDays) * 24 * 60 * 60
-          res.data.stakesData[index].endDay = res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds
-
-          let start = 1
-          let current = 11.5
-          let end = 100
-          console.log("testtt", ((current - start) / end) * 100);
-          console.log("(new Date().getTime() / 1000)", (((res.data.stakesData[index].startDay + res.data.stakesData[index].lockDaysSeconds / 2) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
-          // console.log("res.data.stakesData[index].startDay", res.data.stakesData[index].startDay);
-          // console.log("res.data.stakesData[index].endDay", res.data.stakesData[index].endDay);
-          // console.log("(new Date().getTime() / 1000)", (new Date().getTime() / 1000) - res.data.stakesData[index].startDay);
-
-          console.log("1000", (((new Date().getTime() / 1000) - res.data.stakesData[index].startDay)) / (res.data.stakesData[index].endDay - res.data.stakesData[index].startDay) * 100);
-          // console.log("stakeData.endDay - new Date().getTime() / 1000) / stakeData.endDay", ((new Date().getTime() / 1000) / res.data.stakesData[index].endDay) * 100);
-        }
-        setStakeData(res.data.stakesData);
+        setStakeData(res.data.stakesData.reverse());
         // console.log("stakeData", stakeData);
         // console.log("stakeData.startDayTimeStamp", stakeData[0].startDayTimeStamp);
         // console.log("lockDaysSeconds", stakeData[0].lockDaysSeconds);
@@ -201,16 +163,7 @@ function Staking() {
         console.log(error);
         console.log(error.response);
       });
-    // let count = 0;
-    // const interval = setInterval(() => {
-    //   setProgress(count);
-    //   count++;
-    // }, 100);
-    // return () => clearInterval(interval);
-
-
-  }, [activePublicKey]);
-
+  }
   const { enqueueSnackbar } = useSnackbar();
 
   async function createStakeMakeDeploy(
@@ -239,77 +192,70 @@ function Staking() {
       publicKeyHex !== undefined
     ) {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
-      const paymentAmount = 5000000000;
+      const paymentAmount = isCspr ? 20000000000 : 10000000000;
       console.log("checking staking active Key: ", activePublicKey);
+      console.log("referrerAddress", referrerAddress);
       const accountHash = Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex");
+      console.log("accountHash", accountHash);
       const referrerAddressByteArray = new CLByteArray(
         Uint8Array.from(Buffer.from(accountHash, "hex"))
       );
+      const wiseTokenPackageHash = new CLByteArray(
+        Uint8Array.from(Buffer.from(WISE_PACKAGE_HASH, "hex"))
+      );
+      // console.log("createRecipientAddress(referrerAddressByteArray)", createRecipientAddress(referrerAddressByteArray));
       try {
         const runtimeArgs = isCspr
           ? (RuntimeArgs.fromMap({
-            amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
+            package_hash: CLValueBuilder.key(wiseTokenPackageHash),
+            amount: CLValueBuilder.u512(convertToStr(stakingAmount)),
             lock_days: CLValueBuilder.u64(stakingDuration),
-            referrer: createRecipientAddress(referrerAddressByteArray),
-            purse: CLValueBuilder.uref(
-              Uint8Array.from(Buffer.from(mainPurse.slice(5, 69), "hex")),
-              AccessRights.READ_ADD_WRITE
-            ),
+            referrer: stakingDuration < 360 ? (new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex"))))) : ((new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(accountHash, "hex")))))),
+            entrypoint: CLValueBuilder.string("create_stake_with_cspr")
           }))
           : (RuntimeArgs.fromMap({
-            staked_amount: CLValueBuilder.u256(stakingAmount),
+            package_hash: CLValueBuilder.key(wiseTokenPackageHash),
+            staked_amount: CLValueBuilder.u256(convertToStr(stakingAmount)),
             lock_days: CLValueBuilder.u64(stakingDuration),
-            referrer: createRecipientAddress(referrerAddressByteArray),
+            referrer: stakingDuration < 360 ? (new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex"))))) : ((new CLKey(new CLAccountHash(Uint8Array.from(Buffer.from(accountHash, "hex")))))),
+            entrypoint: CLValueBuilder.string("create_stake"),
           }));
-        console.log("runtimeArgs", runtimeArgs);
-        let contractHashAsByteArray = Uint8Array.from(
-          Buffer.from(WISE_CONTRACT_HASH, "hex")
-        );
-        let entryPoint = !isCspr
-          ? "create_stake_Jsclient"
-          : "create_stake_with_cspr_Jsclient";
 
-        //   // Set contract installation deploy (unsigned).
-        let deploy = await makeDeploy(
+        console.log("runtimeArgs", runtimeArgs);
+        let deploy = await makeWiseTokenDeployWasm(
           publicKey,
-          contractHashAsByteArray,
-          entryPoint,
           runtimeArgs,
           paymentAmount
         );
         console.log("make deploy: ", deploy);
         try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            // let Torus = new Torus();
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          Axios
+            .get(`/queryKeyData/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}/${isCspr ? "create_stake_with_cspr" : "create_stake"}`)
+            .then((res) => {
+              console.log("res.data.Data", res.data.Data);
+
+            })
+            .catch((error) => {
+              console.log(error);
+              console.log(error.response);
             });
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-          }
+
+          getGlobalData();
+          getStakeData();
+          handleCloseStakingWISEModal();
+          handleCloseStakingCSPRModal();
           handleCloseSigning();
           let variant = "success";
           enqueueSnackbar("Stake Created Successfully!", { variant });
+
+
+
         } catch {
           handleCloseSigning();
           let variant = "Error";
@@ -319,6 +265,120 @@ function Staking() {
         handleCloseSigning();
         let variant = "Error";
         enqueueSnackbar("Unable to Create Stake", { variant });
+      }
+    } else {
+      handleCloseSigning();
+      let variant = "error";
+      enqueueSnackbar("Connect to Casper Signer Please", { variant });
+    }
+  }
+  function convertToIntArray(hex) {
+    console.log("hex", hex);
+    if (hex != undefined) {
+      let array = [];
+      let indexedVal = '';
+      for (let index = 1; index < hex.length; index++) {
+        // if (hex[index] >= 0 && hex[index] <= 9)
+        if (hex[index] == ',' || hex[index] == ']') {
+          console.log("indexedVal", indexedVal);
+          array.push(parseInt(indexedVal))
+          indexedVal = ""
+        } else {
+
+          indexedVal = indexedVal + hex[index]
+          console.log("hex[index]", hex[index]);
+        }
+      }
+      return array
+    }
+  }
+
+
+  async function scrapeRewardsMakeDeploy(stakeData, scrapeDays) {
+    handleShowSigning();
+    const publicKeyHex = activePublicKey;
+    console.log(activePublicKey);
+    if (
+      publicKeyHex !== null &&
+      publicKeyHex !== "null" &&
+      publicKeyHex !== undefined
+    ) {
+      const publicKey = CLPublicKey.fromHex(publicKeyHex);
+      const paymentAmount = 10000000000;
+      try {
+        console.log(stakeData);
+        let stakeId = convertToIntArray(stakeData.id)
+        console.log("stakeId", stakeId);
+        console.log("scrapeDays", scrapeDays);
+        let vec32Array = [];
+        for (let i = 0; i < stakeId.length; i++) {
+          const p = CLValueBuilder.u32(stakeId[i]);
+          vec32Array.push(p);
+        }
+        console.log("stakeIdstakeId", vec32Array);
+        const wiseTokenPackageHash = new CLByteArray(
+          Uint8Array.from(Buffer.from(WISE_PACKAGE_HASH, "hex"))
+        );
+        const runtimeArgs = RuntimeArgs.fromMap({
+          package_hash: CLValueBuilder.key(wiseTokenPackageHash),
+          stake_id: new CLList(vec32Array),
+          scrape_days: CLValueBuilder.u64(scrapeDays),
+          entrypoint: CLValueBuilder.string("scrape_interest"),
+        });
+        let deploy = await makeWiseTokenDeployWasm(
+          publicKey,
+          runtimeArgs,
+          paymentAmount
+        );
+        console.log("make deploy: ", deploy);
+        console.log(selectedWallet);
+        try {
+          // if (selectedWallet === "Casper") {
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          // } else {
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   console.log("Torus123", torus);
+          //   console.log("torus", torus.provider);
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          //   console.log(
+          //     `... Contract installed successfully.`,
+          //     JSON.parse(JSON.stringify(result))
+          //   );
+          //   console.log("result", result);
+          // }
+          handleCloseSigning();
+          let variant = "success";
+          enqueueSnackbar("Rewards Scraped Succesfully", { variant });
+        } catch {
+          handleCloseSigning();
+          let variant = "Error";
+          enqueueSnackbar("Unable to Scrape Rewards", { variant });
+        }
+      } catch {
+        handleCloseSigning();
+        let variant = "Error";
+        enqueueSnackbar("Something went Wrong", { variant });
       }
     } else {
       handleCloseSigning();
@@ -336,7 +396,7 @@ function Staking() {
             setSelectedWallet={setSelectedWallet}
             setUserWiseBalance={setUserWiseBalance}
             selectedWallet={selectedWallet}
-            setTorus={setTorus}
+            // setTorus={setTorus}
             selectedNav={"Staking"}
           />
 
@@ -406,7 +466,7 @@ function Staking() {
         </div>
         <handleStakingWISEModal.Provider value={handleShowStakingWISEModal}>
           <handleStakingCSPRModal.Provider value={handleShowStakingCSPRModal}>
-            <WiseStakingTabs stakeData={stakeData} handleShowHistoricalSummaryModal={handleShowHistoricalSummaryModal} />
+            <WiseStakingTabs stakeData={stakeData} setStakeDetail={setStakeDetail} handleShowHistoricalSummaryModal={handleShowHistoricalSummaryModal} />
           </handleStakingCSPRModal.Provider>
         </handleStakingWISEModal.Provider>
       </div>
@@ -430,8 +490,8 @@ function Staking() {
         userWiseBalance={userWiseBalance}
         globalData={globalData}
         handleClose={handleCloseHistoricalSummaryModal}
-        createStakeMakeDeploy={createStakeMakeDeploy}
-        stakeData={stakeData[0]}
+        scrapeRewardsMakeDeploy={scrapeRewardsMakeDeploy}
+        stakeDetail={stakeDetail}
       />
       <SigningModal show={openSigning} />
 

@@ -11,14 +11,12 @@ import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 // Bootstrap
 import "../../../assets/css/bootstrap.min.css";
 // Custom Styling
-import { Grid } from '@material-ui/core/';
 import "../../../assets/css/stakingStyles.css";
-import { makeDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
+import { makeLiquidityTransformerDeployWasm } from '../../../components/blockchain/MakeDeploy/MakeDeployWasm';
 
 // getMyTokens
 // Casper SDK
-import { Avatar, CardHeader } from "@material-ui/core";
-import Torus from "@toruslabs/casper-embed";
+// import Torus from "@toruslabs/casper-embed";
 import Axios from "axios";
 import {
   CasperServiceByJsonRPC,
@@ -45,6 +43,7 @@ import { convertToStr } from "../../../components/ConvertToString/ConvertToStrin
 import GlobalDataHeader from "../../../components/Headers/GlobalDataHeader";
 import ReserveWiseModal from "../../../components/Modals/ReserveWiseModal";
 import SigningModal from "../../../components/Modals/SigningModal";
+import { Avatar, CardHeader, Grid } from "@mui/material";
 
 // Content
 const handleStakingWISEModal = createContext();
@@ -66,6 +65,8 @@ function Reservation() {
   const [selectedDay, setSelectedDay] = useState();
   const [globalReservationDaysData, setGlobalReservationDaysData] = useState();
   const [userReservationDaysData, setUserReservationDaysData] = useState();
+  const [claimWiseStatus, setClaimWiseStatus] = useState(false);
+
 
   const [totalUsersReservations, setTotalUsersReservations] = useState(0);
 
@@ -81,7 +82,7 @@ function Reservation() {
   const handleShowReservationModal = () => {
     setOpenReservationModal(true);
   };
-  let [torus, setTorus] = useState();
+  // let [torus, setTorus] = useState();
 
   const handleCloseSigning = () => {
     setOpenSigning(false);
@@ -91,7 +92,11 @@ function Reservation() {
   };
   const [globalData, setGlobalData] = useState({});
   useEffect(() => {
+    const controller=new AbortController()
     getGlobalData();
+    return () => {
+      controller.abort()
+    }
   }, []);
 
   function getGlobalData() {
@@ -107,7 +112,11 @@ function Reservation() {
       });
   }
   useEffect(() => {
+    const controller=new AbortController()
     getData()
+    return () => {
+      controller.abort()
+    }
   }, [activePublicKey]);
 
 
@@ -148,6 +157,19 @@ function Reservation() {
         })
         .catch((error) => {
           setUserReservationDaysData([]);
+          console.log(error);
+          console.log(error.response);
+        });
+      Axios
+        .get(`/getClaimWiseStatus/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
+        .then((res) => {
+          console.log("claimWiseStatus", res);
+          console.log("claimWiseStatus", res.data.claimWiseStatus);
+
+          setClaimWiseStatus(res.data.claimWiseStatus);
+        })
+        .catch((error) => {
+          setClaimWiseStatus(false);
           console.log(error);
           console.log(error.response);
         });
@@ -195,41 +217,41 @@ function Reservation() {
         console.log("runtimeArgs", runtimeArgs);
 
         //   // Set contract installation deploy (unsigned).
-        let deploy = await makeDeployWasm(
+        let deploy = await makeLiquidityTransformerDeployWasm(
           publicKey,
           runtimeArgs,
           paymentAmount
         );
         console.log("make deploy: ", deploy);
         try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            // let Torus = new Torus();
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-          }
+          // if (selectedWallet === "Casper") {
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          // } else {
+          //   // let Torus = new Torus();
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          // }
           handleCloseSigning();
           let variant = "success";
           getData()
@@ -288,42 +310,54 @@ function Reservation() {
         console.log("make deploy: ", deploy);
         console.log(selectedWallet);
         try {
-          if (selectedWallet === "Casper") {
-            let signedDeploy = await signdeploywithcaspersigner(
-              deploy,
-              publicKeyHex
-            );
-            let result = await putdeploy(signedDeploy, enqueueSnackbar);
-            console.log("result", result);
-          } else {
-            torus = new Torus();
-            console.log("torus", torus);
-            await torus.init({
-              buildEnv: "testing",
-              showTorusButton: true,
-              network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-            });
-            console.log("Torus123", torus);
-            console.log("torus", torus.provider);
-            const casperService = new CasperServiceByJsonRPC(torus?.provider);
-            const deployRes = await casperService.deploy(deploy);
-            console.log("deployRes", deployRes.deploy_hash);
-            console.log(
-              `... Contract installation deployHash: ${deployRes.deploy_hash}`
-            );
-            let result = await getDeploy(
-              NODE_ADDRESS,
-              deployRes.deploy_hash,
-              enqueueSnackbar
-            );
-            console.log(
-              `... Contract installed successfully.`,
-              JSON.parse(JSON.stringify(result))
-            );
-            console.log("result", result);
-          }
+          // if (selectedWallet === "Casper") {
+          let signedDeploy = await signdeploywithcaspersigner(
+            deploy,
+            publicKeyHex
+          );
+          let result = await putdeploy(signedDeploy, enqueueSnackbar);
+          console.log("result", result);
+          // } else {
+          //   torus = new Torus();
+          //   console.log("torus", torus);
+          //   await torus.init({
+          //     buildEnv: "testing",
+          //     showTorusButton: true,
+          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
+          //   });
+          //   console.log("Torus123", torus);
+          //   console.log("torus", torus.provider);
+          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
+          //   const deployRes = await casperService.deploy(deploy);
+          //   console.log("deployRes", deployRes.deploy_hash);
+          //   console.log(
+          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
+          //   );
+          //   let result = await getDeploy(
+          //     NODE_ADDRESS,
+          //     deployRes.deploy_hash,
+          //     enqueueSnackbar
+          //   );
+          //   console.log(
+          //     `... Contract installed successfully.`,
+          //     JSON.parse(JSON.stringify(result))
+          //   );
+          //   console.log("result", result);
+          // }
           handleCloseSigning();
           let variant = "success";
+          Axios
+            .post("/claimWise", {
+              user: Buffer.from(CLPublicKey.fromHex(publicKeyHex).toAccountHash()).toString("hex")
+            })
+            .then((res) => {
+              console.log("claimWise", res);
+              getData()
+            })
+            .catch((error) => {
+              console.log(error);
+              console.log(error.response);
+            })
           enqueueSnackbar("Wise Claimed Succesfully", { variant });
         } catch {
           handleCloseSigning();
@@ -351,7 +385,7 @@ function Reservation() {
             setSelectedWallet={setSelectedWallet}
             setUserWiseBalance={setUserWiseBalance}
             selectedWallet={selectedWallet}
-            setTorus={setTorus}
+            // setTorus={setTorus}
             selectedNav={"Reservation"}
           />
 
@@ -432,7 +466,7 @@ function Reservation() {
                 justifyContent="flex-start"
               // alignItems="flex-start"
               >
-                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} globalData={globalData} findIndexOfDay={findIndexOfDay} totalUsersReservations={totalUsersReservations} />
+                <Mode1Cashback handleShowReservationModal={handleShowReservationModal} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} globalData={globalData} findIndexOfDay={findIndexOfDay} totalUsersReservations={totalUsersReservations} claimWiseStatus={claimWiseStatus} />
                 <Mode2DailyRandom day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode3Rookie day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />
                 <Mode4Leader day={1} handleShowReservationModal={handleShowReservationModal} setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay} findIndexOfDay={findIndexOfDay} globalReservationDaysData={globalReservationDaysData} userReservationDaysData={userReservationDaysData} claimWiseMakeDeploy={claimWiseMakeDeploy} />

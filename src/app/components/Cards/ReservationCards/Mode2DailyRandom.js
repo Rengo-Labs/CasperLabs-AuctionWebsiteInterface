@@ -1,12 +1,9 @@
 
-import { CardActions, CardMedia, Container, Grid, LinearProgress, Paper } from '@material-ui/core';
-import CardHeader from '@material-ui/core/CardHeader';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Button, CardActions, CardHeader, CardMedia, Container, Grid, LinearProgress, Paper, Typography } from '@mui/material';
 import Box from "@mui/material/Box";
 import PropTypes from "prop-types";
 import React from "react";
-import { Button, Col, Row } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import "../../../assets/css/bootstrap.min.css";
 import "../../../assets/css/style.css";
 import Mode2 from '../../../assets/img/Mode2.svg';
@@ -14,42 +11,6 @@ import "../../../assets/plugins/fontawesome/css/all.min.css";
 import "../../../assets/plugins/fontawesome/css/fontawesome.min.css";
 
 
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: '100%',
-        backgroundColor: theme.palette.background.paper,
-    },
-    badge: {
-        '& > *': {
-            margin: theme.spacing(1),
-        },
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-
-    card: {
-        minWidth: 250,
-    },
-    media: {
-        height: 0,
-        paddingTop: '100%', // 16:9
-    },
-    bullet: {
-        display: 'inline-block',
-        margin: '0 2px',
-        transform: 'scale(0.8)',
-    },
-    title: {
-        fontSize: 14,
-    },
-    pos: {
-        marginBottom: 12,
-    },
-}));
 
 
 function LinearProgressWithLabel(props) {
@@ -80,7 +41,6 @@ function Mode2DailyRandom(props) {
     // console.log("props", props)
     // console.log("props.", props.findIndexOfDay(props.day));
     // console.log("props.globalReservationDaysData[props.findIndex(props.day)]?.userCount", props.globalReservationDaysData);
-    const classes = useStyles();
     return (
         <Grid item xs={12} sm={6} md={6} >
             <Paper elevation={3} style={{ height: "100%" }}>
@@ -122,22 +82,22 @@ function Mode2DailyRandom(props) {
 
                             </Grid>
                             <Grid item xs={6}>
-                                {((1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 && props.findIndexOfDay(props.userReservationDaysData, props.day) == -1) || !props.userReservationDaysData ? (
+                            {((1664520921 - new Date().getTime() / 1000) + ((props.day - 1) * 86400) < 0 && props.findIndexOfDay(props.userReservationDaysData, props.day) == -1) || !props.userReservationDaysData ? (
                                     <Button
                                         className="text-center"
-                                        block
+                                        style={{ color: 'white', backgroundColor: '#08209e' }}
+                                        fullWidth
                                         disabled
                                     >
                                         Reserve Wise
                                     </Button>
 
                                 ) : (
-
-
                                     props.userReservationDaysData && props.findIndexOfDay(props.userReservationDaysData, props.day) != -1 ? (
-                                        < Button
+                                        <Button
                                             className="text-center"
-                                            block
+                                            style={{ color: 'white', backgroundColor: '#08209e' }}
+                                            fullWidth
                                             onClick={() => {
                                                 props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
                                                 props.setSelectedDay(props.day);
@@ -149,7 +109,8 @@ function Mode2DailyRandom(props) {
                                     ) : (
                                         <Button
                                             className="text-center"
-                                            block
+                                            style={{ color: 'white', backgroundColor: '#08209e' }}
+                                            fullWidth
                                             onClick={() => {
                                                 props.setSelectedDate((new Date().getTime()) + ((props.day - 1) * 86400));
                                                 props.setSelectedDay(props.day);
@@ -158,11 +119,7 @@ function Mode2DailyRandom(props) {
                                         >
                                             Reserve Wise
                                         </Button>
-
                                     )
-
-
-
                                 )}
                                 <Typography variant="caption" display="block" gutterBottom className="text-center">
                                     Minimum 5 CSPR

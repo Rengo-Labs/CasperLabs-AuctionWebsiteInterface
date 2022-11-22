@@ -61,8 +61,8 @@ function CollateralStakingTable() {
             <Table aria-label="Wise Staking">
               <TableHead>
                 <TableRow>
-                  {cells.map((cell) => (
-                    <TableCell sx={{ border: 0, fontWeight: "bold" }}>
+                  {cells.map((cell, index) => (
+                    <TableCell key={index} sx={{ border: 0, fontWeight: "bold" }}>
                       {cell}
                     </TableCell>
                   ))}

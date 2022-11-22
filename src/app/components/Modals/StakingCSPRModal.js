@@ -1,4 +1,3 @@
-import { Card, CardContent, Typography } from "@material-ui/core";
 import AccessAlarmTwoToneIcon from "@mui/icons-material/AccessAlarmTwoTone";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import AlarmOnIcon from "@mui/icons-material/AlarmOn";
@@ -12,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Select from "@mui/material/Select";
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
 import "../../assets/css/style.css";
 import Exit from "../../assets/img/exit.svg";
@@ -25,6 +24,7 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../../containers/App/Application";
 import { useCookies } from "react-cookie";
+import { Button, Card, CardContent, Typography } from "@mui/material";
 
 // -------------------- COMPONENT FUNCTION --------------------
 
@@ -43,6 +43,7 @@ function StakingCSPRModal(props) {
   const [addy, setAddy] = useState("");
   const [addyOpen, setAddyOpen] = useState(false);
   const [referrer, setReferrer] = useState();
+  const [WISEperWCSPR, setWISEperWCSPR] = useState(0);
   const [referrerAddress, setReferrerAddress] = useState();
   const [referrerCheck, setReferrerCheck] = useState(false);
   const [daysCheck, setDaysCheck] = useState(false);
@@ -53,6 +54,7 @@ function StakingCSPRModal(props) {
   // -------------------- Life Cycle Methods --------------------
 
   useEffect(() => {
+    const controller = new AbortController()
     const client = new CasperServiceByJsonRPC(NODE_ADDRESS);
     if (
       activePublicKey &&
@@ -88,51 +90,74 @@ function StakingCSPRModal(props) {
           });
       });
     }
+    return () => {
+      controller.abort()
+    }
   }, [activePublicKey]);
 
-  useEffect(() => {
-    let cancel = false;
+  // useEffect(() => {
+  // const controller=new AbortController()
+  //   let cancel = false;
+  //   // let publicKeyHex = activePublicKey
+  //   // if (
+  //   //   publicKeyHex !== null &&
+  //   //   publicKeyHex !== "null" &&
+  //   //   publicKeyHex !== undefined
+  //   // ) {
+  //     axios
+  //       .get(`/getStakeData/${Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex")}`)
+  //       .then((res) => {
+  //         if (cancel) return;
+  //         setReferrer(res.data.stakesData[0].referrer);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         console.log(error.response);
+  //       });
+  //   // }
+  //   return () => {
+  //     cancel = true;
+  //   };
+  // return () => {
+  //   controller.abort()
+  // }
+  // }, [activePublicKey]);
 
-    axios
-      .get("/getStakeData/123")
-      .then((res) => {
-        if (cancel) return;
-        setReferrer(res.data.stakesData[0].referrer);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.log(error.response);
-      });
-    return () => {
-      cancel = true;
-    };
-  }, []);
-
   useEffect(() => {
+    const controller = new AbortController()
     if (amountCheck && daysCheck && referrerCheck) {
       setRenderButtonInactive(false);
     }
+    return () => {
+      controller.abort()
+    }
   }, [amountCheck, daysCheck, referrerCheck]);
+
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function fetchData() {
+      axios
+        .get("/getWISEPERWCSPRRatio")
+        .then((res) => {
+          console.log("getWISEPERWCSPRRatio", res);
+          setWISEperWCSPR(res.data.WISEPerWCSPR);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.log(error.response);
+        });
+
+    }
+    fetchData();
+    return () => {
+      controller.abort()
+    }
+  }, []);
 
   // -------------------- Event Handlers --------------------
 
-  // const balanceOnChange = (event) => {
-  //   let value = event.target.value;
-  //   let percent = (100 * value) / cspr;
-
-  //   setPercentagedCsprBalance(value);
-  //   setAmountCheck(true);
-  //   if (percent == 25) {
-  //     setBalance(25);
-  //   } else if (percent == 50) {
-  //     setBalance(50);
-  //   } else if (percent == 75) {
-  //     setBalance(75);
-  //   } else {
-  //     console.log("empty");
-  //     setBalance("");
-  //   }
-  // };
 
   const balanceOnChange = (event) => {
     if (percentagedCsprBalance > csprBalanceAgainstUser) {
@@ -195,7 +220,7 @@ function StakingCSPRModal(props) {
     if (event.target.value === "Cookie Reffral Addy") {
       setReferrerAddress(cookies.refree);
     } else {
-      setReferrerAddress(referrer);
+      setReferrerAddress("010650ac3716ff39a0b66bec203fa3403911237c27cfb38fa43b3da39e909fc3b6");
     }
 
     setReferrerCheck(true);
@@ -298,6 +323,7 @@ function StakingCSPRModal(props) {
                           value={days}
                           onChange={(e) => {
                             if (e.target.value < 15330) {
+                              setDaysCheck(true);
                               setDays(e.target.value);
                               if (((e.target.value / 365) * 5).toFixed(2) < 30) {
                                 setDurationBonus(((e.target.value / 365) * 5).toFixed(2))
@@ -357,7 +383,7 @@ function StakingCSPRModal(props) {
                         <OutlinedInput
                           id="outlined-adornment-amount"
                           value={referrerAddress}
-                          placeholder="account-hash-000000...000000"
+                          placeholder="000000...000000"
                           startAdornment={
                             <InputAdornment position="start">
                               <RecordVoiceOverOutlinedIcon />
@@ -406,20 +432,20 @@ function StakingCSPRModal(props) {
                   <div className="row">
                     {renderButtonInactive ? (
                       <Button
-                        style={{ marginBottom: "20px" }}
-                        variant="primary"
+                        style={{ marginBottom: "20px", backgroundColor: '#08209e0F', color: 'white' }}
                         disabled
-                        block
-                        size="lg"
+                        fullWidth
+                        size="large"
+                        variant="contained"
                       >
                         Create Stake
                       </Button>
                     ) : (
                       <Button
-                        style={{ marginBottom: "20px" }}
-                        variant="primary"
-                        block
-                        size="lg"
+                        style={{ marginBottom: "20px", backgroundColor: '#08209e' }}
+                        variant="contained"
+                        fullWidth
+                        size="large"
                         onClick={() => {
                           console.log("this is address: ", mainPurse);
                           props.createStakeMakeDeploy(
@@ -458,7 +484,7 @@ function StakingCSPRModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        {percentagedCsprBalance ? (parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) : (0)} SHRS
+                        {percentagedCsprBalance ? (parseFloat((percentagedCsprBalance / WISEperWCSPR) / ((props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)))).toFixed(2) : (0)} SHRS
                       </div>
                     </div>
                   </Typography>
@@ -472,7 +498,7 @@ function StakingCSPRModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right", color: 'green', fontWeight: 'bold' }}
                       >
-                        +{durationBonus.toFixed(2)}%
+                        +{Number(durationBonus).toFixed(2)}%
 
                       </div>
                     </div>
@@ -501,7 +527,7 @@ function StakingCSPRModal(props) {
                         className="col-md-12 col-lg-4"
                         style={{ textAlign: "right" }}
                       >
-                        {percentagedCsprBalance ? (parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat(percentagedCsprBalance / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0) : (0)}  SHRS
+                        {percentagedCsprBalance ? ((parseFloat((percentagedCsprBalance / WISEperWCSPR) / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0))) + parseFloat((percentagedCsprBalance / WISEperWCSPR) / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (durationBonus / 100) + (referrerAddress ? parseFloat((percentagedCsprBalance / WISEperWCSPR) / (props?.globalData?.sharePrice ? props?.globalData?.sharePrice / 10 ** 9 : 0)) * (10 / 100) : 0)).toFixed(2) : (0)}  SHRS
                       </div>
                     </div>
                   </Typography>

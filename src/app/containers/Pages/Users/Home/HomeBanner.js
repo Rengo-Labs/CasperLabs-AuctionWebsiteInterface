@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HomeCards from "../../../../components/Cards/HomeCards";
 import { AppContext } from "../../../App/Application";
 // Material UI Icons
@@ -8,36 +8,38 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { CLPublicKey } from "casper-js-sdk";
 import { WISE_CONTRACT_HASH } from "../../../../components/blockchain/AccountHashes/Addresses";
+import { balanceOf } from "../../../../components/JsClients/WISETOKEN/wiseTokenFunctionsForBackend/functions";
 
 function HomeBanner() {
   const { activePublicKey } = useContext(AppContext);
-  let history = useHistory();
+  let navigate = useNavigate();
 
   const [globalData, setGlobalData] = useState({});
   const [wiseBalanceAgainstUser, setwiseBalanceAgainstUser] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController()
+
     if (
       activePublicKey &&
       activePublicKey !== null &&
       activePublicKey !== "null" &&
       activePublicKey !== undefined
     ) {
-      axios
-        .get(`/wiseBalanceAgainstUser/${WISE_CONTRACT_HASH}/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}`)
-        .then((res) => {
-          console.log("wiseBalanceAgainstUser", res.data);
-          setwiseBalanceAgainstUser(res.data.balance / 10 ** 9);
-          //setTokenBBalance(res.data.balance);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log(error.response);
-        });
+      async function fetchData() {
+        let balance = await balanceOf(WISE_CONTRACT_HASH, Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex"));
+        setwiseBalanceAgainstUser(balance / 10 ** 9);
+      }
+      fetchData();
+
+    }
+    return () => {
+      controller.abort()
     }
   }, [activePublicKey]);
 
   useEffect(() => {
+    const controller = new AbortController()
     axios
       .get("/getGlobalData")
       .then((res) => {
@@ -47,6 +49,9 @@ function HomeBanner() {
         console.log(error);
         console.log(error.response);
       });
+    return () => {
+      controller.abort()
+    }
   }, []);
 
   return (
@@ -72,7 +77,7 @@ function HomeBanner() {
         <div className="row no-gutters mt-5 justify-content-between">
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/staking")}
+              onClick={() => navigate("/staking")}
               style={{ cursor: "pointer" }}
             >
               <HomeCards stake={globalData.stakeCount ? globalData.stakeCount : 0} title={"YOUR STAKES"} />
@@ -80,13 +85,13 @@ function HomeBanner() {
           </div>
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/refer")}
+              onClick={() => navigate("/refer")}
               id="referrals"
               style={{ cursor: "pointer" }}
             >
               <HomeCards
                 stake={globalData.reservationReferrerCount ? globalData.reservationReferrerCount : 0}
-                title={"YOUR REFEREALS"}
+                title={"YOUR REFERRALS"}
               />
             </div>
           </div>
@@ -104,7 +109,7 @@ function HomeBanner() {
         <div className="row mt-5 justify-content-between">
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/staking")}
+              onClick={() => navigate("/staking")}
               style={{ cursor: "pointer" }}
             >
               <div className="card cardSkeleton border-secondary">
@@ -134,13 +139,13 @@ function HomeBanner() {
           </div>
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/refer")}
+              onClick={() => navigate("/refer")}
               id="referrals"
               style={{ cursor: "pointer" }}
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.totalShares ? globalData.totalShares / 10 ** 9 : 0} SHRS</h2>
+                  <h3>{globalData.totalShares ? globalData.totalShares / 10 ** 9 : 0} SHRS</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -165,13 +170,13 @@ function HomeBanner() {
           </div>
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/refer")}
+              onClick={() => navigate("/refer")}
               id="referrals"
               style={{ cursor: "pointer" }}
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.referrerShares ? globalData.referrerShares / 10 ** 9 : 0} rSHRS</h2>
+                  <h3>{globalData.referrerShares ? globalData.referrerShares / 10 ** 9 : 0} rSHRS</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -196,13 +201,13 @@ function HomeBanner() {
           </div>
           <div className="col-12 col-md-3">
             <div
-              onClick={() => history.push("/refer")}
+              onClick={() => navigate("/refer")}
               id="referrals"
               style={{ cursor: "pointer" }}
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.sharePrice ? globalData.sharePrice / 10 ** 9 : 0} WISE</h2>
+                  <h3>{globalData.sharePrice ? globalData.sharePrice / 10 ** 9 : 0} WISE</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />

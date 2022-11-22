@@ -1,4 +1,4 @@
-import { Avatar, Card, CardHeader, Typography } from "@material-ui/core";
+import { Avatar, Card, CardHeader, Typography } from "@mui/material";
 import React from "react";
 import { Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
@@ -30,7 +30,7 @@ function WalletModal(props) {
         </Typography>
       </Modal.Body>
       <Modal.Body>
-        <Card
+        {/* <Card
           onClick={() => {
             props.torusLogin();
             props.setSelectedWallet("Torus");
@@ -45,7 +45,7 @@ function WalletModal(props) {
             subheader="Connect to Torus Waller"
           />
         </Card>
-        <hr></hr>
+        <hr></hr> */}
         <Card
           onClick={() => {
             props.casperLogin();
