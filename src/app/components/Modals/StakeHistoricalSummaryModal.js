@@ -9,11 +9,11 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import { Alert, Box, CardHeader, Grid, Typography } from '@mui/material';
+import { Alert, Box, Button, CardHeader, Grid, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import "../../assets/css/bootstrap.min.css";
 import "../../assets/css/style.css";
 import Exit from "../../assets/img/exit.svg";
@@ -58,7 +58,7 @@ function StakeHistoricalSummaryModal(props) {
   }));
 
 
-  
+
   return (
     <Modal size="xl" centered show={props.show} onHide={props.handleClose}>
       <Modal.Body style={{ textAlign: "center" }}>
@@ -84,7 +84,11 @@ function StakeHistoricalSummaryModal(props) {
             toHex(props.stakeDetail?.id)
 
             // parseInt(props.stakeDetail?.id.slice(1, 6)).toString(16)
-          }</strong> was started on <strong>{addDays(props.stakeDetail?.createdAt, 1).toLocaleDateString("en-US")}</strong> and will mature <strong>in {toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days</strong> reaching remaining Possible reward.
+          }</strong> was started on <strong>{addDays(props.stakeDetail?.createdAt, 1).toLocaleDateString("en-US")}</strong> and {toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000) > 0 ? (
+            <>will mature <strong>in {toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)} Days</strong> </>
+          ) : (
+            <>matured <strong>on {addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail?.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).toLocaleDateString("en-US")}</strong> </>
+          )}  reaching remaining Possible reward.
           Scraping reward Prematurely will always result in penalties applied to stake shares and referral shares reducing the remaining possible reward for both.
         </Alert>
       </Modal.Body>
@@ -162,15 +166,27 @@ function StakeHistoricalSummaryModal(props) {
                         <Typography>
                           Available Reward: {(props.stakeDetail?.principal / 10 ** 9 - props.stakeDetail?.penalty / 10 ** 9).toFixed(2)} WISE
                         </Typography>
-                        <Button
-                          className="text-center"
-                          block
-                          onClick={() => {
-                            props.scrapeRewardsMakeDeploy(props.stakeDetail, parseInt(toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)) + parseInt(props.stakeDetail?.startDay))
-                          }}
-                        >
-                          Scrape Reward
-                        </Button>
+                        {parseInt(props.stakeDetail?.closeDay) !== 0 ? (
+                          <Button
+                            className="text-center"
+                            fullWidth
+                            style={{ color: 'white', backgroundColor: '#08209e5f' }}
+                            disabled
+                          >
+                            Scrape Reward
+                          </Button>
+                        ) : (
+                          <Button
+                            className="text-center"
+                            fullWidth
+                            style={{ color: 'white', backgroundColor: '#08209e' }}
+                            onClick={() => {
+                              props.scrapeRewardsMakeDeploy(props.stakeDetail, parseInt(toDays(addDays(addDays(props.stakeDetail?.createdAt, (parseInt(props.stakeDetail.startDay)) - parseInt(props.stakeDetail?.currentStakeableDay)), props.stakeDetail?.lockDays).getTime() / 1000 - new Date().getTime() / 1000)) + parseInt(props.stakeDetail?.startDay))
+                            }}
+                          >
+                            Scrape Reward
+                          </Button>
+                        )}
                       </>
                     }
                   />

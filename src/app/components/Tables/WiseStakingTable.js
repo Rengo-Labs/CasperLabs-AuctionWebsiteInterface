@@ -30,7 +30,7 @@ import IconButton from '@mui/material/IconButton';
 import { useTheme } from '@mui/material/styles';
 import { useMedia } from "react-use";
 import "../../assets/css/stakingTables.css";
-import { addDays, currentStakeableDay, toDaysMinutesSeconds } from "../Helpers/Helper";
+import { addDays, currentStakeableDay, toDaysMinutesSeconds, toHex } from "../Helpers/Helper";
 import ProgressBar from "../ProgressBar/ProgressBar";
 // Content
 const cells = [
@@ -104,7 +104,7 @@ function WiseStakingTable(props) {
                                   parseInt(stakeData.closeDay) !== 0 ? (
                                     "#FF0000"
                                   ) : (
-                                    parseInt(currentStakeableDay()) <= parseInt(stakeData.startDay) ? ('#A020F0') : (currentStakeableDay() < parseInt(stakeData.startDay) + parseInt(stakeData.lockDays)) ? ("#FFA500") : ("#59981A"))
+                                    currentStakeableDay() <= parseInt(stakeData.startDay) ? ('#A020F0') : (currentStakeableDay() < parseInt(stakeData.startDay) + parseInt(stakeData.lockDays)) ? ("#FFA500") : ("#59981A"))
                               }} aria-label="Access">
                                 <AccessAlarmIcon />
                               </Avatar>
@@ -129,7 +129,7 @@ function WiseStakingTable(props) {
                                   100
                                 } height={20} backgroundColor="#FF00001F" />
                               ) : (
-                                parseInt(currentStakeableDay()) <= parseInt(stakeData.startDay) ?
+                                currentStakeableDay() <= parseInt(stakeData.startDay) ?
                                   (
                                     <ProgressBar bgcolor="#A020F0" progress={0} height={20} backgroundColor="#A020F01F" />
                                   ) : (currentStakeableDay() < parseInt(stakeData.startDay) + parseInt(stakeData.lockDays)) ?
@@ -161,7 +161,7 @@ function WiseStakingTable(props) {
                               parseInt(stakeData.closeDay) !== 0 ? (
                                 <strong>{'Closed On'}</strong>)
                                 : (
-                                  parseInt(currentStakeableDay()) <= parseInt(stakeData.startDay) ? (<strong>Starts On</strong>) :
+                                  currentStakeableDay() <= parseInt(stakeData.startDay) ? (<strong>Starts On</strong>) :
                                     (currentStakeableDay() < parseInt(stakeData.startDay) + parseInt(stakeData.lockDays)) ?
                                       (<strong>{toDaysMinutesSeconds(addDays(addDays(stakeData?.createdAt, (parseInt(stakeData.startDay)) - parseInt(stakeData.currentStakeableDay)), parseInt(stakeData?.lockDays)).getTime() / 1000 - new Date().getTime() / 1000) + ' left'}</strong>) : (
                                         <strong>Matured</strong>
@@ -171,7 +171,7 @@ function WiseStakingTable(props) {
                               parseInt(stakeData.closeDay) !== 0 ? (
                                 addDays(stakeData?.createdAt, parseInt(stakeData.currentStakeableDay) > parseInt(stakeData.closeDay) ? (parseInt(stakeData.currentStakeableDay) - parseInt(stakeData.closeDay)) : (parseInt(stakeData.closeDay) - parseInt(stakeData.currentStakeableDay))).toDateString().split(' ').slice(1).join(' ')
                               ) : (
-                                parseInt(currentStakeableDay()) <= parseInt(stakeData.startDay) ? (
+                                currentStakeableDay() <= parseInt(stakeData.startDay) ? (
                                   addDays(stakeData?.createdAt, parseInt(stakeData.startDay) - parseInt(stakeData.currentStakeableDay)).toDateString().split(' ').slice(1).join(' ')
                                 ) :
                                   (addDays(addDays(stakeData?.createdAt, (parseInt(stakeData.startDay)) - parseInt(stakeData.currentStakeableDay)), stakeData?.lockDays).toDateString().split(' ').slice(1).join(' '))
@@ -187,7 +187,7 @@ function WiseStakingTable(props) {
                               <span></span>
                             }
 
-                            title={<strong>{below1200 ? stakeData.staker?.slice(0, 4) + '...' + stakeData.staker?.slice(60, 64) : stakeData.staker?.slice(0, 12) + '...' + stakeData.staker?.slice(52, 64)}</strong>}
+                            title={<strong>{below1200 ? toHex(stakeData.id)?.slice(0, 4) + '...' + toHex(stakeData.id)?.slice(60, 64) : toHex(stakeData.id)?.slice(0, 12) + '...' + toHex(stakeData.id)?.slice(52, 64)}</strong>}
                             subheader={
                               parseInt(stakeData.closeDay) !== 0 ? (
                                 <div style={{ display: 'flex' }}>
@@ -199,7 +199,7 @@ function WiseStakingTable(props) {
                                   </span>
                                 </div>
                               ) : (
-                                parseInt(currentStakeableDay()) <= parseInt(stakeData.startDay) ?
+                                currentStakeableDay() <= parseInt(stakeData.startDay) ?
                                   (
                                     <div style={{ display: 'flex' }}>
                                       <span className="circle" style={{ marginTop: '5px', marginRight: '5px', backgroundColor: '#A020F0' }}>

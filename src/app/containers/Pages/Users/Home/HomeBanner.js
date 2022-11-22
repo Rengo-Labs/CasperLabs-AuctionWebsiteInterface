@@ -91,7 +91,7 @@ function HomeBanner() {
             >
               <HomeCards
                 stake={globalData.reservationReferrerCount ? globalData.reservationReferrerCount : 0}
-                title={"YOUR REFEREALS"}
+                title={"YOUR REFERRALS"}
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.totalShares ? globalData.totalShares / 10 ** 9 : 0} SHRS</h2>
+                  <h3>{globalData.totalShares ? globalData.totalShares / 10 ** 9 : 0} SHRS</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -176,7 +176,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.referrerShares ? globalData.referrerShares / 10 ** 9 : 0} rSHRS</h2>
+                  <h3>{globalData.referrerShares ? globalData.referrerShares / 10 ** 9 : 0} rSHRS</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />
@@ -207,7 +207,7 @@ function HomeBanner() {
             >
               <div className="card cardSkeleton border-secondary">
                 <div className="card-body pb-0">
-                  <h2>{globalData.sharePrice ? globalData.sharePrice / 10 ** 9 : 0} WISE</h2>
+                  <h3>{globalData.sharePrice ? globalData.sharePrice / 10 ** 9 : 0} WISE</h3>
                   <div className="row no-gutters justify-content-between align-items-center w-100">
                     <div className="divider"></div>
                     <ChevronRightIcon fontSize="large" />

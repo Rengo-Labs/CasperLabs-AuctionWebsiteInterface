@@ -148,7 +148,7 @@ function Staking() {
       .then((res) => {
         // console.log("getStakeData", res.data);
         console.log("getStakeData", res.data.stakesData);
-        setStakeData(res.data.stakesData);
+        setStakeData(res.data.stakesData.reverse());
         // console.log("stakeData", stakeData);
         // console.log("stakeData.startDayTimeStamp", stakeData[0].startDayTimeStamp);
         // console.log("lockDaysSeconds", stakeData[0].lockDaysSeconds);
@@ -222,14 +222,6 @@ function Staking() {
           }));
 
         console.log("runtimeArgs", runtimeArgs);
-        //   // Set contract installation deploy (unsigned).
-        // let deploy = await makeDeploy(
-        //   publicKey,
-        //   contractHashAsByteArray,
-        //   entryPoint,
-        //   runtimeArgs,
-        //   paymentAmount
-        // );
         let deploy = await makeWiseTokenDeployWasm(
           publicKey,
           runtimeArgs,
@@ -237,34 +229,23 @@ function Staking() {
         );
         console.log("make deploy: ", deploy);
         try {
-          // if (selectedWallet === "Casper") {
           let signedDeploy = await signdeploywithcaspersigner(
             deploy,
             publicKeyHex
           );
           let result = await putdeploy(signedDeploy, enqueueSnackbar);
           console.log("result", result);
-          // } else {
-          //   // let Torus = new Torus();
-          //   torus = new Torus();
-          //   console.log("torus", torus);
-          //   await torus.init({
-          //     buildEnv: "testing",
-          //     showTorusButton: true,
-          //     network: SUPPORTED_NETWORKS[CHAINS.CASPER_TESTNET],
-          //   });
-          //   const casperService = new CasperServiceByJsonRPC(torus?.provider);
-          //   const deployRes = await casperService.deploy(deploy);
-          //   console.log("deployRes", deployRes.deploy_hash);
-          //   console.log(
-          //     `... Contract installation deployHash: ${deployRes.deploy_hash}`
-          //   );
-          //   let result = await getDeploy(
-          //     NODE_ADDRESS,
-          //     deployRes.deploy_hash,
-          //     enqueueSnackbar
-          //   );
-          // }
+          Axios
+            .get(`/queryKeyData/${Buffer.from(CLPublicKey.fromHex(activePublicKey).toAccountHash()).toString("hex")}/${isCspr ? "create_stake_with_cspr" : "create_stake"}`)
+            .then((res) => {
+              console.log("res.data.Data", res.data.Data);
+
+            })
+            .catch((error) => {
+              console.log(error);
+              console.log(error.response);
+            });
+
           getGlobalData();
           getStakeData();
           handleCloseStakingWISEModal();
@@ -272,6 +253,9 @@ function Staking() {
           handleCloseSigning();
           let variant = "success";
           enqueueSnackbar("Stake Created Successfully!", { variant });
+
+
+
         } catch {
           handleCloseSigning();
           let variant = "Error";
