@@ -201,7 +201,7 @@ function Reservation() {
       publicKeyHex !== undefined
     ) {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
-      const paymentAmount = 5000000000;
+      const paymentAmount = 50000000000;
       console.log("checking staking active Key: ", activePublicKey);
       const ltPackageHash = new CLByteArray(
         Uint8Array.from(Buffer.from(LIQUIDITYTRANSFORMER_PACKAGE_HASH, "hex"))

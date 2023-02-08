@@ -192,7 +192,7 @@ function Staking() {
       publicKeyHex !== undefined
     ) {
       const publicKey = CLPublicKey.fromHex(publicKeyHex);
-      const paymentAmount = isCspr ? 20000000000 : 10000000000;
+      const paymentAmount = isCspr ? 200000000000 : 100000000000;
       console.log("checking staking active Key: ", activePublicKey);
       console.log("referrerAddress", referrerAddress);
       const accountHash = Buffer.from(CLPublicKey.fromHex(referrerAddress).toAccountHash()).toString("hex");
