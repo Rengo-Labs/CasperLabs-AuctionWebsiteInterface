@@ -114,6 +114,7 @@ function Mode5Master(props) {
                                                 props.setSelectedDay(props.day);
                                                 props.handleShowReservationModal()
                                             }}
+                                            disabled
                                         >
                                             Reserve Wise
                                         </Button>

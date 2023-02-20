@@ -124,7 +124,7 @@ function Mode1Cashback(props) {
                             <Grid item xs={6}>
 
 
-                                {((1667144081322 / 1000 - new Date().getTime() / 1000) + (15 * 86400) < 0) ? (
+                                {((1676457756000 / 1000 - new Date().getTime() / 1000) + (30 * 86400) < 0) ? (
                                     props.totalUsersReservations !== 0 && props.claimWiseStatus === false ? (
                                         <Button
                                             className="text-center"
@@ -171,7 +171,7 @@ function Mode1Cashback(props) {
                                 style={{ backgroundColor: '#08209e0f' }}
                                 className="text-center"
                                 avatar={<AccessTimeIcon />}
-                                label={((1667144081322 / 1000 - new Date().getTime() / 1000) + ((15) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1667144081322 / 1000 - new Date().getTime() / 1000) + ((6) * 86400)))}
+                                label={((1676457756000 / 1000 - new Date().getTime() / 1000) + ((30) * 86400)) < 0 ? ('Reservation Closed') : ('Closing in ' + toDaysMinutesSeconds((1676457756000 / 1000 - new Date().getTime() / 1000) + ((30) * 86400)))}
                                 variant="outlined"
                             />
                         </div>
