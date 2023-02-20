@@ -1,5 +1,5 @@
 export function currentStakeableDay() {
-    return (new Date().getTime() - 1667144081322) / 86400000
+    return (new Date().getTime() - 1676457756000) / 86400000
 }
 export function addDays(date, days) {
     var result = new Date(date).getTime();
